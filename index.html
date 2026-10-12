@@ -395,7 +395,7 @@ async function restoreSessionProfile(){
 }
 function canOpenPage(id){return allowedPagesForRole(currentUserRole).includes(id)}
 
-async function initSupabase(){try{if(window.supabase&&CONFIG.SUPABASE_URL.startsWith('http')){sb=window.supabase.createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_ANON_KEY); cloudEnabled=true;get('connectionStatus').textContent='Supabase متصل';get('dbStatus').textContent='الربط مفعل مع Supabase. إذا لم تظهر بيانات العميل تأكد من الجداول والسياسات RLS.';await refreshFromCloud(false);sb.channel('alostol-live').on('postgres_changes',{event:'*',schema:'public',table:'orders'},()=>refreshFromCloud(false)).on('postgres_changes',{event:'*',schema:'public',table:'technicians'},()=>refreshFromCloud(false)).subscribe();}else throw new Error('Supabase library not loaded')}catch(e){cloudEnabled=false;get('connectionStatus').textContent='Supabase غير متصل';get('dbStatus').textContent='تعذر الاتصال بـ Supabase. تسجيل الدخول المحلي غير مفعل في نسخة البيع.'}}
+async function initSupabase(){try{if(window.supabase&&CONFIG.SUPABASE_URL.startsWith('http')){sb=window.supabase.createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_ANON_KEY); cloudEnabled=true;get('connectionStatus').textContent='Supabase متصل';get('dbStatus').textContent='الربط مفعل مع Supabase. إذا لم تظهر بيانات العميل تأكد من الجداول والسياسات RLS.';sb.channel('alostol-live').on('postgres_changes',{event:'*',schema:'public',table:'orders'},()=>refreshFromCloud(false)).on('postgres_changes',{event:'*',schema:'public',table:'technicians'},()=>refreshFromCloud(false)).subscribe();}else throw new Error('Supabase library not loaded')}catch(e){cloudEnabled=false;get('connectionStatus').textContent='Supabase غير متصل';get('dbStatus').textContent='تعذر الاتصال بـ Supabase. تسجيل الدخول المحلي غير مفعل في نسخة البيع.'}}
 async function loginSupabase(){const email=get('loginEmail').value.trim(),pass=get('loginPass').value;if(!email||!pass){showLoginError('اكتب الإيميل وكلمة المرور');return}try{if(!sb) await initSupabase(); if(!sb) throw new Error('Supabase غير متاح');const {data,error}=await sb.auth.signInWithPassword({email,password:pass});if(error) throw error;localStorage.setItem(KEYS.SESSION,JSON.stringify({mode:'supabase',email,time:Date.now()}));await loadLoggedUserProfile(data.user,email);get('loginScreen').classList.add('hidden');toast('تم تسجيل الدخول');await refreshFromCloud();if(currentUserRole==='technician')showPage('techPortal');else if(currentUserRole==='company_manager')showPage('companyPortal');}catch(e){showLoginError('فشل الدخول: '+(e.message||'راجع بيانات الحساب'))}}
 function showLoginError(msg){get('loginError').textContent=msg;get('loginError').classList.remove('hidden')}
 
@@ -577,38 +577,45 @@ function fillTechSelects(){
 
 async function refreshFromCloud(showToast=true){
   if(!sb||!cloudEnabled){renderAll();return false;}
+  if(refreshFromCloudBusy)return false;
+  refreshFromCloudBusy=true;
   try{
     pulling=true;
-    const [{data:orders,error:ordersError},{data:techs,error:techsError},{data:companies,error:companiesError}]=await Promise.all([
-      sb.from('orders').select('*').order('updated_at',{ascending:false}),
+    const {data:orders,error:ordersError}=await sb.from('orders').select('*').order('updated_at',{ascending:false});
+    if(ordersError) throw new Error('فشل قراءة الطلبات: '+ordersError.message);
+    const localOrders=(orders||[]).map(fromDbOrder);
+    localStorage.setItem(KEYS.ORD,JSON.stringify(localOrders));
+    detectIncomingOrders(localOrders);
+    const results=await Promise.allSettled([
       sb.from('technicians').select('*').order('updated_at',{ascending:false}),
       sb.from('companies').select('id,name,phone,city')
     ]);
-    if(ordersError) throw ordersError;
-    if(techsError) throw techsError;
-    if(companiesError) throw companiesError;
-    const localOrders=(orders||[]).map(fromDbOrder);
-    const localTechs=(techs||[]).map(fromDbTech);
-    localStorage.setItem(KEYS.ORD,JSON.stringify(localOrders));
-    localStorage.setItem(KEYS.TECH,JSON.stringify(localTechs));
-    const oldCompanies=getCompanies();
-    const oldMap=new Map(oldCompanies.map(c=>[String(c.id),c]));
-    const cloudCompanies=(companies||[]).map(c=>({...oldMap.get(String(c.id)),id:c.id,name:c.name||'',phone:c.phone||'',city:c.city||'',region:oldMap.get(String(c.id))?.region||inferRegion(c.city||''),status:oldMap.get(String(c.id))?.status||'نشطة',notes:oldMap.get(String(c.id))?.notes||''}));
-    localStorage.setItem(KEYS.COMP,JSON.stringify(cloudCompanies));
-    detectIncomingOrders(localOrders);
-    pulling=false;
+    const techResult=results[0].status==='fulfilled'?results[0].value:null;
+    if(techResult&&!techResult.error) localStorage.setItem(KEYS.TECH,JSON.stringify((techResult.data||[]).map(fromDbTech)));
+    else console.warn('تعذر تحميل الفنيين دون التأثير على الطلبات',techResult?.error||results[0].reason);
+    const companyResult=results[1].status==='fulfilled'?results[1].value:null;
+    if(companyResult&&!companyResult.error){
+      const oldCompanies=getCompanies();
+      const oldMap=new Map(oldCompanies.map(c=>[String(c.id),c]));
+      const cloudCompanies=(companyResult.data||[]).map(c=>({...oldMap.get(String(c.id)),id:c.id,name:c.name||'',phone:c.phone||'',city:c.city||'',region:oldMap.get(String(c.id))?.region||inferRegion(c.city||''),status:oldMap.get(String(c.id))?.status||'نشطة',notes:oldMap.get(String(c.id))?.notes||''}));
+      localStorage.setItem(KEYS.COMP,JSON.stringify(cloudCompanies));
+    }else console.warn('تعذر تحميل الشركات دون التأثير على الطلبات',companyResult?.error||results[1].reason);
+    const db=get('dbStatus');if(db)db.textContent='تم جلب '+localOrders.length+' طلب من Supabase. إذا كان العدد صفرًا، تحقق من وجود الطلبات وصلاحيات RLS للحساب.';
+    const st=get('connectionStatus');if(st)st.textContent='Supabase متصل';
     renderAll();
-    if(showToast) toast('تم تحديث البيانات');
+    if(showToast)toast('تم تحديث الطلبات: '+localOrders.length);
     return true;
   }catch(e){
-    pulling=false;
-    const st=get('connectionStatus'); if(st) st.textContent='Supabase غير متصل';
-    const db=get('dbStatus'); if(db) db.textContent='تعذر جلب بيانات Supabase. لا يوجد وضع دخول محلي في نسخة البيع. السبب: '+(e.message||e);
-    console.warn('refreshFromCloud failed',e.message||e);
+    const msg=e.message||String(e);
+    console.error('refreshFromCloud failed',e);
+    const db=get('dbStatus');if(db)db.textContent=msg+' — راجع صلاحيات RLS والاتصال.';
+    const st=get('connectionStatus');if(st)st.textContent='خطأ في قراءة الطلبات';
+    if(showToast)toast(msg);
     renderAll();
     return false;
-  }
+  }finally{pulling=false;refreshFromCloudBusy=false;}
 }
+let refreshFromCloudBusy=false;
 
 async function syncOrders(orders){
   if(!sb||!cloudEnabled||pulling) return;
