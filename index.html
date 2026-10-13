@@ -918,7 +918,37 @@ function techClearPhotos(orderId,type){const lockedOrder=load(KEYS.ORD).find(o=>
 }
 
 function techMoveOrder(id){techUpdateOrder(id,{status:'الفني تحرك'},'تم تسجيل تحرك الفني')}
-function techFinishOrder(id){if(!confirm('إغلاق الطلب نهائياً؟ لن يتمكن الفني من تعديله بعد الإغلاق.'))return;const key='report_'+String(id).replace(/[^a-zA-Z0-9]/g,'_');const el=get(key);const saved=(load(KEYS.ORD).find(o=>o.id===id)||{}).workReport||'';const note=(el&&el.value?el.value.trim():saved);techUpdateOrder(id,{status:'مكتملة',technicianLocked:true,workReport:note,completedAt:new Date().toISOString()},'تم إنهاء العمل')}
+async function techFinishOrder(id){
+  if(!confirm('إغلاق الطلب نهائياً؟ لن يتمكن الفني من تعديله بعد الإغلاق.'))return;
+  if(!sb||!cloudEnabled){toast('لا يمكن إغلاق الطلب بدون اتصال بقاعدة البيانات');return;}
+  const current=load(KEYS.ORD).find(o=>String(o.id)===String(id));
+  if(!current){toast('الطلب غير موجود');return;}
+  if(techIsClosed(current)){toast('الطلب مغلق بالفعل');return;}
+  const key='report_'+String(id).replace(/[^a-zA-Z0-9]/g,'_');
+  const el=get(key);
+  const note=(el&&el.value?el.value.trim():current.workReport||'');
+  const closedAt=new Date().toISOString();
+  try{
+    // Read the authoritative record first. Never trust stale browser cache for closure.
+    const {data:remote,error:readError}=await sb.from('orders').select('*').eq('id',id).single();
+    if(readError)throw readError;
+    if(techIsClosed(fromDbOrder(remote))){await refreshFromCloud(false);toast('الطلب مغلق بالفعل على السيرفر');return;}
+    const raw={...(remote.raw||{}),technicianLocked:true,workReport:note,completedAt:closedAt};
+    const {data:updated,error:writeError}=await sb.from('orders')
+      .update({status:'مكتملة',raw,updated_at:closedAt})
+      .eq('id',id).eq('updated_at',remote.updated_at).select('*');
+    if(writeError)throw writeError;
+    if(!updated||updated.length!==1)throw new Error('تغير الطلب أثناء الحفظ؛ حدّث الصفحة وأعد المحاولة');
+    // Confirm persisted state by reading from Supabase, not from localStorage.
+    const {data:verified,error:verifyError}=await sb.from('orders').select('*').eq('id',id).single();
+    if(verifyError)throw verifyError;
+    if(!techIsClosed(fromDbOrder(verified)))throw new Error('لم يتم تأكيد إغلاق الطلب في قاعدة البيانات');
+    pulling=true;
+    try{const arr=load(KEYS.ORD).map(o=>String(o.id)===String(id)?fromDbOrder(verified):o);localStorage.setItem(KEYS.ORD,JSON.stringify(arr));}
+    finally{pulling=false;}
+    renderAll();toast('تم إغلاق الطلب وحفظه في Supabase بنجاح');
+  }catch(e){console.error('techFinishOrder persistence error',e);toast('لم يتم تأكيد إغلاق الطلب: '+(e.message||e));await refreshFromCloud(false);}
+}
 function techCollectInvoice(id){if(!confirm('تأكيد تحصيل الفاتورة من العميل؟'))return;techUpdateOrder(id,{paymentStatus:'مدفوعة',collectedAt:new Date().toISOString()},'تم تسجيل تحصيل الفاتورة')}
 function customerWhatsAppLink(phone){
   let digits=String(phone||'').replace(/\D/g,'');
