@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -176,7 +176,7 @@
         <div class="card"><div class="card-head"><h3>الطلبات المسندة للشركة</h3></div><div id="companyPortalOrders" class="list-card"></div></div>
       </div>
       <div id="clients" class="page"><div class="page-title"><div><h1>العملاء</h1><p>ملفات العملاء من الطلبات المسجلة</p></div></div><div class="card"><div id="clientsList" class="list-card"></div></div></div>
-      <div id="techPortal" class="page"><div class="page-title"><div><h1>بوابة الفني</h1><p>عرض الطلبات المسندة لفني معين</p></div></div><div class="wide-grid"><div class="card"><div class="field"><label>اختر الفني</label><select id="portalTech" onchange="renderTechPortal()"></select></div><br><div id="portalSummary"></div></div><div class="card"><div class="card-head"><h3>طلبات الفني</h3><div class="actions"><button class="btn green" onclick="printTechnicianAllOrdersReport()">📄 التقرير التفصيلي / PDF</button><button class="btn light" onclick="exportTechnicianReportCSV()">📊 تصدير Excel (CSV)</button><button class="btn light" onclick="copyTechReport()">نسخ تقرير</button></div></div><div class="mini-form" style="margin:12px 0"><div class="field"><label>من تاريخ</label><input type="date" id="techReportFrom"></div><div class="field"><label>إلى تاريخ</label><input type="date" id="techReportTo"></div><div class="field"><label>فلترة حسب حالة الطلب</label><select id="techOrderStatusFilter" onchange="renderTechPortal()"><option value="all">كل الطلبات</option><option value="new">الجديدة</option><option value="active">قيد التنفيذ</option><option value="finished">انتهى منها الفني</option><option value="completed">المكتملة</option><option value="cancelled">الملغاة / المرفوضة</option><option value="other">حالات أخرى</option></select></div><div class="field"><label>بحث في طلبات الفني</label><input id="techOrderSearch" placeholder="رقم الطلب أو العميل أو الجوال" oninput="renderTechPortal()"></div></div><p id="techFilterCount" class="muted" style="margin-bottom:10px"></p><div id="portalOrders" class="list-card"></div></div></div></div>
+      <div id="techPortal" class="page"><div class="page-title"><div><h1>بوابة الفني</h1><p>عرض الطلبات المسندة لفني معين</p></div></div><div class="wide-grid"><div class="card"><div class="field"><label>اختر الفني</label><select id="portalTech" onchange="renderTechPortal()"></select></div><br><div id="portalSummary"></div></div><div class="card"><div class="card-head"><h3>طلبات الفني</h3><div class="actions"><button class="btn green" onclick="printTechnicianAllOrdersReport()">📄 التقرير التفصيلي / PDF</button><button class="btn light" onclick="exportTechnicianReportCSV()">📊 تقرير الفني Excel احترافي</button><button class="btn light" onclick="copyTechReport()">نسخ تقرير</button></div></div><div class="mini-form" style="margin:12px 0"><div class="field"><label>من تاريخ</label><input type="date" id="techReportFrom"></div><div class="field"><label>إلى تاريخ</label><input type="date" id="techReportTo"></div><div class="field"><label>فلترة حسب حالة الطلب</label><select id="techOrderStatusFilter" onchange="renderTechPortal()"><option value="all">كل الطلبات</option><option value="new">الجديدة</option><option value="active">قيد التنفيذ</option><option value="finished">انتهى منها الفني</option><option value="completed">المكتملة</option><option value="cancelled">الملغاة / المرفوضة</option><option value="other">حالات أخرى</option></select></div><div class="field"><label>بحث في طلبات الفني</label><input id="techOrderSearch" placeholder="رقم الطلب أو العميل أو الجوال" oninput="renderTechPortal()"></div></div><p id="techFilterCount" class="muted" style="margin-bottom:10px"></p><div id="portalOrders" class="list-card"></div></div></div></div>
       <div id="clientTracking" class="page"><div class="tracking-hero"><div><h1>تتبع طلب العميل</h1><p>اكتب رقم الطلب أو رقم الجوال لمتابعة الحالة</p></div><div style="font-size:46px">📍</div></div><div class="tracking-search"><input id="trackInput" placeholder="مثال: #1250 أو 0501112222" oninput="renderTracking()"><button class="btn" onclick="renderTracking()">تتبع الآن</button><button class="btn light" onclick="copyTrackingInfo()">نسخ البيانات</button></div><div id="trackingResult"></div></div>
       <div id="payments" class="page"><section id="fpCashAdmin" class="card" style="margin-bottom:18px;display:none">
  <div class="card-head"><h3>💰 حسابات وعهدة الفنيين — للإدارة فقط</h3><button class="btn light" onclick="fpCashRefresh()">تحديث الحسابات</button></div>
@@ -1086,11 +1086,40 @@ function printTechnicianAllOrdersReport(){
  const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة');return;}w.document.open();w.document.write(html);w.document.close();
 }
 function exportTechnicianReportCSV(){
- const {id,tech,orders}=fpTechReportData();if(!id||!orders.length){toast('اختر فنيًا لديه طلبات');return;}
- const names=fpTechReportFields(orders[0]).map(x=>x[0]);
- const quote=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
- const csv='\uFEFF'+[ ['الفني',...names].map(quote).join(','),...orders.map(o=>[tech?.name||id,...fpTechReportFields(o).map(x=>x[1])].map(quote).join(','))].join('\r\n');
- const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));const a=document.createElement('a');a.href=url;a.download='technician_report_'+String(id).replace(/[^a-zA-Z0-9_-]/g,'_')+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ const {id,tech,orders,from,to}=fpTechReportData();
+ if(!id||!orders.length){toast('اختر فنيًا لديه طلبات في الفترة المختارة');return;}
+ if(typeof XLSX==='undefined'){toast('تعذر تحميل مكتبة Excel؛ تأكد من الاتصال بالإنترنت');return;}
+ const name=tech?.name||String(id), money=n=>Number(n)||0;
+ const total=orders.reduce((v,o)=>v+money(o.price),0);
+ const visits=orders.reduce((v,o)=>v+money(o.visitFee||o.technicianVisitFee),0);
+ const completed=orders.filter(o=>techOrderCategory(o)==='done').length;
+ const wb=XLSX.utils.book_new();wb.Props={Title:'فني برو | التقرير التفصيلي للفني',Subject:'سجل الطلبات والزيارات',Author:'فني برو'};
+ const navy='123D69',blue='176DF7',light='EAF2FF',green='DFF7EA';
+ function sheet(title,headers,rows,widths,amountColumns=[]){
+  const grid=[[title],['اسم الفني: '+name],['الفترة: '+(from||'البداية')+' إلى '+(to||'اليوم')],['تاريخ التصدير: '+new Date().toLocaleString('ar-SA')],[],headers,...rows];
+  const ws=XLSX.utils.aoa_to_sheet(grid),last=headers.length-1;
+  ws['!merges']=[0,1,2,3].map(r=>({s:{r,c:0},e:{r,c:last}}));
+  ws['!cols']=widths.map(w=>({wch:w}));ws['!rows']=[{hpt:35},{hpt:25},{hpt:25},{hpt:25},{hpt:10},{hpt:30}];
+  ws['!autofilter']={ref:XLSX.utils.encode_range({s:{r:5,c:0},e:{r:Math.max(5,grid.length-1),c:last}})};
+  for(let r=0;r<grid.length;r++)for(let c=0;c<headers.length;c++){
+   const cell=ws[XLSX.utils.encode_cell({r,c})];if(!cell)continue;
+   cell.s={font:{name:'Arial',sz:r===0?18:11,bold:r===0||r===5,color:r===0||r===5?'FFFFFF':'17365E'},fill:{fgColor:{rgb:r===0?navy:r===5?blue:r%2===0&&r>5?'F2F7FD':'FFFFFF'}},alignment:{horizontal:'right',vertical:'center',wrapText:true},border:r>=5?{bottom:{style:'hair',color:{rgb:'DDE7F3'}}}:undefined};
+   if(r>=6&&amountColumns.includes(c)&&typeof cell.v==='number'){cell.z='#,##0.00 "ر.س"';}
+  }
+  ws['!sheetViews']=[{rightToLeft:true}];return ws;
+ }
+ const summary=[['الفني',name],['عدد الطلبات',orders.length],['الطلبات المكتملة',completed],['الطلبات غير المكتملة',orders.length-completed],['إجمالي قيمة الطلبات (ر.س)',total],['إجمالي رسوم الزيارات (ر.س)',visits],['الفترة من',from||'الكل'],['الفترة إلى',to||'الكل']];
+ XLSX.utils.book_append_sheet(wb,sheet('فني برو | ملخص أداء الفني',['المؤشر','القيمة'],summary,[37,48],[1]),'ملخص الفني');
+ const fields=fpTechReportFields(orders[0]);const headers=['م',...fields.map(x=>x[0])];
+ const details=orders.map((o,i)=>[i+1,...fpTechReportFields(o).map(([key,value])=>['رسوم الزيارة','قيمة الطلب (ريال)','مدة العمل بالدقائق','عدد صور قبل','عدد صور بعد'].includes(key)?money(value):(value??''))]);
+ const amountCols=headers.map((x,i)=>['رسوم الزيارة','قيمة الطلب (ريال)'].includes(x)?i:-1).filter(x=>x>=0);
+ XLSX.utils.book_append_sheet(wb,sheet('فني برو | سجل طلبات الفني',headers,details,headers.map((h,i)=>i===0?7:['تشخيص العطل','الأعمال المنفذة','التوصيات','تقرير الفني','العنوان'].includes(h)?42: h.includes('وقت')||h.includes('تاريخ')?24:22),amountCols),'تفاصيل الطلبات');
+ const statuses=[...new Set(orders.map(o=>String(o.status||'غير محدد')))];
+ const byStatus=statuses.map(st=>[st,orders.filter(o=>String(o.status||'غير محدد')===st).length,orders.filter(o=>String(o.status||'غير محدد')===st).reduce((v,o)=>v+money(o.price),0)]);
+ XLSX.utils.book_append_sheet(wb,sheet('فني برو | تحليل حالات الطلبات',['الحالة','عدد الطلبات','قيمة الطلبات (ر.س)'],byStatus,[28,22,30],[2]),'تحليل الحالات');
+ const stamp=new Date().toISOString().slice(0,10);
+ try{XLSX.writeFile(wb,'Fanni_Pro_Technician_'+String(id).replace(/[^a-zA-Z0-9_-]/g,'_')+'_'+stamp+'.xlsx');toast('تم تصدير تقرير الفني الاحترافي بثلاث أوراق');}
+ catch(e){toast('تعذر تصدير Excel: '+(e.message||e));}
 }
 function copyTechReport(){const id=(isTechnicianRole()&&currentTechnicianId)?currentTechnicianId:get('portalTech').value,orders=load(KEYS.ORD).filter(o=>String(o.techId)===String(id)),tech=load(KEYS.TECH).find(t=>String(t.id)===String(id));const txt=`تقرير الفني: ${tech?.name||'-'}\nعدد الطلبات: ${orders.length}\n`+orders.map(o=>`${o.id} - ${o.service} - ${o.status}`).join('\n');navigator.clipboard.writeText(txt).then(()=>toast('تم نسخ التقرير'))}
 function renderTracking(){const q=get('trackInput').value.trim();if(!q){get('trackingResult').innerHTML='<div class="empty-state">اكتب رقم الطلب أو الجوال لعرض التتبع</div>';return}const o=roleFilteredOrders(load(KEYS.ORD)).find(x=>x.id===q||x.phone===q||String(x.id).replace('#','')===q.replace('#',''));if(!o){get('trackingResult').innerHTML='<div class="empty-state">لم يتم العثور على الطلب</div>';return}const steps=['جديدة','تم الإسناد','الفني تحرك','قيد التنفيذ','مكتملة'];const idx=Math.max(0,steps.indexOf(o.status));get('trackingResult').innerHTML=`<div class="card"><div class="card-head"><h3>${safe(o.id)} - ${safe(o.service)}</h3><span class="status ${orderStatusClass(o.status)}">${safe(o.status)}</span></div><p class="muted">العميل: ${safe(o.name)} · الفني: ${safe(techName(o.techId))} · المدينة: ${safe(o.city)}</p><br><div class="timeline">${steps.map((s,i)=>`<div class="time-item"><div class="time-box"><b>${s}</b><p class="muted">${i<=idx?'تم الوصول لهذه المرحلة':'بانتظار التحديث'}</p></div><div class="time-dot">${i<=idx?'✅':'○'}</div></div>`).join('')}</div></div>`}
