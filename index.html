@@ -127,7 +127,7 @@
 <option value="المنطقة الجنوبية">المنطقة الجنوبية</option>
 <option value="المنطقة الشرقية">المنطقة الشرقية</option>
 </select></div>
-<div class="field"><label>المدينة</label><select id="oCity"></select></div><div class="field"><label>السعر</label><input id="oPrice" type="number" min="0"></div><div class="field"><label>الحالة</label><select id="oStatus"><option>جديدة</option><option>تم الإسناد</option><option>الفني تحرك</option><option>قيد التنفيذ</option><option>مكتملة</option><option>متأخرة</option><option>ملغي</option></select></div><div class="field"><label>الشركة المنفذة</label><select id="oCompany" onchange="fillOrderTechsByCompany()"><option value="">كل الشركات</option></select></div><div class="field"><label>الفني</label><select id="oTech"><option value="">بدون إسناد</option></select></div><div class="field"><label>حالة الدفع</label><select id="oPayment"><option>غير مدفوعة</option><option>مدفوعة</option><option>جزئي</option><option>متأخرة</option></select></div><div class="field" style="grid-column:1/-1"><label>العنوان / الملاحظات</label><textarea id="oNotes"></textarea></div></div><br><button class="btn" onclick="saveOrderForm()">حفظ الطلب</button></div><div class="card"><div class="card-head"><h3>كل الطلبات</h3><span class="status new" id="ordersCount">0 طلب</span></div><div id="ordersDiagnostic" class="danger-note" style="margin:10px 0">اضغط فحص الطلبات لمعرفة حالة الربط.</div><button class="btn light" type="button" onclick="diagnoseOrders()" style="margin-bottom:12px">🔎 فحص الطلبات من Supabase</button><div id="allOrders" class="list-card"></div></div></div></div>
+<div class="field"><label>المدينة</label><select id="oCity"></select></div><div class="field"><label>السعر</label><input id="oPrice" type="number" min="0"></div><div class="field"><label>الحالة</label><select id="oStatus"><option>جديدة</option><option>تم الإسناد</option><option>الفني تحرك</option><option>قيد التنفيذ</option><option>مكتملة</option><option>متأخرة</option><option>ملغي</option></select></div><div class="field"><label>الشركة المنفذة</label><select id="oCompany" onchange="fillOrderTechsByCompany()"><option value="">كل الشركات</option></select></div><div class="field"><label>الفني</label><select id="oTech"><option value="">بدون إسناد</option></select></div><div class="field"><label>حالة الدفع</label><select id="oPayment"><option>غير مدفوعة</option><option>مدفوعة</option><option>جزئي</option><option>متأخرة</option></select></div><div class="field" style="grid-column:1/-1"><label>العنوان / الملاحظات</label><textarea id="oNotes"></textarea></div></div><br><button class="btn" onclick="saveOrderForm()">حفظ الطلب</button></div><div class="card"><div class="card-head"><h3>كل الطلبات</h3><span class="status new" id="ordersCount">0 طلب</span></div><div id="ordersDiagnostic" class="danger-note" style="margin:10px 0">اضغط فحص الطلبات لمعرفة حالة الربط.</div><button class="btn light" type="button" onclick="diagnoseOrders()" style="margin-bottom:12px">🔎 فحص الطلبات من Supabase</button><button class="btn light" type="button" onclick="resetOrderSearch()" style="margin-bottom:12px">↺ إظهار جميع الطلبات / مسح البحث</button><div id="allOrders" class="list-card"></div></div></div></div>
 
       <div id="companies" class="page">
         <div class="page-title"><div><h1>الشركات والفنيين</h1><p>إدارة الشركات وعرض الفنيين التابعين لكل شركة</p></div></div>
@@ -777,7 +777,15 @@ function saveTechForm(){let arr=load(KEYS.TECH),edit=get('editingTechId').value;
 function editTech(id){const t=load(KEYS.TECH).find(x=>x.id===id);if(!t)return;showPage('technicians');get('editingTechId').value=t.id;get('techFormTitle').textContent='تعديل فني';get('tName').value=t.name;get('tPhone').value=t.phone||'';get('tSkill').value=t.skill;get('tCity').value=t.city;get('tRate').value=t.rate;get('tAvailable').value=t.available;get('tExp').value=t.experience||0}
 function clearTechForm(){['editingTechId','tName','tPhone','tSkill'].forEach(id=>get(id).value='');get('tCity').value='خميس مشيط';get('tRate').value='4.8';get('tAvailable').value='متاح للعمل';get('tExp').value='5';get('techFormTitle').textContent='إضافة فني'}
 async function deleteTech(id){if(!confirm('حذف الفني؟ سيتم إزالة إسناده من الطلبات.'))return;save(KEYS.TECH,load(KEYS.TECH).filter(x=>x.id!==id));save(KEYS.ORD,load(KEYS.ORD).map(o=>o.techId===id?{...o,techId:null,status:o.status==='تم الإسناد'?'جديدة':o.status}:o));await deleteTechCloud(id);renderAll();toast('تم حذف الفني')}
-function qfilter(arr){let list=arr||[];if(list.some(x=>x&&('service' in x||'status' in x||'techId' in x)))list=roleFilteredOrders(list);const q=(get('globalSearch').value||'').toLowerCase();return !q?list:list.filter(x=>JSON.stringify(x).toLowerCase().includes(q))}
+function qfilter(arr){
+ let list=Array.isArray(arr)?arr:[];
+ if(currentUserRole==='technician'||currentUserRole==='company_manager') list=roleFilteredOrders(list);
+ const input=get('globalSearch');
+ const q=(input?.value||'').trim().toLowerCase();
+ return !q?list:list.filter(x=>JSON.stringify(x).toLowerCase().includes(q));
+}
+function resetOrderSearch(){const input=get('globalSearch');if(input)input.value='';renderAll();toast('تم إظهار جميع الطلبات المتاحة');}
+
 
 async function diagnoseOrders(){
  const el=get('ordersDiagnostic');if(!el)return;
@@ -793,7 +801,7 @@ async function diagnoseOrders(){
   const {data, error:readError}=await sb.from('orders').select('*').limit(5);
   if(readError)throw readError;
   const local=load(KEYS.ORD),filtered=qfilter(local);
-  el.textContent='الحساب: '+user.email+' | دور الحساب: '+currentUserRole+' | عدد الطلبات المتاحة لهذا الحساب في Supabase: '+count+' | عدد الطلبات المخزنة محليًا: '+local.length+' | المعروضة بعد التصفية: '+filtered.length+'. '+(count===0?'إذا كانت الطلبات موجودة في Table Editor فافحص RLS أو اختلاف مشروع Supabase.':filtered.length===0?'البيانات متاحة لكن التصفية/التحويل/التحديث يمنع ظهورها.':'الطلبات متاحة؛ افحص قائمة العرض.');
+  el.textContent='الحساب: '+user.email+' | دور الحساب: '+currentUserRole+' | عدد الطلبات المتاحة لهذا الحساب في Supabase: '+count+' | عدد الطلبات المخزنة محليًا: '+local.length+' | المعروضة بعد التصفية: '+filtered.length+' | البحث الحالي: '+(get('globalSearch')?.value||'لا يوجد')+'. '+(count===0?'إذا كانت الطلبات موجودة في Table Editor فافحص RLS أو اختلاف مشروع Supabase.':filtered.length===0?'البيانات متاحة لكن التصفية/التحويل/التحديث يمنع ظهورها.':'الطلبات متاحة؛ افحص قائمة العرض.');
  }catch(e){el.textContent='خطأ فحص الطلبات: '+(e.message||String(e));}
 }
 
