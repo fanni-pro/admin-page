@@ -939,10 +939,45 @@ const TECH_WA_TEMPLATES = [
  ['delay','🕒 تأجيل الزيارة'],['parts','🔧 انتظار قطع الغيار'],
  ['done','✅ انتهاء الصيانة'],['rating','⭐ تقييم الخدمة']
 ];
+// رسوم الزيارة: نموذج يحدد فيه الفني المبلغ ثم يفتح واتساب برسالة جاهزة.
+async function techSendVisitFee(orderId){
+ const order=load(KEYS.ORD).find(o=>String(o.id)===String(orderId));
+ if(!order){toast('الطلب غير موجود');return;}
+ const techId=typeof currentTechId==='function'?currentTechId():null;
+ if(!techId || String(order.techId)!==String(techId)){toast('هذا الطلب غير مسند لك');return;}
+ const phone=formatWhatsAppPhone(order.phone);
+ if(!phone){toast('رقم جوال العميل غير صالح');return;}
+ const field=document.getElementById('visitFee_'+String(orderId).replace(/[^a-zA-Z0-9]/g,'_'));
+ const raw=String(field?.value||'').trim();
+ const amount=Number(raw);
+ if(!raw||!Number.isFinite(amount)||amount<=0||amount>100000){toast('أدخل رسوم زيارة صحيحة بالريال');field?.focus();return;}
+ if(!sb||!cloudEnabled){toast('الإرسال التلقائي يتطلب اتصال Supabase');return;}
+ const button=field?.closest('.fp-visit-fee')?.querySelector('.fp-send-fee');
+ if(button?.disabled)return;
+ const formatted=amount.toFixed(2);
+ const msg=`مرحبًا ${order.name||'عميلنا العزيز'} 🌹\nمعك فني منصة فني برو للصيانة المتكاملة.\n📋 رقم الطلب: ${order.id}\n🔧 الخدمة: ${displayServices(order)||order.service||'الصيانة'}\n💰 رسوم الزيارة والفحص: ${formatted} ريال سعودي.\nيرجى تأكيد الموافقة على رسوم الزيارة قبل بدء الخدمة.\nشكرًا لاختياركم فني برو 💙`;
+ try{
+   if(button){button.disabled=true;button.textContent='⏳ جارٍ الإرسال...';}
+   const {data:{session},error:sessionError}=await sb.auth.getSession();
+   if(sessionError||!session?.access_token)throw new Error('سجّل دخول الفني أولًا');
+   const res=await fetch(CONFIG.SUPABASE_URL+'/functions/v1/send-whatsapp',{
+     method:'POST',
+     headers:{'Content-Type':'application/json','apikey':CONFIG.SUPABASE_ANON_KEY,'Authorization':'Bearer '+session.access_token},
+     body:JSON.stringify({phone,message:msg,order_id:String(order.id),message_type:'visit_fee',visit_fee:amount})
+   });
+   const body=await res.text();
+   let result;try{result=JSON.parse(body)}catch{result={error:body.slice(0,250)}}
+   if(!res.ok||!(result?.ok===true||result?.success===true))throw new Error(result?.error||result?.message||'فشل الإرسال');
+   toast('تم قبول إرسال رسوم الزيارة إلى واتساب العميل');
+   // نجاح API ليس دليل تسليم أو قراءة العميل. يلزم webhook للتأكيد.
+ }catch(e){console.error('visit fee send failed',e);toast('تعذر إرسال الرسالة: '+(e.message||'خطأ غير معروف'));}
+ finally{if(button){button.disabled=false;button.textContent='📤 إرسال المبلغ للعميل';}}
+}
 function techWhatsAppTemplatesCard(order){
  const link=customerWhatsAppLink(order.phone);
  const buttons=TECH_WA_TEMPLATES.map(([key,label])=>`<button type="button" class="btn small light" onclick="techSendWhatsAppTemplate('${safe(String(order.id))}','${key}')" ${link?'':'disabled title="رقم العميل غير صالح"'}>${label}</button>`).join('');
- return `<div class="tech-detail-box fp-wa-templates"><b>💬 رسائل واتساب جاهزة للعميل</b><p class="muted" style="margin:6px 0 12px">اختر الرسالة، ثم اضغط إرسال من واتساب.</p><div class="tech-actions-row" style="display:flex;flex-wrap:wrap;gap:8px">${buttons}</div></div>`;
+ const feeId='visitFee_'+String(order.id).replace(/[^a-zA-Z0-9]/g,'_');
+ return `<div class="tech-detail-box fp-wa-templates"><div class="fp-visit-fee" style="padding:12px;background:#effaf4;border:1px solid #bcebd0;border-radius:12px;margin-bottom:12px"><b>💰 إرسال رسوم الزيارة للعميل</b><p class="muted" style="margin:6px 0">اكتب المبلغ ثم اضغط إرسال؛ سيرسل النظام الرسالة مباشرة عبر خدمة واتساب المرتبطة. موافقة العميل خطوة منفصلة.</p><div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-top:10px"><div class="field" style="flex:1;min-width:160px"><label for="${feeId}">رسوم الزيارة (ر.س)</label><input id="${feeId}" type="number" min="0.01" max="100000" step="0.01" inputmode="decimal" placeholder="مثال: 75.00"></div><button type="button" class="btn green fp-send-fee" onclick="techSendVisitFee('${safe(String(order.id))}')" ${link?'':'disabled title="رقم العميل غير صالح"'}>📤 إرسال المبلغ للعميل</button></div></div><b>💬 رسائل واتساب جاهزة للعميل</b><p class="muted" style="margin:6px 0 12px">اختر الرسالة، ثم اضغط إرسال من واتساب.</p><div class="tech-actions-row" style="display:flex;flex-wrap:wrap;gap:8px">${buttons}</div></div>`;
 }
 function techSendWhatsAppTemplate(orderId,template){
  const order=load(KEYS.ORD).find(o=>String(o.id)===String(orderId));
