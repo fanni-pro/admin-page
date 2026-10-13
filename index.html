@@ -1103,5 +1103,38 @@ document.getElementById('nav').addEventListener('click',e=>{const b=e.target.clo
 window.addEventListener('storage',e=>{if(e.key===KEYS.ORD){const orders=load(KEYS.ORD);detectIncomingOrders(orders);renderAll();}});
 window.addEventListener('load',async()=>{await initSupabase();const logged=await requireLogin();if(logged){await restoreSessionProfile();await refreshFromCloud(false);detectIncomingOrders(roleFilteredOrders(load(KEYS.ORD)));renderAll();if(currentUserRole==='technician')showPage('techPortal');startFastOrderNotifications();}else{renderAll();}});
 </script>
+<!-- Audit trail viewer (admin only, database-backed) -->
+<div id="fpAuditPanel" class="card" style="margin:16px;display:none" dir="rtl">
+ <h3>🕓 سجل عمليات الطلبات والفواتير</h3>
+ <p class="muted">يوضح التغييرات المحفوظة فعليًا في Supabase بعد تفعيل ملف SQL. السجل للمدير فقط.</p>
+ <div class="actions" style="margin:12px 0"><input id="fpAuditOrderId" placeholder="رقم الطلب (اتركه فارغًا لآخر العمليات)" style="height:42px;padding:10px;border:1px solid #ddd;border-radius:10px"><button class="btn" onclick="fpLoadAudit()">عرض السجل</button></div>
+ <div id="fpAuditResults" class="list-card"></div>
+</div>
+<script>
+async function fpLoadAudit(){
+ const panel=document.getElementById('fpAuditResults'); if(!panel)return;
+ panel.textContent='جارٍ جلب سجل العمليات...';
+ try{
+  if(!sb)throw Error('اتصال Supabase غير متاح');
+  if(currentUserRole!=='admin')throw Error('السجل متاح للمدير فقط');
+  const orderId=document.getElementById('fpAuditOrderId').value.trim();
+  let q=sb.from('fp_activity_log').select('id,source_table,record_id,action,actor_email,actor_role,happened_at,changes').order('happened_at',{ascending:false}).limit(100);
+  if(orderId)q=q.eq('record_id',orderId);
+  const {data,error}=await q; if(error)throw error;
+  panel.replaceChildren();
+  if(!data?.length){panel.textContent='لا توجد عمليات مسجلة. يبدأ التسجيل بعد تشغيل SQL، ولا يسترجع العمليات القديمة.';return;}
+  for(const r of data){
+   const item=document.createElement('div');item.className='item-card';item.style.display='block';
+   const title=document.createElement('b');title.textContent=`${r.source_table==='orders'?'طلب':'فاتورة'} ${r.record_id} — ${r.action==='INSERT'?'إنشاء':r.action==='UPDATE'?'تعديل':'حذف'}`;
+   const who=document.createElement('p');who.textContent=`بواسطة: ${r.actor_email||'غير معروف (عملية خادم)'} | الصلاحية: ${r.actor_role||'غير محددة'} | ${new Date(r.happened_at).toLocaleString('ar-SA')}`;
+   const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='عرض الحقول التي تغيرت';
+   const pre=document.createElement('pre');pre.style.cssText='white-space:pre-wrap;direction:ltr;text-align:left;max-height:250px;overflow:auto';pre.textContent=JSON.stringify(r.changes,null,2);
+   details.append(summary,pre);item.append(title,who,details);panel.append(item);
+  }
+ }catch(e){panel.textContent='تعذر عرض السجل: '+(e.message||String(e));}
+}
+function fpAuditVisibility(){const p=document.getElementById('fpAuditPanel');if(p)p.style.display=currentUserRole==='admin'?'block':'none';}
+setInterval(fpAuditVisibility,1500);
+</script>
 </body>
 </html>
