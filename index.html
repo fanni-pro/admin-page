@@ -906,43 +906,7 @@ function printProfessionalReport(id){
  const html=`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>تقرير صيانة ${safe(x.id)}</title><style>body{font-family:Tahoma,Arial,sans-serif;color:#10213d;margin:0;background:#eef3fa}.paper{background:white;max-width:820px;margin:25px auto;padding:35px;box-shadow:0 10px 40px #0001}.head{background:#0b2b52;color:white;padding:25px;border-radius:16px;display:flex;justify-content:space-between;align-items:center}.head h1{margin:5px 0}.head small{color:#bcd8ff}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}.datum{background:#f5f8fd;border:1px solid #e1eaf5;border-radius:10px;padding:13px;white-space:pre-wrap;overflow-wrap:anywhere}.datum small{display:block;color:#667b99;margin-bottom:6px}.section{border-top:2px solid #e8eef7;padding-top:14px;margin-top:20px}.photos{display:flex;flex-wrap:wrap;gap:10px}.photos img{width:170px;height:130px;object-fit:cover;border-radius:10px}.footer{margin-top:40px;display:flex;justify-content:space-between;gap:20px;color:#64748b}.print{margin:20px auto;display:block;padding:12px 24px;background:#176df7;color:#fff;border:0;border-radius:10px;cursor:pointer}@media print{body{background:white}.paper{margin:0;box-shadow:none;padding:10mm}.print{display:none}@page{size:A4;margin:10mm}}</style></head><body><button class="print" onclick="window.print()">طباعة / حفظ PDF</button><main class="paper"><div class="head"><div><small>FANNI PRO · SERVICE REPORT</small><h1>تقرير فني للصيانة</h1><div>رقم الطلب: ${safe(x.id)}</div></div><div>🔧 فني برو</div></div><div class="grid">${row('العميل',x.name||'—')}${row('جوال العميل',x.phone||'—')}${row('المدينة',x.city||'—')}${row('العنوان',x.address||x.notes||'—')}${row('نوع الخدمة',displayServices(x))}${row('الفني',tech?.name||'—')}${row('حالة الطلب',x.status||'—')}${row('تاريخ التقرير',new Date().toLocaleString('ar-SA'))}</div><section class="section"><h2>تفاصيل الصيانة</h2><div class="grid">${row('التشخيص',field('technicianDiagnosis','diagnosis'))}${row('الأعمال المنفذة',field('technicianAction','action'))}${row('قطع الغيار',field('technicianParts','parts'))}${row('التوصيات',field('technicianRecommendations','recommend'))}${row('نتيجة الزيارة',field('technicianResult','result'))}${row('مدة العمل بالدقائق',field('technicianDuration','duration'))}</div>${row('ملاحظات إضافية',field('workReport','report'))}</section><section class="section">${photos(x.beforePhotos,'صور قبل الصيانة')}${photos(x.afterPhotos,'صور بعد الصيانة')}</section><div class="footer"><span>اسم وتوقيع الفني: __________________</span><span>مراجعة الإدارة: __________________</span></div></main>
 
 
-<!-- Technician transfer: database-verified, no local optimistic reassignment -->
-<div id="fpTransferModal" class="hidden" style="position:fixed;inset:0;z-index:999999;background:#06172dba;display:grid;place-items:center;padding:15px">
- <div class="card" style="width:min(520px,100%);max-height:90vh;overflow:auto">
-  <h3>تحويل طلب إلى فني آخر</h3><p id="fpTransferOrderLabel" class="muted"></p>
-  <div class="field" style="margin-top:12px"><label>الفني المستلم</label><select id="fpTransferTarget"></select></div>
-  <div class="field" style="margin-top:12px"><label>سبب التحويل (إجباري)</label><textarea id="fpTransferReason" maxlength="1000" placeholder="اشرح سبب تحويل الطلب بالتفصيل"></textarea></div>
-  <p id="fpTransferMessage" class="muted"></p>
-  <div class="actions" style="margin-top:12px"><button id="fpTransferSubmit" class="btn" onclick="fpSubmitTransfer()">تأكيد التحويل والحفظ</button><button class="btn light" onclick="fpCloseTransfer()">إلغاء</button></div>
- </div>
-</div>
-<script>
-let fpTransferOrderId=null;
-function fpCloseTransfer(){document.getElementById('fpTransferModal').classList.add('hidden');fpTransferOrderId=null}
-function fpOpenTransfer(orderId){
- const o=load(KEYS.ORD).find(x=>String(x.id)===String(orderId));
- if(!o||techIsClosed(o)){toast('الطلب غير متاح للتحويل');return}
- if(currentUserRole==='technician'&&String(o.techId)!==String(currentTechnicianId)){toast('هذا الطلب غير مسند لك');return}
- fpTransferOrderId=String(orderId);
- const opts=load(KEYS.TECH).filter(t=>String(t.id)!==String(o.techId)&&String(t.companyId||'')===String(o.companyId||''));
- const sel=document.getElementById('fpTransferTarget');sel.innerHTML='<option value="">اختر الفني المستلم</option>';
- opts.forEach(t=>{const opt=document.createElement('option');opt.value=String(t.id);opt.textContent=t.name||t.id;sel.appendChild(opt)});
- document.getElementById('fpTransferOrderLabel').textContent='رقم الطلب: '+orderId;
- document.getElementById('fpTransferReason').value='';document.getElementById('fpTransferMessage').textContent='';
- document.getElementById('fpTransferModal').classList.remove('hidden');
-}
-async function fpSubmitTransfer(){
- const id=fpTransferOrderId,to=document.getElementById('fpTransferTarget').value,reason=document.getElementById('fpTransferReason').value.trim();
- if(!id||!to||reason.length<10){document.getElementById('fpTransferMessage').textContent='اختر الفني واكتب سببًا لا يقل عن 10 أحرف';return}
- if(!sb||!cloudEnabled){document.getElementById('fpTransferMessage').textContent='لا يوجد اتصال بقاعدة البيانات؛ لم يتم الحفظ';return}
- const btn=document.getElementById('fpTransferSubmit');btn.disabled=true;
- try{
-  const {error}=await sb.rpc('fp_technician_transfer_order',{p_order_id:id,p_to_technician_id:to,p_reason:reason});
-  if(error)throw error;
-  fpCloseTransfer();await refreshFromCloud(false);renderAll();toast('تم تحويل الطلب وحفظ السبب في Supabase');
- }catch(e){document.getElementById('fpTransferMessage').textContent='لم يتم التحويل: '+(e.message||e)}finally{btn.disabled=false}
-}
-</script>
+
 </body></html>`;
  const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة لطباعة التقرير');return;}w.document.open();w.document.write(html);w.document.close();
 }
@@ -1426,6 +1390,43 @@ function fpCashExport(){
  catch(err){toast('تعذر تصدير التقرير: '+(err.message||err));}
 }
 const fpCashOldShowPage=showPage;showPage=function(id){fpCashOldShowPage(id);if(id==='payments'){fpCashPrepare();if(currentUserRole==='admin')fpCashRefresh();}};
+</script>
+<!-- Technician transfer: database-verified, no local optimistic reassignment -->
+<div id="fpTransferModal" class="hidden" style="position:fixed;inset:0;z-index:999999;background:#06172dba;display:grid;place-items:center;padding:15px">
+ <div class="card" style="width:min(520px,100%);max-height:90vh;overflow:auto">
+  <h3>تحويل طلب إلى فني آخر</h3><p id="fpTransferOrderLabel" class="muted"></p>
+  <div class="field" style="margin-top:12px"><label>الفني المستلم</label><select id="fpTransferTarget"></select></div>
+  <div class="field" style="margin-top:12px"><label>سبب التحويل (إجباري)</label><textarea id="fpTransferReason" maxlength="1000" placeholder="اشرح سبب تحويل الطلب بالتفصيل"></textarea></div>
+  <p id="fpTransferMessage" class="muted"></p>
+  <div class="actions" style="margin-top:12px"><button id="fpTransferSubmit" class="btn" onclick="fpSubmitTransfer()">تأكيد التحويل والحفظ</button><button class="btn light" onclick="fpCloseTransfer()">إلغاء</button></div>
+ </div>
+</div>
+<script>
+let fpTransferOrderId=null;
+function fpCloseTransfer(){document.getElementById('fpTransferModal').classList.add('hidden');fpTransferOrderId=null}
+function fpOpenTransfer(orderId){
+ const o=load(KEYS.ORD).find(x=>String(x.id)===String(orderId));
+ if(!o||techIsClosed(o)){toast('الطلب غير متاح للتحويل');return}
+ if(currentUserRole==='technician'&&String(o.techId)!==String(currentTechnicianId)){toast('هذا الطلب غير مسند لك');return}
+ fpTransferOrderId=String(orderId);
+ const opts=load(KEYS.TECH).filter(t=>String(t.id)!==String(o.techId)&&String(t.companyId||'')===String(o.companyId||''));
+ const sel=document.getElementById('fpTransferTarget');sel.innerHTML='<option value="">اختر الفني المستلم</option>';
+ opts.forEach(t=>{const opt=document.createElement('option');opt.value=String(t.id);opt.textContent=t.name||t.id;sel.appendChild(opt)});
+ document.getElementById('fpTransferOrderLabel').textContent='رقم الطلب: '+orderId;
+ document.getElementById('fpTransferReason').value='';document.getElementById('fpTransferMessage').textContent='';
+ document.getElementById('fpTransferModal').classList.remove('hidden');
+}
+async function fpSubmitTransfer(){
+ const id=fpTransferOrderId,to=document.getElementById('fpTransferTarget').value,reason=document.getElementById('fpTransferReason').value.trim();
+ if(!id||!to||reason.length<10){document.getElementById('fpTransferMessage').textContent='اختر الفني واكتب سببًا لا يقل عن 10 أحرف';return}
+ if(!sb||!cloudEnabled){document.getElementById('fpTransferMessage').textContent='لا يوجد اتصال بقاعدة البيانات؛ لم يتم الحفظ';return}
+ const btn=document.getElementById('fpTransferSubmit');btn.disabled=true;
+ try{
+  const {error}=await sb.rpc('fp_technician_transfer_order',{p_order_id:id,p_to_technician_id:to,p_reason:reason});
+  if(error)throw error;
+  fpCloseTransfer();await refreshFromCloud(false);renderAll();toast('تم تحويل الطلب وحفظ السبب في Supabase');
+ }catch(e){document.getElementById('fpTransferMessage').textContent='لم يتم التحويل: '+(e.message||e)}finally{btn.disabled=false}
+}
 </script>
 </body>
 </html>
