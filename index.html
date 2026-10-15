@@ -809,8 +809,61 @@ function saveOrderForm(){let arr=load(KEYS.ORD),edit=get('editingOrderId').value
 function editOrder(id){markOrderSeen(id);const x=roleFilteredOrders(load(KEYS.ORD)).find(o=>o.id===id);if(!x)return;showPage('orders');get('editingOrderId').value=x.id;get('orderFormTitle').textContent='تعديل طلب '+x.id;get('oName').value=x.name||'';get('oPhone').value=x.phone||'';setAdminServiceSelection((x.services&&x.services.length)?x.services:(x.service||'صيانة مكيفات'));if(get('oRegion'))get('oRegion').value=x.region||inferRegion(x.city||'');fillOrderCities(x.city||'');fillOrderCompaniesByRegion(x.companyId||'');get('oCity').value=x.city||'خميس مشيط';fillOrderCompaniesByRegion(x.companyId||'');get('oPrice').value=x.price||0;get('oStatus').value=x.status||'جديدة';get('oPayment').value=x.paymentStatus||'غير مدفوعة';fillOrderTechsByCompany();get('oTech').value=x.techId||'';get('oNotes').value=x.notes||'';window.scrollTo({top:0,behavior:'smooth'})}
 function clearOrderForm(){['editingOrderId','oName','oPhone','oPrice','oNotes'].forEach(id=>get(id).value='');setAdminServiceSelection('');get('orderFormTitle').textContent='إضافة طلب';get('oStatus').value='جديدة';get('oPayment').value='غير مدفوعة';get('oTech').value='';if(get('oCompany'))get('oCompany').value='';fillOrderCompaniesByRegion()}
 async function deleteOrder(id){if(!confirm('حذف الطلب '+id+'؟'))return;save(KEYS.ORD,load(KEYS.ORD).filter(x=>x.id!==id));await deleteOrderCloud(id);renderAll();toast('تم حذف الطلب')}
-function updateOrderStatus(id,status){markOrderSeen(id);const arr=load(KEYS.ORD).map(x=>x.id===id?{...x,status}:x);save(KEYS.ORD,arr);renderAll();toast('تم تحديث الحالة');const changed=arr.find(x=>x.id===id);/* WhatsApp handled by database webhook */}
-function assignOrder(id,techId){markOrderSeen(id);const arr=load(KEYS.ORD).map(x=>x.id===id?{...x,techId,companyId:(load(KEYS.TECH).find(t=>String(t.id)===String(techId))||{}).companyId||x.companyId||'',status:x.status==='جديدة'?'تم الإسناد':x.status}:x);save(KEYS.ORD,arr);renderAll();toast('تم إسناد الطلب');const changed=arr.find(x=>x.id===id);/* WhatsApp handled by database webhook */}
+// Verified, single-row status and assignment writes. No optimistic local success.
+const fpOrderWriteLocks = new Set();
+async function fpCommitOrderPatch(id, patch, successMessage){
+  const key=String(id);
+  if(fpOrderWriteLocks.has(key)){fpNotice('يوجد حفظ جارٍ لهذا الطلب، انتظر لحظة');return false;}
+  if(!sb||!cloudEnabled){fpNotice('تعذر الحفظ: Supabase غير متصل');return false;}
+  fpOrderWriteLocks.add(key);
+  try{
+    const {data:before,error:readError}=await sb.from('orders').select('*').eq('id',key).single();
+    if(readError||!before)throw new Error('تعذر قراءة الطلب من السيرفر: '+(readError?.message||key));
+    const updates={};
+    if(Object.prototype.hasOwnProperty.call(patch,'status')){
+      updates.status=patch.status;
+      updates.order_status=patch.status;
+    }
+    if(Object.prototype.hasOwnProperty.call(patch,'techId')){
+      updates.tech_id=patch.techId||null;
+    }
+    if(Object.prototype.hasOwnProperty.call(patch,'companyId')){
+      updates.company_id=patch.companyId||null;
+    }
+    // Keep extended technician report fields in raw; do not overwrite unrelated columns.
+    const extended=Object.fromEntries(Object.entries(patch).filter(([k])=>!['status','techId','companyId'].includes(k)));
+    if(Object.keys(extended).length || Object.prototype.hasOwnProperty.call(patch,'techId') || Object.prototype.hasOwnProperty.call(patch,'status')){
+      updates.raw={...(before.raw||{}),...extended};
+      if(Object.prototype.hasOwnProperty.call(patch,'status'))updates.raw.status=patch.status;
+      if(Object.prototype.hasOwnProperty.call(patch,'techId'))updates.raw.techId=patch.techId||'';
+      if(Object.prototype.hasOwnProperty.call(patch,'companyId'))updates.raw.companyId=patch.companyId||'';
+    }
+    let q=sb.from('orders').update(updates).eq('id',key);
+    if(before.updated_at)q=q.eq('updated_at',before.updated_at);
+    const {data:after,error:writeError}=await q.select('*').maybeSingle();
+    if(writeError)throw writeError;
+    if(!after)throw new Error('الطلب اتغير من جهاز آخر أو صلاحيات الحفظ غير كافية. حدّث البيانات ثم أعد المحاولة');
+    if(updates.status!==undefined && (after.status!==updates.status || after.order_status!==updates.status))throw new Error('السيرفر لم يؤكد حفظ الحالة المطلوبة');
+    if(Object.prototype.hasOwnProperty.call(updates,'tech_id') && String(after.tech_id||'')!==String(updates.tech_id||''))throw new Error('السيرفر لم يؤكد إسناد الفني');
+    const local=load(KEYS.ORD);
+    const mapped=fromDbOrder(after);
+    const pos=local.findIndex(x=>String(x.id)===key);
+    if(pos>=0)local[pos]=mapped;else local.unshift(mapped);
+    localStorage.setItem(KEYS.ORD,JSON.stringify(local));
+    renderAll();fpNotice(successMessage||'تم تأكيد حفظ الطلب في Supabase');
+    return true;
+  }catch(e){console.error('Confirmed order write failed',key,e);fpNotice('لم يتم حفظ الطلب: '+(e.message||e));return false;}
+  finally{fpOrderWriteLocks.delete(key);}
+}
+async function updateOrderStatus(id,status){markOrderSeen(id);return fpCommitOrderPatch(id,{status},'تم حفظ حالة الطلب على Supabase');}
+async function assignOrder(id,techId){
+  markOrderSeen(id);
+  const order=load(KEYS.ORD).find(x=>String(x.id)===String(id));
+  const tech=load(KEYS.TECH).find(t=>String(t.id)===String(techId));
+  const patch={techId,companyId:tech?.companyId||order?.companyId||''};
+  if(order?.status==='جديدة')patch.status='تم الإسناد';
+  return fpCommitOrderPatch(id,patch,'تم حفظ إسناد الطلب على Supabase');
+}
 function saveTechForm(){let arr=load(KEYS.TECH),edit=get('editingTechId').value;const tech={id:edit||uid('TECH'),name:get('tName').value.trim()||'فني جديد',phone:get('tPhone').value.trim(),skill:get('tSkill').value.trim()||'صيانة عامة',city:get('tCity').value.trim()||'خميس مشيط',rate:+get('tRate').value||4.8,available:get('tAvailable').value,experience:+get('tExp').value||0,companyId:get('tCompany')?.value||'',region:get('tRegion')?.value||inferRegion(get('tCity')?.value||'')};if(edit)arr=arr.map(x=>x.id===edit?{...x,...tech}:x);else arr.push(tech);save(KEYS.TECH,arr);clearTechForm();renderAll();toast(edit?'تم تعديل الفني':'تم حفظ الفني')}
 function editTech(id){const t=load(KEYS.TECH).find(x=>x.id===id);if(!t)return;showPage('technicians');get('editingTechId').value=t.id;get('techFormTitle').textContent='تعديل فني';get('tName').value=t.name;get('tPhone').value=t.phone||'';get('tSkill').value=t.skill;get('tCity').value=t.city;get('tRate').value=t.rate;get('tAvailable').value=t.available;get('tExp').value=t.experience||0}
 function clearTechForm(){['editingTechId','tName','tPhone','tSkill'].forEach(id=>get(id).value='');get('tCity').value='خميس مشيط';get('tRate').value='4.8';get('tAvailable').value='متاح للعمل';get('tExp').value='5';get('techFormTitle').textContent='إضافة فني'}
@@ -883,7 +936,7 @@ function renderAssign(){
 function autoAssignAll(){let orders=load(KEYS.ORD),techs=load(KEYS.TECH).filter(t=>t.available==='متاح للعمل');if(!techs.length){toast('لا يوجد فني متاح');return}let i=0;orders=orders.map(o=>!o.techId?{...o,techId:techs[i++%techs.length].id,status:'تم الإسناد'}:o);save(KEYS.ORD,orders);renderAll();toast('تم الإسناد التلقائي')}
 function renderClients(){const orders=roleFilteredOrders(load(KEYS.ORD)),map={};orders.forEach(o=>{const k=o.phone||o.name;if(!map[k])map[k]={name:o.name,phone:o.phone,total:0,count:0,last:o.date};map[k].total+=Number(o.price||0);map[k].count++;map[k].last=o.date});const clients=Object.values(map);get('clientsList').innerHTML=clients.map(c=>`<div class="item-card"><div><b>${safe(c.name)}</b><p>${safe(c.phone)} · عدد الطلبات: ${c.count} · آخر طلب: ${safe(c.last)}</p></div><b>${fmt(c.total)} ر.س</b></div>`).join('')||'<div class="empty-state">لا يوجد عملاء</div>'}
 function techIsClosed(o){return !!o && (o.technicianLocked===true || ['مكتملة','مكتمل','completed','done','closed','مغلق'].includes(String(o.status||'').trim().toLowerCase()));}
-function techUpdateOrder(id,patch,msg){const current=load(KEYS.ORD).find(x=>String(x.id)===String(id));if(techIsClosed(current)){toast('الطلب مغلق ولا يمكن تعديله');return;}const arr=load(KEYS.ORD).map(x=>x.id===id?{...x,...patch}:x);save(KEYS.ORD,arr);renderAll();toast(msg||'تم تحديث الطلب')}
+async function techUpdateOrder(id,patch,msg){const current=load(KEYS.ORD).find(x=>String(x.id)===String(id));if(techIsClosed(current)){toast('الطلب مغلق ولا يمكن تعديله');return false;}return fpCommitOrderPatch(id,patch,msg||'تم تأكيد تحديث الطلب على Supabase');}
 
 function photosHtml(list){
   list=Array.isArray(list)?list:[];
