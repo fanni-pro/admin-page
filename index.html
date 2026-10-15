@@ -943,13 +943,14 @@ function renderOrders(){
  const target=get('allOrders');
  if(!target){console.error('Fanni Pro: #allOrders not found');return;}
  try{
-  const all=qfilter(load(KEYS.ORD)),techs=load(KEYS.TECH);
+  const all=roleFilteredOrders(load(KEYS.ORD)),techs=load(KEYS.TECH);
   fpFilterSelectOptions('fpFilterTech',techs.map(t=>t.id),'<option value="">كل الفنيين</option><option value="__none">بدون إسناد</option>');
   const te=get('fpFilterTech');if(te){[...te.options].forEach(op=>{const t=techs.find(x=>String(x.id)===op.value);if(t)op.textContent=t.name})}
   fpFilterSelectOptions('fpFilterCity',all.map(o=>o.city),'<option value="">كل المدن</option>');
   fpFilterSelectOptions('fpFilterCompany',all.map(o=>o.companyId||o.company_id||o.company),'<option value="">كل الشركات</option>');
   fpRenderOrderFlowCounts(all);
   const filtered=fpFilterOrders(all);
+  if(!filtered.length&&all.length){const note=get('ordersDiagnostic');if(note)note.textContent='يوجد '+all.length+' طلب، لكن الفلاتر الحالية لا تعرض نتائج. اضغط مسح الفلاتر أو جميع الطلبات.';}
   const orders=fpCurrentOrderFlow==='all'?filtered:filtered.filter(o=>fpOrderFlowCategory(o)===fpCurrentOrderFlow);
   const diagnostic=get('ordersDiagnostic');if(diagnostic&&!diagnostic.dataset.checked)diagnostic.textContent='المحفوظ محليًا: '+load(KEYS.ORD).length+' | الظاهر بعد الصلاحيات والبحث: '+all.length+' — اضغط فحص الطلبات لمعرفة العدد على السيرفر.';
   const count=get('ordersCount');if(count)count.textContent=orders.length+' طلب';
@@ -964,7 +965,7 @@ function renderOrders(){
  }catch(err){console.error('Fanni Pro orders render failure',err);target.innerHTML='<div class="danger-note">حدث خطأ أثناء عرض الطلبات: '+safe(err?.message||String(err))+' — البيانات محفوظة ولم يتم تعديلها.</div>'}
 }
 function techName(id){return (load(KEYS.TECH).find(t=>t.id===id)||{}).name||'غير مسند'}
-function orderCardCompact(x){const isNew=getNewOrderIds().has(x.id);return `<div class="item-card ${isNew?'new-order-highlight':''}"><div><b>${safe(x.id)} - ${safe(displayServices(x))}</b><p>عميل: ${safe(x.name)} · فني: ${safe(techName(x.techId))}</p></div><span class="status ${locked?'paid':orderStatusClass(x.status)}">${locked?'🔒 تم الانتهاء منها':safe(x.status)}</span></div>`}
+function orderCardCompact(x){const locked=techIsClosed(x);const isNew=getNewOrderIds().has(x.id);return `<div class="item-card ${isNew?'new-order-highlight':''}"><div><b>${safe(x.id)} - ${safe(displayServices(x))}</b><p>عميل: ${safe(x.name)} · فني: ${safe(techName(x.techId))}</p></div><span class="status ${locked?'paid':orderStatusClass(x.status)}">${locked?'🔒 تم الانتهاء منها':safe(x.status)}</span></div>`}
 function sendInvoiceToTech(id){const arr=load(KEYS.ORD).map(x=>x.id===id?{...x,invoiceSent:true,invoiceSentAt:new Date().toISOString()}:x);save(KEYS.ORD,arr);renderAll();toast('تم إرسال الفاتورة للفني')}
 function orderCardFull(x,techs){const techOptions='<option value="">إسناد</option>'+techs.map(t=>`<option value="${safe(t.id)}" ${x.techId===t.id?'selected':''}>${safe(t.name)}</option>`).join('');const isNew=getNewOrderIds().has(x.id);return `<div class="item-card ${isNew?'new-order-highlight':''}"><div style="min-width:0"><b>${safe(x.id)} - ${safe(displayServices(x))}</b><p>${safe(x.name)} · ${customerPhoneAction(x.phone)} · ${safe(x.city)} · ${fmt(x.price)} ر.س<br>الفني: ${safe(techName(x.techId))} · الدفع: ${safe(x.paymentStatus||'غير مدفوعة')} · الفاتورة للفني: ${x.invoiceSent?'مرسلة':'غير مرسلة'}</p></div><div class="actions"><span class="status ${orderStatusClass(x.status)}">${safe(x.status)}</span><select onchange="assignOrder('${safe(x.id)}',this.value)" style="height:34px;border:1px solid var(--line);border-radius:10px">${techOptions}</select><button class="btn small light" onclick="editOrder('${safe(x.id)}')">تعديل</button><button class="btn small green" onclick="updateOrderStatus('${safe(x.id)}','مكتملة')">إنهاء</button><button class="btn small orange" onclick="updateOrderStatus('${safe(x.id)}','الفني تحرك')">تحرك</button><button class="btn small" onclick="printInvoice('${safe(x.id)}')">فاتورة</button><button class="btn small green" onclick="sendInvoiceToTech('${safe(x.id)}')">إرسال للفني</button><button class="btn small red" onclick="deleteOrder('${safe(x.id)}')">حذف</button></div></div>`}
 function renderTech(){const techs=qfilter(load(KEYS.TECH));get('techCount').textContent=techs.length+' فني';get('techList').innerHTML=techs.map(t=>`<div class="item-card"><div style="display:flex;gap:12px;align-items:center"><div class="avatar">👨‍🔧</div><div><b>${safe(t.name)}</b><p>${safe(t.skill)} · ${safe(t.city)} · ${safe(t.available)} · خبرة ${safe(t.experience||0)} سنوات</p></div></div><div class="actions"><b>★ ${safe(t.rate)}</b><button class="btn small light" onclick="editTech('${safe(t.id)}')">تعديل</button><button class="btn small red" onclick="deleteTech('${safe(t.id)}')">حذف</button></div></div>`).join('')||'<div class="empty-state">لا يوجد فنيين</div>';fillTechSelects()}
@@ -979,7 +980,7 @@ function renderAssign(){
  const working=orders.filter(o=>o.status==='قيد التنفيذ');
  const finished=orders.filter(o=>['مكتملة','متأخرة'].includes(o.status));
  const groups=[['بانتظار الإسناد',unassigned],['بانتظار فني من الشركة',companyPending],['تم الإسناد للفني',assigned],['قيد التنفيذ',working],['مكتملة/متأخرة',finished]];
- get('assignBoard').innerHTML=groups.map(g=>`<div class="lane"><h4>${g[0]} <small class="muted">${g[1].length}</small></h4>${g[1].map(orderCardCompact).join('')||'<div class="empty-state">فارغ</div>'}</div>`).join('');
+ get('assignBoard').innerHTML=(!orders.length?'<div class="danger-note">لا توجد طلبات محملة لهذا الحساب. تحقق من اتصال Supabase وصلاحيات RLS، أو اضغط تحديث البيانات.</div>':'')+groups.map(g=>`<div class="lane"><h4>${g[0]} <small class="muted">${g[1].length}</small></h4>${g[1].map(orderCardCompact).join('')||'<div class="empty-state">فارغ</div>'}</div>`).join('');
  get('assignBoard').style.gridTemplateColumns='repeat(auto-fit,minmax(210px,1fr))';
  get('quickAssign').innerHTML=unassigned.slice(0,6).map(o=>`<div class="time-item"><div class="time-box"><b>${safe(o.id)} - ${safe(displayServices(o))}</b><p class="muted">اختر الفني المناسب</p><select onchange="assignOrder('${safe(o.id)}',this.value)" style="width:100%;height:40px;border:1px solid var(--line);border-radius:10px;margin-top:8px"><option value="">اختيار فني</option>${techs.map(t=>`<option value="${safe(t.id)}">${safe(t.name)} - ${safe(t.skill)}</option>`).join('')}</select></div><div class="time-dot">🔗</div></div>`).join('')||'<div class="empty-state">لا توجد طلبات جديدة بانتظار الإسناد</div>';
 }
@@ -989,7 +990,7 @@ function techIsClosed(o){
  if(!o)return false;
  const closedStatuses=['مكتملة','مكتمل','تم الانتهاء منها','تم الانتهاء','انتهى منها الفني','بانتظار اعتماد الإدارة','تم الاكتمال','تم الإكمال','تم الاغلاق','تم الإغلاق','مغلق','مغلقة','completed','complete','done','closed','issued'];
  const state=String(o.status||o.order_status||'').trim().toLowerCase();
- const invoiceIssued=Array.isArray(fpInvoices)&&fpInvoices.some(i=>String(i.order_id)===String(o.id)&&i.status==='issued');
+ const invoiceIssued=typeof fpInvoices!=='undefined'&&Array.isArray(fpInvoices)&&fpInvoices.some(i=>String(i.order_id)===String(o.id)&&i.status==='issued');
  return o.technicianLocked===true||o.technician_locked===true||o.is_closed===true||!!o.closed_at||closedStatuses.includes(state)||invoiceIssued;
 }
 function techUpdateOrder(id,patch,msg){const current=load(KEYS.ORD).find(x=>String(x.id)===String(id));if(techIsClosed(current)){toast('الطلب مغلق ولا يمكن تعديله');return;}const arr=load(KEYS.ORD).map(x=>x.id===id?{...x,...patch}:x);save(KEYS.ORD,arr);renderAll();toast(msg||'تم تحديث الطلب')}
@@ -1249,7 +1250,10 @@ async function companyUpdateStatus(orderId,status){
   }catch(e){console.error('company status',e);toast('فشل التحديث: '+(e.message||e));}
 }
 function showPage(id){if(!canOpenPage(id)){toast('غير مسموح لهذا الحساب بفتح هذه الصفحة');id=allowedPagesForRole(currentUserRole)[0]||'techPortal';}document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));const page=get(id);if(page)page.classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));if(id==='techPortal')renderTechPortal();if(id==='companyPortal')renderCompanyPortal();if(id==='clientTracking')renderTracking();window.scrollTo({top:0,behavior:'smooth'})}
-function renderAll(){initAdminServiceCards();fillTechSelects();renderNumbers();renderOrders();renderTech();renderInvoices();renderAlerts();renderAssign();renderClients();renderTechPortal();renderCompanyPortal();if(!isTechnicianRole())renderUsers();renderChart();applyRolePermissions(currentUserRole,currentTechnicianId)}
+function renderAll(){
+ const steps=[initAdminServiceCards,fillTechSelects,renderNumbers,renderOrders,renderTech,renderInvoices,renderAlerts,renderAssign,renderClients,renderTechPortal,renderCompanyPortal,...(!isTechnicianRole()?[renderUsers]:[]),renderChart,()=>applyRolePermissions(currentUserRole,currentTechnicianId)];
+ for(const fn of steps){try{fn()}catch(err){console.error('فني برو: تعذر عرض '+(fn.name||'قسم'),err);const d=get('dbStatus');if(d)d.textContent='خطأ عرض في '+(fn.name||'قسم')+': '+(err.message||err)+' — بقية الأقسام مستمرة.';}}
+}
 document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('button[data-page]');if(b)showPage(b.dataset.page)});
 window.addEventListener('storage',e=>{if(e.key===KEYS.ORD){const orders=load(KEYS.ORD);detectIncomingOrders(orders);renderAll();}});
 window.addEventListener('load',async()=>{await initSupabase();const logged=await requireLogin();if(logged){await restoreSessionProfile();await refreshFromCloud(false);detectIncomingOrders(roleFilteredOrders(load(KEYS.ORD)));renderAll();if(currentUserRole==='technician')showPage('techPortal');startFastOrderNotifications();}else{renderAll();}});
