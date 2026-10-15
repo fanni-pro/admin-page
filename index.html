@@ -669,7 +669,8 @@ async function refreshFromCloud(showToast=true){
     const {data:orders,error:ordersError}=await sb.from('orders').select('*').order('updated_at',{ascending:false});
     if(ordersError) throw new Error('فشل قراءة الطلبات: '+ordersError.message);
     const localOrders=(orders||[]).map(fromDbOrder);
-    localStorage.setItem(KEYS.ORD,JSON.stringify(localOrders));
+    if(localOrders.length || !load(KEYS.ORD).length) localStorage.setItem(KEYS.ORD,JSON.stringify(localOrders));
+    else console.warn('Supabase returned zero visible orders; retaining local cache pending permissions check');
     fpSyncedOrders=new Map(localOrders.map(o=>[String(o.id),fpOrderFingerprint(normOrder(o))]));
     detectIncomingOrders(localOrders);
     const results=await Promise.allSettled([
@@ -920,7 +921,7 @@ function fpFilterSelectOptions(id,items,base){const el=get(id);if(!el)return;con
 function fpOrderDate(o){const d=o.date||o.created_at||o.createdAt||'';if(!d)return '';const raw=String(d);if(/^\d{4}-\d{2}-\d{2}/.test(raw))return raw.slice(0,10);const dt=new Date(raw);return Number.isNaN(dt.getTime())?'':dt.toISOString().slice(0,10)}
 function fpClearOrderFilters(){['fpFilterText','fpFilterStatus','fpFilterTech','fpFilterCompany','fpFilterCity','fpFilterPayment','fpFilterFrom','fpFilterTo'].forEach(id=>{const e=get(id);if(e)e.value=''});const sort=get('fpFilterSort');if(sort)sort.value='new';renderOrders()}
 function fpFilterOrders(orders){const val=id=>get(id)?.value||'';const text=val('fpFilterText').trim().toLowerCase(),status=val('fpFilterStatus'),tech=val('fpFilterTech'),company=val('fpFilterCompany'),city=val('fpFilterCity'),payment=val('fpFilterPayment'),from=val('fpFilterFrom'),to=val('fpFilterTo');return orders.filter(o=>{const isClosed=techIsClosed(o);if(text&&![o.id,o.name,o.phone,displayServices(o)].some(x=>String(x||'').toLowerCase().includes(text)))return false;if(status==='__closed'&&!isClosed)return false;if(status==='__active'&&isClosed)return false;if(status&&!status.startsWith('__')&&String(o.status||'')!==status)return false;if(tech==='__none'&&o.techId)return false;if(tech&&tech!=='__none'&&String(o.techId||'')!==tech)return false;if(company&&String(o.companyId||o.company_id||o.company||'')!==company)return false;if(city&&String(o.city||'')!==city)return false;if(payment&&String(o.paymentStatus||'غير مدفوعة')!==payment)return false;const date=fpOrderDate(o);if(from&&(!date||date<from))return false;if(to&&(!date||date>to))return false;return true}).sort((a,b)=>{const sort=val('fpFilterSort');if(sort==='price_desc')return Number(b.price||0)-Number(a.price||0);if(sort==='price_asc')return Number(a.price||0)-Number(b.price||0);const da=fpOrderDate(a),db=fpOrderDate(b);return sort==='old'?da.localeCompare(db):db.localeCompare(da)})}
-let fpCurrentOrderFlow='pending';
+let fpCurrentOrderFlow='all';
 function fpOrderFlowCategory(o){
  const s=String(o.status||'').trim().toLowerCase();
  if(['مكتملة','مكتمل','completed','done','closed','مغلق'].includes(s))return 'completed';
@@ -931,7 +932,7 @@ function fpOrderFlowCategory(o){
  if(['جديد','جديدة','new','pending','قيد الانتظار','تحت الانتظار'].includes(s))return o.techId?'assigned':'pending';
  return o.techId?'assigned':'pending';
 }
-function fpSetOrderFlow(flow){fpCurrentOrderFlow=flow;renderOrders()}
+function fpSetOrderFlow(flow){fpCurrentOrderFlow=flow;if(flow==='all'&&typeof fpClearOrderFilters==='function')fpClearOrderFilters();else renderOrders()}
 function fpRenderOrderFlowCounts(orders){
  const counts={pending:0,assigned:0,active:0,finished:0,completed:0,archive:0,all:orders.length};
  orders.forEach(o=>counts[fpOrderFlowCategory(o)]++);
@@ -944,6 +945,7 @@ function renderOrders(){
  if(!target){console.error('Fanni Pro: #allOrders not found');return;}
  try{
   const all=roleFilteredOrders(load(KEYS.ORD)),techs=load(KEYS.TECH);
+  if(!all.length){const d=get('ordersDiagnostic');if(d)d.textContent='لا توجد طلبات ظاهرة لهذا الحساب. اضغط فحص الطلبات للتحقق من عدد سجلات Supabase وصلاحيات الحساب.';}
   fpFilterSelectOptions('fpFilterTech',techs.map(t=>t.id),'<option value="">كل الفنيين</option><option value="__none">بدون إسناد</option>');
   const te=get('fpFilterTech');if(te){[...te.options].forEach(op=>{const t=techs.find(x=>String(x.id)===op.value);if(t)op.textContent=t.name})}
   fpFilterSelectOptions('fpFilterCity',all.map(o=>o.city),'<option value="">كل المدن</option>');
