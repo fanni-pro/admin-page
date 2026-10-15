@@ -220,8 +220,72 @@ let currentUserRole='admin', currentTechnicianId=null, currentCompanyId=null, cu
 function safe(v){return String(v??'').replace(/[<>&"']/g,m=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#039;'}[m]))}
 function get(id){return document.getElementById(id)}
 function load(k){try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}}
-function save(k,v){localStorage.setItem(k,JSON.stringify(v)); if(!pulling){ if(k===KEYS.ORD) syncOrders(v); if(k===KEYS.TECH) syncTechs(v);} }
-function toast(msg){const t=get('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2200)}
+// Safe-write preview: no bulk upserts, and no unconfirmed success message.
+const fpWriteQueues=new Map();
+const fpPending=new Set();
+function fpNotice(message){const t=get('toast');if(!t)return;t.textContent=message;t.style.display='block';setTimeout(()=>{if(t.textContent===message)t.style.display='none'},5000)}
+function toast(msg){fpNotice(fpPending.size && /^تم /.test(String(msg))?'جارٍ تأكيد الحفظ على السيرفر…':msg)}
+function fpQueue(key,task){
+  const previous=fpWriteQueues.get(key)||Promise.resolve();
+  const next=previous.catch(()=>{}).then(task);
+  fpWriteQueues.set(key,next);
+  next.finally(()=>{if(fpWriteQueues.get(key)===next)fpWriteQueues.delete(key)}).catch(()=>{});
+  return next;
+}
+async function fpPersistOne(table,localRow,priorRow){
+  if(!sb||!cloudEnabled)throw new Error('لا يوجد اتصال بقاعدة البيانات');
+  const id=String(localRow.id), before=priorRow?JSON.stringify(priorRow):null;
+  const {data:existing,error:readError}=await sb.from(table).select('*').eq('id',id).maybeSingle();
+  if(readError)throw readError;
+  const dbToLocal=table==='orders'?fromDbOrder:fromDbTech;
+  if(existing && priorRow && JSON.stringify(dbToLocal(existing))!==before){
+    // Compare meaningful fields, not just timestamps; a refresh may have changed unrelated presentation fields.
+    const previous=table==='orders'?normOrder(priorRow):normTech(priorRow);
+    const canonical=table==='orders'?normOrder(dbToLocal(existing)):normTech(dbToLocal(existing));
+    for(const field of Object.keys(previous)){
+      if(field==='updated_at'||field==='raw')continue;
+      if(JSON.stringify(previous[field])!==JSON.stringify(canonical[field]))throw new Error('الطلب اتغير من جهاز آخر. حدّث الصفحة قبل إعادة المحاولة');
+    }
+  }
+  if(!existing && priorRow)throw new Error('السجل اختفى من السيرفر؛ تم إيقاف الحفظ لحماية البيانات');
+  if(existing && !priorRow)throw new Error('السجل موجود بالفعل على السيرفر؛ تم إيقاف الكتابة فوقه');
+  const payload=table==='orders'?normOrder(localRow):normTech(localRow);
+  delete payload.updated_at;
+  let query=existing?sb.from(table).update(payload).eq('id',id):sb.from(table).insert(payload);
+  if(existing && existing.updated_at)query=query.eq('updated_at',existing.updated_at);
+  const {data,error}=await query.select('*').maybeSingle();
+  if(error)throw error;
+  if(!data)throw new Error('رفض السيرفر التعديل أو تغيّرت البيانات في جهاز آخر');
+  return data;
+}
+function save(k,v){
+  if(pulling){localStorage.setItem(k,JSON.stringify(v));return;}
+  if(k!==KEYS.ORD&&k!==KEYS.TECH){localStorage.setItem(k,JSON.stringify(v));return;}
+  if(!sb||!cloudEnabled){fpNotice('الحفظ متوقف: لا يوجد اتصال بـ Supabase');return;}
+  const table=k===KEYS.ORD?'orders':'technicians';
+  const old=load(k), previous=new Map(old.map(o=>[String(o.id),o]));
+  const next=new Map((v||[]).map(o=>[String(o.id),o]));
+  if(old.some(o=>!next.has(String(o.id)))){fpNotice('الحذف متوقف مؤقتًا لحماية السجلات');return;}
+  const changed=(v||[]).filter(o=>JSON.stringify(previous.get(String(o.id)))!==JSON.stringify(o));
+  if(!changed.length)return;
+  for(const row of changed){
+    const id=String(row.id), token=table+':'+id;
+    fpPending.add(token);
+    fpQueue(token,async()=>{
+      try{
+        const saved=await fpPersistOne(table,row,previous.get(id));
+        // Update only this row after server confirmation, never re-upload the whole array.
+        const current=load(k), mapper=table==='orders'?fromDbOrder:fromDbTech;
+        const canonical=mapper(saved);
+        const index=current.findIndex(x=>String(x.id)===id);
+        if(index>=0)current[index]=canonical;else current.unshift(canonical);
+        localStorage.setItem(k,JSON.stringify(current));
+        renderAll();fpNotice('تم تأكيد الحفظ على Supabase: '+id);
+      }catch(e){console.error('Server save failed',table,id,e);fpNotice('فشل حفظ '+id+': '+(e.message||e));}
+      finally{fpPending.delete(token)}
+    });
+  }
+}
 
 function getKnownOrders(){try{return new Set(JSON.parse(localStorage.getItem(KEYS.KNOWN)||'[]'))}catch(e){return new Set()}}
 function setKnownOrders(ids){localStorage.setItem(KEYS.KNOWN,JSON.stringify(Array.from(ids)))}
@@ -642,27 +706,8 @@ async function refreshFromCloud(showToast=true){
 }
 let refreshFromCloudBusy=false;
 
-async function syncOrders(orders){
-  if(!sb||!cloudEnabled||pulling) return;
-  try{
-    const rows=(orders||[]).map(normOrder);
-    if(rows.length){
-      const {error}=await sb.from('orders').upsert(rows,{onConflict:'id'});
-      if(error) throw error;
-    }
-  }catch(e){console.warn('syncOrders failed',e.message||e)}
-}
-
-async function syncTechs(techs){
-  if(!sb||!cloudEnabled||pulling) return;
-  try{
-    const rows=(techs||[]).map(normTech);
-    if(rows.length){
-      const {error}=await sb.from('technicians').upsert(rows,{onConflict:'id'});
-      if(error) throw error;
-    }
-  }catch(e){console.warn('syncTechs failed',e.message||e)}
-}
+async function syncOrders(){throw new Error('Bulk order sync disabled to protect server data')}
+async function syncTechs(){throw new Error('Bulk technician sync disabled to protect server data')}
 
 async function deleteOrderCloud(id){
   if(!sb||!cloudEnabled) return;
