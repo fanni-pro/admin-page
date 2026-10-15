@@ -331,16 +331,8 @@ function requestBrowserNotifications(){
 // Persistent dedup prevents repeated sends from polling/realtime refreshes.
 const WA_NOTIFIED_KEY='alostol_wa_notified_orders_v1';
 function incomingWhatsAppOnce(order){
-  const key=String(order?.id||'');
-  if(!key || !order?.phone)return;
-  let sent=[];try{sent=JSON.parse(localStorage.getItem(WA_NOTIFIED_KEY)||'[]')}catch{}
-  if(sent.includes(key))return;
-  // Reserve before async call to avoid concurrent polling duplicates.
-  sent.push(key);localStorage.setItem(WA_NOTIFIED_KEY,JSON.stringify(sent.slice(-1000)));
-  sendOrderWhatsAppNotification(order,'created').then(ok=>{
-    if(!ok){let list=[];try{list=JSON.parse(localStorage.getItem(WA_NOTIFIED_KEY)||'[]')}catch{}
-      localStorage.setItem(WA_NOTIFIED_KEY,JSON.stringify(list.filter(x=>x!==key)));}
-  });
+  // WA policy: send only from the server on INSERT, never from page refresh/polling.
+  return;
 }
 function notifyNewOrders(newOrders){
   if(!newOrders||!newOrders.length)return;
@@ -810,31 +802,8 @@ function formatWhatsAppPhone(value){
   return p;
 }
 async function sendOrderWhatsAppNotification(order,eventType='created'){
-  if(!CONFIG.SUPABASE_URL){toast('واتساب: رابط Supabase غير موجود');return false;}
-  const phone=formatWhatsAppPhone(order?.phone);
-  if(!phone){toast('واتساب: رقم العميل غير موجود');return false;}
-  const message=eventType==='created'
-    ? `مرحباً ${order.name||'بك'}،\nتم تسجيل طلبك لدى فني برو.\nرقم الطلب: ${order.id}\nالخدمة: ${order.service||''}\nسنوافيك بالتحديثات.`
-    : `فني برو\nتحديث الطلب ${order.id}\nالحالة: ${order.status||'تم التحديث'}`;
-  try{
-    const {data:{session}}=await sb.auth.getSession();
-    const headers={'Content-Type':'application/json','apikey':CONFIG.SUPABASE_ANON_KEY};
-    // Use a real user JWT when present; no provider token is exposed in the browser.
-    if(session?.access_token)headers.Authorization='Bearer '+session.access_token;
-    const res=await fetch(CONFIG.SUPABASE_URL+'/functions/v1/send-whatsapp',{
-      method:'POST',headers,body:JSON.stringify({phone,message})
-    });
-    const raw=await res.text();
-    let data;try{data=JSON.parse(raw)}catch{data={ok:false,error:raw.slice(0,300)}}
-    console.log('send-whatsapp HTTP:',res.status,'response:',data);
-    if(!res.ok||data?.ok!==true)throw new Error(String(data?.error||data?.message||'فشل الإرسال HTTP '+res.status));
-    toast('واتساب: تم قبول طلب الإرسال');
-    return true;
-  }catch(e){
-    console.error('send-whatsapp error:',e);
-    toast('واتساب: '+(e.message||'تعذر الإرسال'));
-    return false;
-  }
+  // Prevent duplicate WhatsApp sends from browsers and stale app versions.
+  return Promise.resolve(false);
 }
 function saveOrderForm(){let arr=load(KEYS.ORD),edit=get('editingOrderId').value;const selectedServices=getSelectedAdminServices();const serviceText=selectedServices.join('، ');if(!selectedServices.length){toast('اختار خدمة واحدة على الأقل');return}const order={id:edit||orderNumber(),name:get('oName').value.trim()||'عميل جديد',phone:get('oPhone').value.trim(),service:serviceText,services:selectedServices,city:get('oCity').value,price:+get('oPrice').value||0,status:get('oStatus').value,date:today(),notes:get('oNotes').value.trim(),paymentStatus:get('oPayment').value,techId:get('oTech').value||null,companyId:get('oCompany').value||''}; if(edit)arr=arr.map(x=>x.id===edit?{...x,...order}:x); else arr.unshift(order);save(KEYS.ORD,arr);const known=getKnownOrders();known.add(order.id);setKnownOrders(known);clearOrderForm();renderAll();toast(edit?'تم تعديل الطلب':'تم حفظ الطلب');if(!edit){const k=String(order.id);let ids=[];try{ids=JSON.parse(localStorage.getItem(WA_NOTIFIED_KEY)||'[]')}catch{};if(!ids.includes(k)){ids.push(k);localStorage.setItem(WA_NOTIFIED_KEY,JSON.stringify(ids.slice(-1000)))}/* WhatsApp handled by database webhook */}}
 function editOrder(id){markOrderSeen(id);const x=roleFilteredOrders(load(KEYS.ORD)).find(o=>o.id===id);if(!x)return;showPage('orders');get('editingOrderId').value=x.id;get('orderFormTitle').textContent='تعديل طلب '+x.id;get('oName').value=x.name||'';get('oPhone').value=x.phone||'';setAdminServiceSelection((x.services&&x.services.length)?x.services:(x.service||'صيانة مكيفات'));if(get('oRegion'))get('oRegion').value=x.region||inferRegion(x.city||'');fillOrderCities(x.city||'');fillOrderCompaniesByRegion(x.companyId||'');get('oCity').value=x.city||'خميس مشيط';fillOrderCompaniesByRegion(x.companyId||'');get('oPrice').value=x.price||0;get('oStatus').value=x.status||'جديدة';get('oPayment').value=x.paymentStatus||'غير مدفوعة';fillOrderTechsByCompany();get('oTech').value=x.techId||'';get('oNotes').value=x.notes||'';window.scrollTo({top:0,behavior:'smooth'})}
@@ -1035,66 +1004,15 @@ const TECH_WA_TEMPLATES = [
 ];
 // رسوم الزيارة: نموذج يحدد فيه الفني المبلغ ثم يفتح واتساب برسالة جاهزة.
 async function techSendVisitFee(orderId){
- const order=load(KEYS.ORD).find(o=>String(o.id)===String(orderId));
- if(!order){toast('الطلب غير موجود');return;}
- const techId=typeof currentTechId==='function'?currentTechId():null;
- if(!techId || String(order.techId)!==String(techId)){toast('هذا الطلب غير مسند لك');return;}
- const phone=formatWhatsAppPhone(order.phone);
- if(!phone){toast('رقم جوال العميل غير صالح');return;}
- const field=document.getElementById('visitFee_'+String(orderId).replace(/[^a-zA-Z0-9]/g,'_'));
- const raw=String(field?.value||'').trim();
- const amount=Number(raw);
- if(!raw||!Number.isFinite(amount)||amount<=0||amount>100000){toast('أدخل رسوم زيارة صحيحة بالريال');field?.focus();return;}
- if(!sb||!cloudEnabled){toast('الإرسال التلقائي يتطلب اتصال Supabase');return;}
- const button=field?.closest('.fp-visit-fee')?.querySelector('.fp-send-fee');
- if(button?.disabled)return;
- const formatted=amount.toFixed(2);
- const msg=`مرحبًا ${order.name||'عميلنا العزيز'} 🌹\nمعك فني منصة فني برو للصيانة المتكاملة.\n📋 رقم الطلب: ${order.id}\n🔧 الخدمة: ${displayServices(order)||order.service||'الصيانة'}\n💰 رسوم الزيارة والفحص: ${formatted} ريال سعودي.\nيرجى تأكيد الموافقة على رسوم الزيارة قبل بدء الخدمة.\nشكرًا لاختياركم فني برو 💙`;
- try{
-   if(button){button.disabled=true;button.textContent='⏳ جارٍ الإرسال...';}
-   const {data:{session},error:sessionError}=await sb.auth.getSession();
-   if(sessionError||!session?.access_token)throw new Error('سجّل دخول الفني أولًا');
-   const res=await fetch(CONFIG.SUPABASE_URL+'/functions/v1/send-whatsapp',{
-     method:'POST',
-     headers:{'Content-Type':'application/json','apikey':CONFIG.SUPABASE_ANON_KEY,'Authorization':'Bearer '+session.access_token},
-     body:JSON.stringify({phone,message:msg,order_id:String(order.id),message_type:'visit_fee',visit_fee:amount})
-   });
-   const body=await res.text();
-   let result;try{result=JSON.parse(body)}catch{result={error:body.slice(0,250)}}
-   if(!res.ok||!(result?.ok===true||result?.success===true))throw new Error(result?.error||result?.message||'فشل الإرسال');
-   toast('تم قبول إرسال رسوم الزيارة إلى واتساب العميل');
-   // نجاح API ليس دليل تسليم أو قراءة العميل. يلزم webhook للتأكيد.
- }catch(e){console.error('visit fee send failed',e);toast('تعذر إرسال الرسالة: '+(e.message||'خطأ غير معروف'));}
- finally{if(button){button.disabled=false;button.textContent='📤 إرسال المبلغ للعميل';}}
+  toast('رسائل رسوم الزيارة متوقفة. يُسمح برسالة إنشاء الطلب والإسناد فقط.');
+  return false;
 }
 function techWhatsAppTemplatesCard(order){
- const link=customerWhatsAppLink(order.phone);
- const buttons=TECH_WA_TEMPLATES.map(([key,label])=>`<button type="button" class="btn small light" onclick="techSendWhatsAppTemplate('${safe(String(order.id))}','${key}')" ${link?'':'disabled title="رقم العميل غير صالح"'}>${label}</button>`).join('');
- const feeId='visitFee_'+String(order.id).replace(/[^a-zA-Z0-9]/g,'_');
- return `<div class="tech-detail-box fp-wa-templates"><div class="fp-visit-fee" style="padding:12px;background:#effaf4;border:1px solid #bcebd0;border-radius:12px;margin-bottom:12px"><b>💰 إرسال رسوم الزيارة للعميل</b><p class="muted" style="margin:6px 0">اكتب المبلغ ثم اضغط إرسال؛ سيرسل النظام الرسالة مباشرة عبر خدمة واتساب المرتبطة. موافقة العميل خطوة منفصلة.</p><div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-top:10px"><div class="field" style="flex:1;min-width:160px"><label for="${feeId}">رسوم الزيارة (ر.س)</label><input id="${feeId}" type="number" min="0.01" max="100000" step="0.01" inputmode="decimal" placeholder="مثال: 75.00"></div><button type="button" class="btn green fp-send-fee" onclick="techSendVisitFee('${safe(String(order.id))}')" ${link?'':'disabled title="رقم العميل غير صالح"'}>📤 إرسال المبلغ للعميل</button></div></div><b>💬 رسائل واتساب جاهزة للعميل</b><p class="muted" style="margin:6px 0 12px">اختر الرسالة، ثم اضغط إرسال من واتساب.</p><div class="tech-actions-row" style="display:flex;flex-wrap:wrap;gap:8px">${buttons}</div></div>`;
+  return '';
 }
 function techSendWhatsAppTemplate(orderId,template){
- const order=load(KEYS.ORD).find(o=>String(o.id)===String(orderId));
- if(!order){toast('الطلب غير موجود');return;}
- // تحقق من صلاحية الفني الحالي وعدم السماح باستخدام طلب غير مسند له.
- const techId=typeof currentTechId==='function'?currentTechId():null;
- if(techId && String(order.techId)!==String(techId)){toast('هذا الطلب غير مسند لك');return;}
- const base=customerWhatsAppLink(order.phone);
- if(!base){toast('رقم جوال العميل غير صالح');return;}
- const customer=order.name||'عميلنا العزيز';
- const ref=order.id;
- const service=displayServices(order)||order.service||'الصيانة';
- const messages={
-  confirm:`مرحبًا ${customer}، معك فني منصة فني برو. نود تأكيد موعد زيارة الصيانة لخدمة ${service}، رقم الطلب ${ref}. هل الموعد مناسب لكم؟`,
-  way:`مرحبًا ${customer}، معك فني منصة فني برو. أنا الآن في الطريق إلى موقعكم لتنفيذ طلب الصيانة رقم ${ref}.`,
-  arrived:`مرحبًا ${customer}، معك فني منصة فني برو. وصلت إلى موقعكم بخصوص طلب الصيانة رقم ${ref}، برجاء التكرم بالتواصل معي.`,
-  delay:`مرحبًا ${customer}، نعتذر عن التأخير في زيارة الصيانة الخاصة بالطلب رقم ${ref}. نرجو التنسيق معكم لتحديد موعد بديل مناسب.`,
-  parts:`مرحبًا ${customer}، بخصوص طلب الصيانة رقم ${ref}، يحتاج العمل إلى توفير قطع غيار قبل استكمال الصيانة. سنوافيكم بالتحديثات بعد التنسيق مع الإدارة.`,
-  done:`مرحبًا ${customer}، تم الانتهاء من أعمال الصيانة الخاصة بالطلب رقم ${ref}. نشكركم على ثقتكم بمنصة فني برو.`,
-  rating:`مرحبًا ${customer}، نشكركم على اختيار فني برو لخدمة ${service}، رقم الطلب ${ref}. يسعدنا معرفة تقييمكم للخدمة وملاحظاتكم لتحسين تجربتكم.`
- };
- if(!Object.prototype.hasOwnProperty.call(messages,template))return;
- window.open(base+'?text='+encodeURIComponent(messages[template]),'_blank','noopener,noreferrer');
+  toast('تم إيقاف رسائل واتساب الإضافية.');
+  return false;
 }
 function techOrderDetailCard(x){const isNew=getNewOrderIds().has(x.id);const address=x.address||x.notes||'-';const locked=techIsClosed(x);const safeId=String(x.id).replace(/[^a-zA-Z0-9]/g,'_');return `<div class="tech-order-detail ${locked?'fp-locked':''} ${isNew?'new-order-highlight':''}"><div class="tech-detail-head"><div><h3>${safe(x.id)} - ${safe(displayServices(x))}</h3><p class="muted">${safe(x.name)} · ${customerPhoneAction(x.phone)} · ${safe(x.city)}</p></div><span class="status ${orderStatusClass(x.status)}">${safe(x.status)}</span></div>${techWhatsAppTemplatesCard(x)}${!locked?`<button class="btn small orange" onclick="fpOpenTransfer('${safe(x.id)}')">تحويل الطلب لفني آخر</button>`:''}${locked?`<div class="danger-note">🔒 الطلب مغلق نهائيًا — للعرض والطباعة فقط، لا يمكن للفني تعديله.</div>`:''}<div class="tech-detail-grid"><div class="tech-detail-box"><small>عنوان العميل</small><b>${safe(address)}</b></div><div class="tech-detail-box"><small>الخدمات</small><b>${safe(displayServices(x))}</b></div><div class="tech-detail-box"><small>قيمة الفاتورة</small><b>${fmt(x.price)} ر.س</b></div><div class="tech-detail-box"><small>حالة الدفع</small><b>${safe(x.paymentStatus||'غير مدفوعة')}</b></div></div><div class="tech-invoice-box"><b>الفاتورة من الأدمن:</b> ${x.invoiceSent?'تم إرسالها للفني':'لم يرسلها الأدمن بعد'} ${x.invoiceSentAt?`<br><small class="muted">وقت الإرسال: ${safe(new Date(x.invoiceSentAt).toLocaleString('ar-SA'))}</small>`:''}</div><div class="tech-photo-grid"><div class="tech-photo-panel"><h4>صور قبل الصيانة</h4><div class="tech-photo-list">${photosHtml(x.beforePhotos)}</div><div class="tech-photo-actions" ${locked?'style="display:none"':''}><label class="btn small light" for="before_${safeId}">رفع صور قبل</label><input class="tech-photo-input" id="before_${safeId}" type="file" accept="image/*" multiple onchange="techUploadPhotos('${safe(x.id)}','before',this)"><button class="btn small red" onclick="techClearPhotos('${safe(x.id)}','before')">مسح</button></div></div><div class="tech-photo-panel"><h4>صور بعد الصيانة</h4><div class="tech-photo-list">${photosHtml(x.afterPhotos)}</div><div class="tech-photo-actions" ${locked?'style="display:none"':''}><label class="btn small light" for="after_${safeId}">رفع صور بعد</label><input class="tech-photo-input" id="after_${safeId}" type="file" accept="image/*" multiple onchange="techUploadPhotos('${safe(x.id)}','after',this)"><button class="btn small red" onclick="techClearPhotos('${safe(x.id)}','after')">مسح</button></div></div></div><div class="tech-detail-box"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><b>📋 تقرير الصيانة الاحترافي</b><span class="fp-report-tag">${safe(x.id)}</span></div><div class="fp-report-fields" ${locked?'style="pointer-events:none;opacity:.7"':''}><div class="field"><label>تشخيص العطل</label><textarea id="diagnosis_${safeId}" placeholder="نتيجة الفحص والتشخيص">${safe(x.technicianDiagnosis||'')}</textarea></div><div class="field"><label>الإجراءات والأعمال المنفذة</label><textarea id="action_${safeId}" placeholder="تفاصيل الإصلاح">${safe(x.technicianAction||'')}</textarea></div><div class="field"><label>قطع الغيار المستخدمة</label><textarea id="parts_${safeId}" placeholder="القطعة والكمية">${safe(x.technicianParts||'')}</textarea></div><div class="field"><label>التوصيات والملاحظات</label><textarea id="recommend_${safeId}" placeholder="التوصيات للعميل">${safe(x.technicianRecommendations||'')}</textarea></div><div class="field"><label>نتيجة الزيارة</label><select id="result_${safeId}"><option value="">اختر النتيجة</option>${['تم الإصلاح','يحتاج قطع غيار','زيارة متابعة','تعذر الإصلاح'].map(v=>`<option value="${v}" ${x.technicianResult===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>مدة العمل (بالدقائق)</label><input type="number" min="0" id="duration_${safeId}" value="${safe(x.technicianDuration||'')}" placeholder="مثال: 90"></div></div><small style="display:block;margin-top:12px">ملاحظات إضافية</small><textarea ${locked?'readonly':''} id="report_${safeId}" class="tech-report-area" placeholder="اكتب الأعمال التي تمت وقطع الغيار والملاحظات...">${safe(x.workReport||'')}</textarea><div class="tech-actions-row" style="margin-top:8px"><button ${locked?'disabled style="display:none"':''} class="btn small light" onclick="techSaveProfessionalReport('${safe(x.id)}')">حفظ التقرير</button><button class="btn small green" onclick="printProfessionalReport('${safe(x.id)}')">🖨️ طباعة / PDF</button></div></div><div class="tech-actions-row" ${locked?'style="display:none"':''}><button class="btn small orange" onclick="techMoveOrder('${safe(x.id)}')">تسجيل التحرك</button><button class="btn small green" onclick="techFinishOrder('${safe(x.id)}')">إنهاء العمل</button><button class="btn small" onclick="techCollectInvoice('${safe(x.id)}')">تحصيل الفاتورة</button>${x.invoiceSent?`<button class="btn small light" onclick="printInvoice('${safe(x.id)}')">عرض الفاتورة</button>`:''}</div>${x.completedAt?`<div class="tech-detail-box"><small>وقت إنهاء العمل</small><b>${safe(new Date(x.completedAt).toLocaleString('ar-SA'))}</b></div>`:''}</div>`}
 function techOrderCategory(o){
