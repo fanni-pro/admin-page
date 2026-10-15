@@ -1339,7 +1339,7 @@ const fpOldShowPage=showPage;showPage=function(id){fpOldShowPage(id);if(id==='pa
   const hamburger=document.querySelector('.hamb');
   if(hamburger){
     hamburger.setAttribute('aria-label','فتح قائمة التنقل');
-    hamburger.setAttribute('aria-expanded','false');
+    hamburger.setAttribute('aria-expanded','false'); 
     hamburger.removeAttribute('onclick');
     hamburger.addEventListener('click',()=>{
       if(window.matchMedia('(max-width:850px)').matches){
