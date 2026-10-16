@@ -8,6 +8,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' https: blob:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; img-src 'self' https: data: blob:; connect-src 'self' https: wss:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <style>
 :root{--bg:#f4f8ff;--card:#fff;--nav:#071b34;--nav2:#0b2b52;--blue:#176df7;--blue2:#0f7cff;--text:#10213d;--muted:#73839c;--line:#e6eef8;--green:#22c783;--orange:#ff8a18;--red:#ef4455;--purple:#8b5cf6;--shadow:0 18px 45px rgba(30,61,105,.08);--r:18px}*{box-sizing:border-box;margin:0;padding:0}body{font-family:Tajawal,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}button,input,select,textarea{font-family:inherit}button{border:0;cursor:pointer}.hidden{display:none!important}.app{display:grid;grid-template-columns:1fr 280px;min-height:100vh}.sidebar{background:linear-gradient(180deg,var(--nav),#07182f 65%,#0b2445);color:#fff;padding:24px 16px;position:sticky;top:0;height:100vh;overflow:auto;box-shadow:-20px 0 55px rgba(7,24,47,.16)}.brand{display:flex;align-items:center;gap:12px;margin-bottom:22px;padding:0 8px}.brand-mark{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#009dff,#0756d8);display:grid;place-items:center;font-size:30px;box-shadow:0 14px 32px rgba(0,137,255,.28)}.brand h2{font-size:24px;font-weight:900}.brand small{display:block;color:#a8bdd8;margin-top:2px;font-weight:700}.nav{display:grid;gap:8px}.nav button{min-height:54px;border-radius:15px;background:transparent;color:#c9d6e7;display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-size:15px;font-weight:800;transition:.2s;text-align:right}.nav button span{display:flex;align-items:center;gap:10px}.nav button.active,.nav button:hover{background:linear-gradient(135deg,#195df0,#176df7);color:#fff;box-shadow:0 14px 32px rgba(25,93,240,.28)}.pro-box{margin-top:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:15px;line-height:1.8;color:#b9c9df}.pro-box b{display:block;color:#fff;margin-bottom:5px}.main{min-width:0}.topbar{height:82px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 26px;box-shadow:0 8px 24px rgba(30,61,105,.04);position:sticky;top:0;z-index:20}.hamb{width:45px;height:45px;border-radius:14px;background:#f5f8fe;font-size:22px;color:#17355c}.search{flex:1;max-width:460px;margin-right:auto;position:relative}.search input{width:100%;height:46px;border:1px solid #dde6f2;border-radius:13px;background:#f7faff;padding:0 44px 0 16px;outline:none;font-size:14px}.search:before{content:'⌕';position:absolute;right:16px;top:4px;font-size:29px;color:#536987}.top-icons{display:flex;gap:10px;align-items:center}.icon-btn{width:44px;height:44px;border-radius:14px;background:#f6f9ff;color:#1d3558;font-size:19px;position:relative}.badge{position:absolute;top:-5px;left:-5px;background:#ff3347;color:#fff;width:19px;height:19px;border-radius:50%;font-size:11px;display:grid;place-items:center}.user{display:flex;align-items:center;gap:12px;padding:0 14px 0 18px;height:58px;border-left:1px solid var(--line)}.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#dbeafe,#60a5fa);display:grid;place-items:center;font-size:24px}.user small{color:var(--muted);font-weight:700}.content{padding:24px}.page{display:none}.page.active{display:block}.page-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px}.page-title h1{font-size:24px}.page-title p{color:var(--muted);font-weight:700;margin-top:4px}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}.kpi{background:#fff;border-radius:17px;padding:22px;min-height:140px;box-shadow:var(--shadow);border:1px solid rgba(231,237,246,.9);display:flex;align-items:flex-start;justify-content:space-between;gap:15px}.kpi h4{font-size:15px;margin:8px 0 14px;color:#263957}.kpi strong{font-size:30px}.kpi p{margin-top:14px;color:#7d8ca6;font-size:13px}.kicon{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;color:#fff;font-size:27px}.ki-green{background:linear-gradient(135deg,#26c981,#44d89c)}.ki-blue{background:linear-gradient(135deg,#1b67f2,#3287ff)}.ki-orange{background:linear-gradient(135deg,#ff8b18,#ff7112)}.ki-purple{background:linear-gradient(135deg,#7d44f4,#aa58ff)}.grid{display:grid;grid-template-columns:1.05fr 1.35fr 285px;gap:16px}.card{background:#fff;border:1px solid rgba(231,237,246,.95);border-radius:17px;box-shadow:var(--shadow);padding:18px}.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}.card h3{font-size:18px}.link{background:transparent;color:#176df7;font-weight:900}.chart-wrap{height:290px}.side-cards{display:grid;gap:16px}.amount{min-height:118px;display:flex;align-items:center;gap:16px}.amount.primary{background:linear-gradient(135deg,#126af8,#1d5ee8);color:#fff;border:0}.amount .round{width:55px;height:55px;border-radius:22px;display:grid;place-items:center;font-size:25px;background:rgba(255,255,255,.15)}.amount:not(.primary) .round{background:#ecfbf5;color:#25bd7c}.amount small{display:block;color:inherit;opacity:.72;font-weight:800;margin-bottom:9px}.amount b{font-size:24px}.lower{display:grid;grid-template-columns:310px 1fr 300px;gap:16px;margin-top:16px}.donut{display:grid;grid-template-columns:145px 1fr;align-items:center;gap:10px;min-height:245px}.donut-circle{width:140px;height:140px;border-radius:50%;background:conic-gradient(var(--green) 0 65%, var(--orange) 65% 90%, var(--red) 90% 100%);display:grid;place-items:center;position:relative}.donut-circle:after{content:'';position:absolute;width:88px;height:88px;background:#fff;border-radius:50%}.donut-text{position:relative;z-index:1;text-align:center;font-weight:900}.legend{display:grid;gap:16px}.leg{display:flex;justify-content:space-between;align-items:center;font-weight:900}.dot{width:9px;height:9px;border-radius:50%;display:inline-block}.green{background:var(--green)}.orange{background:var(--orange)}.red{background:var(--red)}.blue{background:var(--blue)}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse}.table th{color:#30405a;background:#f8fbff;font-size:13px;text-align:right;padding:13px;border-bottom:1px solid var(--line);white-space:nowrap}.table td{padding:13px;border-bottom:1px solid #eef3fa;font-size:14px;vertical-align:middle}.status{padding:6px 11px;border-radius:999px;font-weight:900;font-size:12px;display:inline-block;white-space:nowrap}.paid{background:#e7fbf1;color:#17ae72}.unpaid{background:#fff4df;color:#f08618}.delayed{background:#ffecef;color:#e74251}.work{background:#fff4df;color:#f08618}.new{background:#eaf2ff;color:#176df7}.done{background:#e7fbf1;color:#17ae72}.mini-form{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.field label{display:block;font-weight:900;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;height:48px;border:1px solid #dfe8f4;background:#f8fbff;border-radius:13px;padding:0 12px;outline:none}.field textarea{height:90px;padding:12px}.btn{height:46px;border-radius:13px;background:#176df7;color:#fff;font-weight:900;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn.light{background:#eef5ff;color:#176df7}.btn.red{background:#fff0f2;color:#df3040}.btn.green{background:#22c783;color:#fff}.btn.orange{background:#fff4df;color:#c05f00}.btn.small{height:34px;border-radius:10px;padding:0 10px;font-size:12px}.section-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.wide-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px}.list-card{display:grid;gap:10px}.item-card{border:1px solid var(--line);border-radius:15px;padding:14px;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px}.item-card p{color:var(--muted);margin-top:4px;font-size:13px;line-height:1.6}.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.choice-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}.choice-chip{height:40px;border-radius:999px;background:#f6f9ff;color:#30405a;border:1px solid var(--line);padding:0 15px;font-weight:900}.choice-chip.active,.choice-chip:hover{background:#176df7;color:#fff}.kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.lane{background:#f7faff;border:1px solid var(--line);border-radius:17px;padding:12px;min-height:260px}.lane h4{margin-bottom:10px}.empty-state{border:1px dashed #cbd6e6;background:#f8fbff;border-radius:16px;padding:18px;text-align:center;color:var(--muted);font-weight:800}.timeline{display:grid;gap:12px}.time-item{display:grid;grid-template-columns:1fr 38px;gap:12px;align-items:start}.time-dot{width:38px;height:38px;border-radius:14px;background:#eef5ff;display:grid;place-items:center}.time-box{border:1px solid var(--line);border-radius:14px;background:#fff;padding:12px}.profile-hero{background:linear-gradient(135deg,#071b34,#0b3e78 60%,#176df7);color:#fff;border-radius:22px;padding:24px;display:flex;align-items:center;justify-content:space-between;gap:16px}.profile-hero p{color:#cfe0f7}.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}.metric{background:#fff;border:1px solid var(--line);border-radius:17px;box-shadow:var(--shadow);padding:16px}.metric small{color:var(--muted);font-weight:900}.metric b{display:block;font-size:26px;margin-top:8px}.tracking-hero{background:linear-gradient(135deg,#071b34,#176df7);color:#fff;border-radius:22px;padding:24px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.tracking-hero p{color:#dbeafe;margin-top:6px}.tracking-search{display:grid;grid-template-columns:1fr auto auto;gap:10px;margin-bottom:14px}.tracking-search input{height:52px;border:1px solid #dfe8f4;border-radius:15px;padding:0 14px;outline:none}.toast{position:fixed;left:22px;bottom:22px;background:#071b34;color:#fff;border-radius:15px;padding:13px 16px;font-weight:900;box-shadow:0 20px 50px rgba(7,27,52,.25);z-index:999999;display:none}.login-screen{position:fixed;inset:0;z-index:99999;background:radial-gradient(circle at top right,#0b6bff33,transparent 34%),linear-gradient(135deg,#06172d,#071b34 52%,#020814);display:flex;align-items:center;justify-content:center;padding:20px}.login-card{width:min(460px,100%);background:#fff;border-radius:28px;box-shadow:0 40px 100px rgba(0,0,0,.32);padding:26px}.login-card p{color:var(--muted);font-weight:800;line-height:1.8;margin-top:4px}.login-card .security-logo{width:58px;height:58px;border-radius:20px;background:linear-gradient(135deg,#176df7,#2fc987);display:grid;place-items:center;color:#fff;font-size:30px}.login-head{display:flex;gap:13px;align-items:center;margin-bottom:18px}.invoice-print{display:none}.invoice{width:210mm;min-height:297mm;margin:auto;background:#fff;box-shadow:0 30px 90px rgba(7,27,52,.18);overflow:hidden}.inv-cover{background:linear-gradient(135deg,#071b34,#176df7);color:#fff;padding:30px;display:flex;justify-content:space-between;gap:20px}.inv-body{padding:28px}.inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.inv-box{border:1px solid #e2eaf5;background:#f8fbff;border-radius:18px;padding:16px}.inv-line{display:flex;justify-content:space-between;border-bottom:1px dashed #d7e2ef;padding:9px 0}.inv-line:last-child{border-bottom:0}.inv-total{background:#071b34;color:#fff;border-radius:20px;padding:18px;margin-top:18px;display:flex;justify-content:space-between;align-items:center}.inv-total b{font-size:28px}.print-actions{position:fixed;left:22px;bottom:22px;display:flex;gap:8px;z-index:99999}.muted{color:var(--muted);font-weight:700}.danger-note{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:16px;padding:12px;font-weight:900;margin-bottom:14px;line-height:1.8}.new-order-highlight{animation:newOrderPulse 2.6s ease-in-out 3;border-color:#22c783!important;box-shadow:0 0 0 4px rgba(34,199,131,.12),var(--shadow)!important}.live-alert{position:fixed;top:96px;left:22px;z-index:999998;width:min(390px,calc(100vw - 44px));background:#fff;border:1px solid #bbf7d0;border-right:7px solid #22c783;border-radius:18px;box-shadow:0 24px 70px rgba(7,27,52,.22);padding:15px 16px;display:none}.live-alert.show{display:block;animation:slideAlert .25s ease}.live-alert b{display:block;font-size:17px;margin-bottom:5px;color:#071b34}.live-alert p{color:#64748b;font-weight:800;line-height:1.7}.live-alert .actions{margin-top:10px}.notify-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}@keyframes slideAlert{from{transform:translateY(-12px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes newOrderPulse{0%,100%{transform:none}50%{transform:translateY(-2px)}}@media(max-width:1200px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto;order:-1}.nav{grid-template-columns:repeat(2,1fr)}.grid,.lower,.wide-grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){.topbar{height:auto;flex-wrap:wrap;padding:14px}.content{padding:14px}.kpis,.mini-form,.section-grid,.kanban,.metric-grid,.inv-grid{grid-template-columns:1fr}.nav{grid-template-columns:1fr}.tracking-search{grid-template-columns:1fr}.user{border:0;padding:0}.invoice{width:100%;min-height:auto}.print-actions{position:sticky;margin:10px}.table{min-width:760px}}@media print{body>*:not(#printArea){display:none!important}#printArea{display:block!important}.invoice{width:100%!important;box-shadow:none!important}.print-actions{display:none!important}@page{size:A4;margin:8mm}}
 
@@ -65,87 +66,11 @@
 <style>
 .fp-report-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.fp-report-fields .field{min-width:0}.fp-report-fields textarea{height:82px;padding:10px}.fp-report-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.fp-report-tag{background:#eaf2ff;color:#176df7;border-radius:10px;padding:6px 10px;font-weight:900;display:inline-block}@media(max-width:760px){.fp-report-fields{grid-template-columns:1fr}}
 </style>
-<style id="fpOrderFilterStyle">.fp-filter-panel{background:#f8fbff;border:1px solid #dce8fa;border-radius:16px;padding:15px;margin:12px 0 16px}.fp-filter-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.fp-filter-grid label{display:block;font-size:12px;font-weight:900;margin-bottom:5px;color:#445875}.fp-filter-grid input,.fp-filter-grid select{width:100%;height:42px;border:1px solid #d5e2f2;border-radius:10px;padding:0 10px;background:#fff;color:#10213d}.fp-filter-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap}.fp-filter-bottom small{font-weight:900;color:#536987}@media(max-width:760px){.fp-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:480px){.fp-filter-grid{grid-template-columns:1fr}}</style>
-
-<style id="fpMobileProfessional2026">
-@media (max-width: 850px) {
- html,body{max-width:100%;overflow-x:hidden}
- .app{display:block!important;min-height:100dvh}
- .main{width:100%;min-width:0}
- .content{padding:14px 12px 86px!important}
- .sidebar{position:fixed!important;top:0;right:0;bottom:0;left:auto;width:min(310px,88vw);
-   height:100dvh!important;overflow-y:auto;z-index:10002;order:initial;
-   transform:translateX(105%);transition:transform .25s ease;box-shadow:-20px 0 60px #06172d33;
-   padding:22px 15px 40px!important}
- body.fp-mobile-nav-open .sidebar{transform:translateX(0)}
- .fp-mobile-shade{display:none;position:fixed;inset:0;background:#06172d99;z-index:10001}
- body.fp-mobile-nav-open .fp-mobile-shade{display:block}
- .sidebar .nav{display:grid!important;grid-template-columns:1fr!important;gap:6px}
- .sidebar .nav button{min-height:49px;font-size:14px}
- .topbar{height:auto!important;min-height:66px;position:sticky;top:0;z-index:1000;
-   padding:10px 12px!important;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
- .hamb{flex:0 0 44px;min-width:44px;order:0}
- .topbar .user{padding:0 4px!important;height:auto;gap:6px;min-width:0}
- .topbar .user small{font-size:10px}
- .topbar .avatar{width:36px;height:36px;font-size:20px}
- .topbar .search{order:9;flex:1 0 100%;max-width:none!important;margin:0!important}
- .topbar .search input{height:42px}
- .top-icons{gap:5px;margin-inline-start:auto}
- .icon-btn{width:36px;height:36px;border-radius:10px;font-size:16px}
- .page-title{align-items:flex-start;flex-direction:column;gap:12px}
- .page-title h1{font-size:21px}
- .page-title p{font-size:12px;line-height:1.7}
- .page-title .actions,.actions{gap:7px;max-width:100%}
- .page-title .actions .btn{flex:1 1 auto}
- .btn{height:auto;min-height:40px;padding:9px 12px;white-space:normal;line-height:1.5;text-align:center}
- .btn.small{min-height:34px;height:auto;padding:7px 10px}
- .card{padding:14px;border-radius:15px;min-width:0}
- .kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px}
- .kpi{min-height:116px;padding:13px;gap:6px}
- .kpi strong{font-size:23px}.kpi h4{font-size:12px;margin:4px 0 9px}
- .kpi p{font-size:11px;margin-top:8px}
- .kicon{width:42px;height:42px;min-width:42px;border-radius:12px;font-size:20px}
- .grid,.lower,.wide-grid,.section-grid,.metric-grid,.kanban{grid-template-columns:minmax(0,1fr)!important}
- .mini-form,.inv-grid,.tech-detail-grid,.tech-photo-grid{grid-template-columns:minmax(0,1fr)!important}
- .fp-filter-panel{padding:12px;border-radius:14px;margin:10px 0}
- .fp-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px}
- .fp-filter-grid input,.fp-filter-grid select{min-width:0;width:100%;font-size:13px}
- .fp-filter-bottom{align-items:stretch;flex-direction:column}
- .fp-filter-bottom .btn{width:100%}
- .item-card{padding:12px;gap:10px;flex-wrap:wrap;align-items:flex-start}
- .item-card>div{min-width:0;max-width:100%;overflow-wrap:anywhere}
- .item-card .actions{width:100%}
- .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px}
- .table{min-width:680px}
- .table th,.table td{padding:10px 9px;font-size:12px}
- .field input,.field select,.field textarea{max-width:100%;font-size:16px}
- .tracking-hero,.profile-hero{padding:17px;flex-wrap:wrap;gap:10px}
- .tracking-hero h1,.profile-hero h1{font-size:21px}
- .chart-wrap{max-width:100%;overflow:hidden}
- .modal,.modal-content,.login-card{max-width:calc(100vw - 20px)}
- .invoice{max-width:100%}
- .print-actions{position:sticky;left:auto;bottom:8px;justify-content:center;flex-wrap:wrap}
-}
-@media (max-width: 420px) {
- .fp-filter-grid{grid-template-columns:minmax(0,1fr)!important}
- .kpis{gap:7px}.kpi{padding:10px}.kicon{width:35px;height:35px;min-width:35px;font-size:17px}
- .topbar .user small{display:none}
- .page-title .actions{width:100%}
-}
-@media print{.fp-mobile-shade{display:none!important}}
+<style>
+.fp-wa-templates{margin:12px 0;border:1px solid #b9e4c6;background:linear-gradient(135deg,#f3fff6,#ffffff);border-radius:14px;padding:15px}
+.fp-wa-templates .btn{white-space:normal;min-height:38px}
 </style>
-<style id="fpTechReport2026Style">
-.fp-tr-controls{display:flex;gap:9px;flex-wrap:wrap;align-items:end;margin:12px 0}
-.fp-tr-controls label{font-size:12px;font-weight:800;display:grid;gap:5px;flex:1 1 150px}
-.fp-tr-controls input,.fp-tr-controls select{min-height:42px;border:1px solid #d7e4f4;border-radius:10px;padding:7px;background:white;max-width:100%}
-.fp-tr-preview{background:#f7faff;border:1px solid #e3ecf8;border-radius:14px;padding:13px;margin:12px 0;line-height:1.8}
-.fp-tr-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
-.fp-tr-stat{background:white;border:1px solid #e4ebf7;border-radius:11px;padding:11px}
-.fp-tr-stat b{display:block;font-size:22px;color:#176df7}
-@media(max-width:600px){.fp-tr-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
-</style>
-<style id="fpOrdersWorkflowStyle">.fp-workflow-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0}.fp-workflow-tab{background:#f5f8ff;border:1px solid #dce7f6;border-radius:13px;padding:12px 8px;color:#213b60;text-align:center;font-weight:900;transition:.15s}.fp-workflow-tab.active{background:#176df7;color:white;border-color:#176df7;box-shadow:0 8px 22px #176df72b}.fp-workflow-tab .fp-workflow-number{display:block;font-size:21px;margin-top:4px}.fp-workflow-caption{font-size:12px;color:#64748b;margin:8px 0 14px}@media(max-width:650px){.fp-workflow-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}</style>
-<style>.fp-tech-group-title{padding:13px 16px;background:#eaf2ff;color:#103b73;border-radius:12px;margin:16px 0 10px;border-right:5px solid #176df7}.fp-locked{background:#f6faf8;border-color:#bce9d3}.fp-locked textarea{background:#edf2f6;cursor:not-allowed}</style></head>
+</head>
 <body>
 <div id="loginScreen" class="login-screen hidden">
   <div class="fp-login-layout">
@@ -210,7 +135,7 @@
 <option value="المنطقة الجنوبية">المنطقة الجنوبية</option>
 <option value="المنطقة الشرقية">المنطقة الشرقية</option>
 </select></div>
-<div class="field"><label>المدينة</label><select id="oCity"></select></div><div class="field"><label>السعر</label><input id="oPrice" type="number" min="0"></div><div class="field"><label>الحالة</label><select id="oStatus"><option>جديدة</option><option>تم الإسناد</option><option>الفني تحرك</option><option>قيد التنفيذ</option><option>مكتملة</option><option>متأخرة</option><option>ملغي</option></select></div><div class="field"><label>الشركة المنفذة</label><select id="oCompany" onchange="fillOrderTechsByCompany()"><option value="">كل الشركات</option></select></div><div class="field"><label>الفني</label><select id="oTech"><option value="">بدون إسناد</option></select></div><div class="field"><label>حالة الدفع</label><select id="oPayment"><option>غير مدفوعة</option><option>مدفوعة</option><option>جزئي</option><option>متأخرة</option></select></div><div class="field" style="grid-column:1/-1"><label>العنوان / الملاحظات</label><textarea id="oNotes"></textarea></div></div><br><button class="btn" onclick="saveOrderForm()">حفظ الطلب</button></div><div class="card"><div class="card-head"><h3>كل الطلبات</h3><span class="status new" id="ordersCount">0 طلب</span></div><div id="ordersDiagnostic" class="danger-note" style="margin:10px 0">اضغط فحص الطلبات لمعرفة حالة الربط.</div><button class="btn light" type="button" onclick="diagnoseOrders()" style="margin-bottom:12px">🔎 فحص الطلبات من Supabase</button><button class="btn light" type="button" onclick="resetOrderSearch()" style="margin-bottom:12px">↺ إظهار جميع الطلبات / مسح البحث</button><div class="fp-filter-panel" id="fpOrderFilterPanel"><div class="fp-filter-grid"><div><label>بحث الطلب / العميل / الجوال</label><input id="fpFilterText" placeholder="رقم الطلب أو الاسم أو الجوال" oninput="renderOrders()"></div><div><label>حالة الطلب</label><select id="fpFilterStatus" onchange="renderOrders()"><option value="">كل الحالات</option><option>جديدة</option><option>تم الإسناد</option><option>الفني تحرك</option><option>قيد التنفيذ</option><option>مكتملة</option><option>متأخرة</option><option>ملغي</option><option value="__closed">مغلقة / مكتملة</option><option value="__active">نشطة فقط</option></select></div><div><label>الفني</label><select id="fpFilterTech" onchange="renderOrders()"><option value="">كل الفنيين</option><option value="__none">بدون إسناد</option></select></div><div><label>الشركة</label><select id="fpFilterCompany" onchange="renderOrders()"><option value="">كل الشركات</option></select></div><div><label>المدينة</label><select id="fpFilterCity" onchange="renderOrders()"><option value="">كل المدن</option></select></div><div><label>حالة الدفع</label><select id="fpFilterPayment" onchange="renderOrders()"><option value="">كل حالات الدفع</option><option>غير مدفوعة</option><option>مدفوعة</option><option>جزئي</option><option>متأخرة</option></select></div><div><label>من تاريخ</label><input type="date" id="fpFilterFrom" onchange="renderOrders()"></div><div><label>إلى تاريخ</label><input type="date" id="fpFilterTo" onchange="renderOrders()"></div><div><label>ترتيب الطلبات</label><select id="fpFilterSort" onchange="renderOrders()"><option value="new">الأحدث أولاً</option><option value="old">الأقدم أولاً</option><option value="price_desc">الأعلى قيمة</option><option value="price_asc">الأقل قيمة</option></select></div></div><div class="fp-filter-bottom"><small id="fpFilterSummary">عرض الطلبات</small><button type="button" class="btn small light" onclick="fpClearOrderFilters()">↺ مسح جميع الفلاتر</button></div></div><div class="fp-workflow-tabs" id="fpWorkflowTabs" aria-label="تصنيف الطلبات"><button type="button" class="fp-workflow-tab active" data-flow="pending" onclick="fpSetOrderFlow('pending')">⏳ تحت الانتظار <span class="fp-workflow-number" id="fpFlowPending">0</span></button><button type="button" class="fp-workflow-tab" data-flow="assigned" onclick="fpSetOrderFlow('assigned')">👷 تم الإسناد <span class="fp-workflow-number" id="fpFlowAssigned">0</span></button><button type="button" class="fp-workflow-tab" data-flow="active" onclick="fpSetOrderFlow('active')">🔧 قيد التنفيذ <span class="fp-workflow-number" id="fpFlowActive">0</span></button><button type="button" class="fp-workflow-tab" data-flow="finished" onclick="fpSetOrderFlow('finished')">🕒 بانتظار الاعتماد <span class="fp-workflow-number" id="fpFlowFinished">0</span></button><button type="button" class="fp-workflow-tab" data-flow="completed" onclick="fpSetOrderFlow('completed')">✅ المكتملة <span class="fp-workflow-number" id="fpFlowCompleted">0</span></button><button type="button" class="fp-workflow-tab" data-flow="archive" onclick="fpSetOrderFlow('archive')">📁 الأرشيف <span class="fp-workflow-number" id="fpFlowArchive">0</span></button><button type="button" class="fp-workflow-tab" data-flow="all" onclick="fpSetOrderFlow('all')">📋 جميع الطلبات <span class="fp-workflow-number" id="fpFlowAll">0</span></button></div><p class="fp-workflow-caption">تنتقل الطلبات تلقائيًا بين الأقسام عند تغيير حالتها، دون حذف أو تعديل البيانات.</p><div id="allOrders" class="list-card"></div></div></div></div>
+<div class="field"><label>المدينة</label><select id="oCity"></select></div><div class="field"><label>السعر</label><input id="oPrice" type="number" min="0"></div><div class="field"><label>الحالة</label><select id="oStatus"><option>جديدة</option><option>تم الإسناد</option><option>الفني تحرك</option><option>قيد التنفيذ</option><option>مكتملة</option><option>متأخرة</option><option>ملغي</option></select></div><div class="field"><label>الشركة المنفذة</label><select id="oCompany" onchange="fillOrderTechsByCompany()"><option value="">كل الشركات</option></select></div><div class="field"><label>الفني</label><select id="oTech"><option value="">بدون إسناد</option></select></div><div class="field"><label>حالة الدفع</label><select id="oPayment"><option>غير مدفوعة</option><option>مدفوعة</option><option>جزئي</option><option>متأخرة</option></select></div><div class="field" style="grid-column:1/-1"><label>العنوان / الملاحظات</label><textarea id="oNotes"></textarea></div></div><br><button class="btn" onclick="saveOrderForm()">حفظ الطلب</button></div><div class="card"><div class="card-head"><h3>كل الطلبات</h3><span class="status new" id="ordersCount">0 طلب</span></div><div id="ordersDiagnostic" class="danger-note" style="margin:10px 0">اضغط فحص الطلبات لمعرفة حالة الربط.</div><button class="btn light" type="button" onclick="diagnoseOrders()" style="margin-bottom:12px">🔎 فحص الطلبات من Supabase</button><button class="btn light" type="button" onclick="resetOrderSearch()" style="margin-bottom:12px">↺ إظهار جميع الطلبات / مسح البحث</button><div id="allOrders" class="list-card"></div></div></div></div>
 
       <div id="companies" class="page">
         <div class="page-title"><div><h1>الشركات والفنيين</h1><p>إدارة الشركات وعرض الفنيين التابعين لكل شركة</p></div></div>
@@ -251,14 +176,25 @@
         <div class="card"><div class="card-head"><h3>الطلبات المسندة للشركة</h3></div><div id="companyPortalOrders" class="list-card"></div></div>
       </div>
       <div id="clients" class="page"><div class="page-title"><div><h1>العملاء</h1><p>ملفات العملاء من الطلبات المسجلة</p></div></div><div class="card"><div id="clientsList" class="list-card"></div></div></div>
-      <div id="techPortal" class="page"><div class="page-title"><div><h1>بوابة الفني</h1><p>عرض الطلبات المسندة لفني معين</p></div></div><div class="wide-grid"><div class="card"><div class="field"><label>اختر الفني</label><select id="portalTech" onchange="renderTechPortal()"></select></div><br><div id="portalSummary"></div></div><div class="card"><div class="card-head"><h3>طلبات الفني</h3><div class="actions"><button class="btn green" onclick="printTechnicianAllOrdersReport()">📄 تقرير جميع طلبات الفني / PDF</button><button class="btn light" onclick="copyTechReport()">نسخ تقرير</button></div></div><div class="mini-form" style="margin:12px 0"><div class="field"><label>فلترة حسب حالة الطلب</label><select id="techOrderStatusFilter" onchange="renderTechPortal()"><option value="all">كل الطلبات</option><option value="new">الجديدة</option><option value="active">قيد التنفيذ</option><option value="finished">تم الانتهاء منها 🔒</option><option value="completed">المكتملة (قديمة)</option><option value="cancelled">الملغاة / المرفوضة</option><option value="other">حالات أخرى</option></select></div><div class="field"><label>بحث في طلبات الفني</label><input id="techOrderSearch" placeholder="رقم الطلب أو العميل أو الجوال" oninput="renderTechPortal()"></div></div><p id="techFilterCount" class="muted" style="margin-bottom:10px"></p><div id="portalOrders" class="list-card"></div></div></div></div>
+      <div id="techPortal" class="page"><div class="page-title"><div><h1>بوابة الفني</h1><p>عرض الطلبات المسندة لفني معين</p></div></div><div class="wide-grid"><div class="card"><div class="field"><label>اختر الفني</label><select id="portalTech" onchange="renderTechPortal()"></select></div><br><div id="portalSummary"></div></div><div class="card"><div class="card-head"><h3>طلبات الفني</h3><div class="actions"><button class="btn green" onclick="printTechnicianAllOrdersReport()">📄 التقرير التفصيلي / PDF</button><button class="btn light" onclick="exportTechnicianReportCSV()">📊 تقرير الفني Excel احترافي</button><button class="btn light" onclick="copyTechReport()">نسخ تقرير</button></div></div><div class="mini-form" style="margin:12px 0"><div class="field"><label>من تاريخ</label><input type="date" id="techReportFrom"></div><div class="field"><label>إلى تاريخ</label><input type="date" id="techReportTo"></div><div class="field"><label>فلترة حسب حالة الطلب</label><select id="techOrderStatusFilter" onchange="renderTechPortal()"><option value="all">كل الطلبات</option><option value="new">الجديدة</option><option value="active">قيد التنفيذ</option><option value="finished">انتهى منها الفني</option><option value="completed">المكتملة</option><option value="cancelled">الملغاة / المرفوضة</option><option value="other">حالات أخرى</option></select></div><div class="field"><label>بحث في طلبات الفني</label><input id="techOrderSearch" placeholder="رقم الطلب أو العميل أو الجوال" oninput="renderTechPortal()"></div></div><p id="techFilterCount" class="muted" style="margin-bottom:10px"></p><div id="portalOrders" class="list-card"></div></div></div></div>
       <div id="clientTracking" class="page"><div class="tracking-hero"><div><h1>تتبع طلب العميل</h1><p>اكتب رقم الطلب أو رقم الجوال لمتابعة الحالة</p></div><div style="font-size:46px">📍</div></div><div class="tracking-search"><input id="trackInput" placeholder="مثال: #1250 أو 0501112222" oninput="renderTracking()"><button class="btn" onclick="renderTracking()">تتبع الآن</button><button class="btn light" onclick="copyTrackingInfo()">نسخ البيانات</button></div><div id="trackingResult"></div></div>
-      <div id="payments" class="page"><div class="card" id="fpFinancePanel" style="margin:0 0 16px"><div class="card-head"><h3>💰 تحصيل ومصروفات الفواتير</h3><button class="btn light" type="button" onclick="fpFinReload()">تحديث الكشف</button></div><p class="muted" style="margin-bottom:12px">حساب صافي التحصيل = المبلغ المحصل − المصروف. يتم الحفظ في Supabase فقط بعد تهيئة جدول التحصيل.</p><div class="mini-form"><div class="field"><label>رقم الطلب</label><select id="fpFinOrder"><option value="">اختر طلبًا</option></select></div><div class="field"><label>تاريخ التحصيل</label><input id="fpFinDate" type="date"></div><div class="field"><label>المبلغ المحصل (ريال)</label><input id="fpFinAmount" type="number" min="0" step="0.01" value="0"></div><div class="field"><label>طريقة التحصيل</label><select id="fpFinMethod"><option value="cash">كاش</option><option value="network">شبكة</option><option value="transfer">تحويل</option><option value="mixed">مختلط</option></select></div><div class="field"><label>المصروف (ريال)</label><input id="fpFinExpense" type="number" min="0" step="0.01" value="0"></div><div class="field"><label>نوع المصروف</label><select id="fpFinExpenseType"><option value="parts">قطع غيار</option><option value="fuel">ديزل</option><option value="other">أخرى</option><option value="none">بدون مصروف</option></select></div><div class="field"><label>صافي التحصيل (ريال)</label><input id="fpFinNet" readonly value="0.00"></div><div class="field"><label>ملاحظات</label><input id="fpFinNotes" maxlength="300" placeholder="اختياري"></div></div><div class="actions" style="margin-top:12px"><button class="btn green" type="button" onclick="fpFinSave()">حفظ التحصيل في Supabase</button></div><p id="fpFinMessage" style="margin:12px 0;font-weight:800" role="status"></p><div class="kpis" style="margin-top:14px"><div class="kpi"><div><h4>إجمالي المحصل</h4><strong id="fpFinSumAmount">0.00</strong></div></div><div class="kpi"><div><h4>إجمالي المصروفات</h4><strong id="fpFinSumExpense">0.00</strong></div></div><div class="kpi"><div><h4>صافي التحصيل</h4><strong id="fpFinSumNet">0.00</strong></div></div></div><div class="table-wrap"><table class="table"><thead><tr><th>الطلب</th><th>التاريخ</th><th>المحصل</th><th>الطريقة</th><th>المصروف</th><th>الصافي</th></tr></thead><tbody id="fpFinRows"><tr><td colspan="6">اضغط تحديث الكشف</td></tr></tbody></table></div></div><div class="card" style="margin-bottom:16px"><div class="card-head"><h3>فواتير الفنيين — مسودات واعتمادات</h3><button class="btn light" onclick="fpInvoiceRefresh()">تحديث</button></div><div id="fpInvoiceAdminList" class="list-card">جار التحميل...</div></div><div class="page-title"><div><h1>الفواتير والمدفوعات</h1><p>طباعة الفواتير ومراجعة حالة الدفع</p></div><button class="btn light" onclick="window.print()">طباعة الصفحة</button></div><div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>رقم الفاتورة</th><th>العميل</th><th>الخدمة</th><th>التاريخ</th><th>المبلغ</th><th>الدفع</th><th>إجراء</th></tr></thead><tbody id="invoiceRows2"></tbody></table></div></div></div>
-      <div id="reports" class="page"><div class="page-title"><div><h1>التقارير</h1><p>مؤشرات تشغيلية سريعة</p></div></div><div class="kpis"><div class="kpi"><div><h4>نسبة الإنجاز</h4><strong id="completeRate">0%</strong><p>مكتملة من إجمالي الطلبات</p></div><div class="kicon ki-green">✅</div></div><div class="kpi"><div><h4>متوسط الطلب</h4><strong id="avgOrder">0</strong><p>متوسط قيمة الطلب</p></div><div class="kicon ki-blue">📌</div></div><div class="kpi"><div><h4>طلبات متأخرة</h4><strong id="lateOrdersKpi">0</strong><p>تحتاج متابعة</p></div><div class="kicon ki-orange">⏱</div></div><div class="kpi"><div><h4>فنيين نشطين</h4><strong id="activeTechsKpi">0</strong><p>متاحين للعمل</p></div><div class="kicon ki-purple">👷</div></div></div><div class="card" id="fpActualReport" style="margin-top:18px"><div class="card-head"><h3>فني برو | التقرير التفصيلي للفنيين</h3><span class="muted">المبالغ من نفس بيانات شاشة الطلبات</span></div>
-<div class="fp-tr-controls"><label>الفني<select id="fpARtech"><option value="">جميع الفنيين</option></select></label><label>من تاريخ<input id="fpARfrom" type="date"></label><label>إلى تاريخ<input id="fpARto" type="date"></label><button class="btn" type="button" id="fpARrefresh">تحديث التقرير</button><button class="btn green" type="button" id="fpARexcel">تصدير Excel</button></div>
-<p class="muted" id="fpARnotice" style="margin:10px 0">قيمة الطلب من نفس حقل السعر المستخدم في قائمة الطلبات والفواتير. المحصل تقديري عند ظهور الحالة «مدفوعة»، وليس سجل قبض موثقًا.</p>
-<div class="fp-tr-stats" style="margin:12px 0"><div class="fp-tr-stat">قيمة الطلبات<b id="fpARtotal">0</b></div><div class="fp-tr-stat">طلبات بحالة مدفوعة<b id="fpARpaid">0</b></div><div class="fp-tr-stat">عدد الطلبات<b id="fpARcount">0</b></div></div>
-<div class="table-wrap"><table class="table" id="fpARtable"><thead><tr><th>الفني</th><th>رقم الطلب</th><th>العميل</th><th>الجوال</th><th>الخدمة</th><th>تاريخ الطلب</th><th>الوقت</th><th>حالة الطلب</th><th>حالة الدفع</th><th>قيمة الطلب (ر.س)</th><th>وقت الإسناد/التحويل</th><th>المسند / المحوّل</th><th>محول من فني</th><th>سجل الإسنادات</th></tr></thead><tbody id="fpARrows"></tbody></table></div></div></div>
+      <div id="payments" class="page"><section id="fpCashAdmin" class="card" style="margin-bottom:18px;display:none">
+ <div class="card-head"><h3>💰 حسابات وعهدة الفنيين — للإدارة فقط</h3><button class="btn light" onclick="fpCashRefresh()">تحديث الحسابات</button></div>
+ <p class="muted">تسجيل تحصيل نقدي مرتبط بطلب، أو اعتماد مبلغ استلمته الشركة من الفني. القيود لا تُحذف، والتصحيح يتم بقيد عكسي.</p>
+ <div class="mini-form" style="margin-top:12px">
+  <div class="field"><label>الفني</label><select id="fpCashTech"></select></div>
+  <div class="field"><label>نوع العملية</label><select id="fpCashType" onchange="fpCashToggleOrder()"><option value="collection">تحصيل كاش من العميل</option><option value="handover">استلام الشركة كاش من الفني</option></select></div>
+  <div class="field" id="fpCashOrderField"><label>رقم الطلب (إلزامي للتحصيل)</label><input id="fpCashOrder" placeholder="رقم الطلب"></div>
+  <div class="field"><label>المبلغ (ريال)</label><input id="fpCashAmount" type="number" min="0.01" step="0.01" placeholder="75.00"></div>
+  <div class="field" style="grid-column:1/-1"><label>ملاحظات / رقم إيصال الاستلام</label><input id="fpCashNote" maxlength="1000" placeholder="اختياري"></div>
+ </div>
+ <div class="actions" style="margin:12px 0"><button class="btn green" id="fpCashSubmit" onclick="fpCashSubmit()">تسجيل العملية واعتمادها</button><button class="btn light" onclick="fpCashExport()">📊 تحميل تقرير Excel احترافي</button></div>
+ <p id="fpCashMsg" class="muted"></p>
+ <div class="table-wrap"><table class="table"><thead><tr><th>الفني</th><th>إجمالي التحصيل</th><th>تسليمات الشركة</th><th>العهدة المتبقية</th></tr></thead><tbody id="fpCashSummary"></tbody></table></div>
+ <h3 style="margin:18px 0 8px">سجل جميع الحركات</h3>
+ <div class="table-wrap"><table class="table"><thead><tr><th>التاريخ</th><th>الفني</th><th>النوع</th><th>الطلب</th><th>المبلغ</th><th>ملاحظات</th><th>الإجراء</th></tr></thead><tbody id="fpCashRows"></tbody></table></div>
+</section><div class="card" style="margin-bottom:16px"><div class="card-head"><h3>فواتير الفنيين — مسودات واعتمادات</h3><button class="btn light" onclick="fpInvoiceRefresh()">تحديث</button></div><div id="fpInvoiceAdminList" class="list-card">جار التحميل...</div></div><div class="page-title"><div><h1>الفواتير والمدفوعات</h1><p>طباعة الفواتير ومراجعة حالة الدفع</p></div><button class="btn light" onclick="window.print()">طباعة الصفحة</button></div><div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>رقم الفاتورة</th><th>العميل</th><th>الخدمة</th><th>التاريخ</th><th>المبلغ</th><th>الدفع</th><th>إجراء</th></tr></thead><tbody id="invoiceRows2"></tbody></table></div></div></div>
+      <div id="reports" class="page"><div class="page-title"><div><h1>التقارير</h1><p>مؤشرات تشغيلية سريعة</p></div></div><div class="kpis"><div class="kpi"><div><h4>نسبة الإنجاز</h4><strong id="completeRate">0%</strong><p>مكتملة من إجمالي الطلبات</p></div><div class="kicon ki-green">✅</div></div><div class="kpi"><div><h4>متوسط الطلب</h4><strong id="avgOrder">0</strong><p>متوسط قيمة الطلب</p></div><div class="kicon ki-blue">📌</div></div><div class="kpi"><div><h4>طلبات متأخرة</h4><strong id="lateOrdersKpi">0</strong><p>تحتاج متابعة</p></div><div class="kicon ki-orange">⏱</div></div><div class="kpi"><div><h4>فنيين نشطين</h4><strong id="activeTechsKpi">0</strong><p>متاحين للعمل</p></div><div class="kicon ki-purple">👷</div></div></div></div>
       <div id="notifications" class="page"><div class="page-title"><div><h1>الإشعارات</h1><p>تنبيهات تشغيلية تلقائية</p></div></div><div class="card"><div id="notifyCenter" class="timeline"></div></div></div>
       <div id="users" class="page"><div class="page-title"><div><h1>المستخدمين والصلاحيات</h1><p>إنشاء مستخدمين حقيقيين في Supabase Authentication مع ربط الصلاحيات</p></div></div><div class="wide-grid"><div class="card"><div class="mini-form"><div class="field"><label>الاسم</label><input id="uName" placeholder="اسم المستخدم"></div><div class="field"><label>البريد</label><input id="uEmail" type="email" placeholder="user@example.com"></div><div class="field"><label>كلمة المرور</label><input id="uPassword" type="password" placeholder="كلمة مرور لا تقل عن 6 أحرف"></div><div class="field"><label>الدور</label><select id="uRole"><option value="admin">Admin</option><option value="dispatcher">Dispatcher</option><option value="company_manager">Company Manager</option><option value="technician">Technician</option><option value="viewer">Viewer</option><option value="client">Client</option></select></div><div class="field"><label>الحالة</label><select id="uActive"><option value="Active">Active</option><option value="Disabled">Disabled</option></select></div><div class="field"><label>ربط الفني - اختياري</label><select id="uTechnicianId"><option value="">بدون ربط</option></select></div><div class="field"><label>ربط الشركة - لمدير الشركة</label><select id="uCompanyId"><option value="">بدون ربط</option></select></div></div><br><div class="actions"><button class="btn" onclick="addUser()">إنشاء مستخدم حقيقي</button><button class="btn light" onclick="clearUserForm()">تفريغ</button></div></div><div class="card"><div class="danger-note">إدارة المستخدمين والصلاحيات وربط الفنيين بالحسابات.</div><div id="usersRows" class="list-card"></div></div></div></div>
       <div id="settings" class="page"><div class="page-title"><div><h1>الإعدادات</h1><p>إدارة النسخة والربط والنسخ الاحتياطي</p></div></div><div class="section-grid"><div class="card"><h3>حالة الربط</h3><br><div class="danger-note" id="dbStatus">جاري الفحص...</div><div class="actions"><button class="btn light" onclick="exportBackup()">تصدير نسخة احتياطية</button><button class="btn light" onclick="document.getElementById('backupInput').click()">استيراد نسخة</button><input id="backupInput" type="file" accept="application/json" class="hidden" onchange="importBackup(event)"><button class="btn red" onclick="logout()">تسجيل خروج</button></div></div><div class="card"><h3>ملاحظات أمان</h3><br><p class="muted">إعدادات النظام والنسخ الاحتياطي وإدارة الجلسة.</p></div></div></div>
@@ -673,9 +609,7 @@ async function refreshFromCloud(showToast=true){
     const {data:orders,error:ordersError}=await sb.from('orders').select('*').order('updated_at',{ascending:false});
     if(ordersError) throw new Error('فشل قراءة الطلبات: '+ordersError.message);
     const localOrders=(orders||[]).map(fromDbOrder);
-    if(localOrders.length || !load(KEYS.ORD).length) localStorage.setItem(KEYS.ORD,JSON.stringify(localOrders));
-    else console.warn('Supabase returned zero visible orders; retaining local cache pending permissions check');
-    fpSyncedOrders=new Map(localOrders.map(o=>[String(o.id),fpOrderFingerprint(normOrder(o))]));
+    localStorage.setItem(KEYS.ORD,JSON.stringify(localOrders));
     detectIncomingOrders(localOrders);
     const results=await Promise.allSettled([
       sb.from('technicians').select('*').order('updated_at',{ascending:false}),
@@ -708,41 +642,15 @@ async function refreshFromCloud(showToast=true){
 }
 let refreshFromCloudBusy=false;
 
-// Sync only changed orders, in sequence. Never report cloud success before confirmation.
-function fpOrderFingerprint(row){const {updated_at,...stable}=row;return JSON.stringify(stable)}
-let fpSyncedOrders=new Map();
-let fpOrderSyncQueue=Promise.resolve();
-let fpOrderSyncGeneration=0;
-function fpSyncError(e){
-  const message=e?.message||String(e);
-  console.error('Supabase order save failed:',e);
-  toast('تعذر حفظ تعديل الطلب في Supabase: '+message);
-}
 async function syncOrders(orders){
-  if(!sb||!cloudEnabled||pulling){
-    if(!pulling)toast('التعديل محلي فقط: لا يوجد اتصال بـ Supabase');
-    return false;
-  }
-  const rows=(orders||[]).map(normOrder);
-  const changes=rows.filter(row=>fpSyncedOrders.get(String(row.id))!==fpOrderFingerprint(row));
-  // normOrder includes updated_at, so compare stable fields without the timestamp.
-  const meaningful=changes;
-  if(!meaningful.length)return true;
-  const work=async()=>{
-    for(const row of meaningful){
-      const id=String(row.id);
-      const current=(load(KEYS.ORD)||[]).find(o=>String(o.id)===id);
-      if(!current)continue;
-      const fresh=normOrder(current);
-      const {error}=await sb.from('orders').upsert(fresh,{onConflict:'id'});
-      if(error)throw new Error('الطلب '+id+': '+error.message);
-      fpSyncedOrders.set(id,fpOrderFingerprint(fresh));
+  if(!sb||!cloudEnabled||pulling) return;
+  try{
+    const rows=(orders||[]).map(normOrder);
+    if(rows.length){
+      const {error}=await sb.from('orders').upsert(rows,{onConflict:'id'});
+      if(error) throw error;
     }
-    return true;
-  };
-  const task=fpOrderSyncQueue.then(work);
-  fpOrderSyncQueue=task.catch(fpSyncError);
-  return task.catch(()=>false);
+  }catch(e){console.warn('syncOrders failed',e.message||e)}
 }
 
 async function syncTechs(techs){
@@ -883,7 +791,7 @@ async function sendOrderWhatsAppNotification(order,eventType='created'){
     return false;
   }
 }
-async function saveOrderForm(){let arr=load(KEYS.ORD),edit=get('editingOrderId').value;const selectedServices=getSelectedAdminServices();const serviceText=selectedServices.join('، ');if(!selectedServices.length){toast('اختار خدمة واحدة على الأقل');return}const order={id:edit||orderNumber(),name:get('oName').value.trim()||'عميل جديد',phone:get('oPhone').value.trim(),service:serviceText,services:selectedServices,city:get('oCity').value,price:+get('oPrice').value||0,status:get('oStatus').value,date:today(),notes:get('oNotes').value.trim(),paymentStatus:get('oPayment').value,techId:get('oTech').value||null,companyId:get('oCompany').value||''}; if(edit)arr=arr.map(x=>x.id===edit?{...x,...order}:x); else arr.unshift(order);localStorage.setItem(KEYS.ORD,JSON.stringify(arr));const cloudSaved=await syncOrders(arr);const known=getKnownOrders();known.add(order.id);setKnownOrders(known);clearOrderForm();renderAll();toast(cloudSaved?(edit?'تم تعديل الطلب وحفظه في Supabase':'تم حفظ الطلب في Supabase'):'التعديل محفوظ على الجهاز فقط؛ راجع اتصال Supabase');if(!edit){const k=String(order.id);let ids=[];try{ids=JSON.parse(localStorage.getItem(WA_NOTIFIED_KEY)||'[]')}catch{};if(!ids.includes(k)){ids.push(k);localStorage.setItem(WA_NOTIFIED_KEY,JSON.stringify(ids.slice(-1000)))}/* WhatsApp handled by database webhook */}}
+function saveOrderForm(){let arr=load(KEYS.ORD),edit=get('editingOrderId').value;const selectedServices=getSelectedAdminServices();const serviceText=selectedServices.join('، ');if(!selectedServices.length){toast('اختار خدمة واحدة على الأقل');return}const order={id:edit||orderNumber(),name:get('oName').value.trim()||'عميل جديد',phone:get('oPhone').value.trim(),service:serviceText,services:selectedServices,city:get('oCity').value,price:+get('oPrice').value||0,status:get('oStatus').value,date:today(),notes:get('oNotes').value.trim(),paymentStatus:get('oPayment').value,techId:get('oTech').value||null,companyId:get('oCompany').value||''}; if(edit)arr=arr.map(x=>x.id===edit?{...x,...order}:x); else arr.unshift(order);save(KEYS.ORD,arr);const known=getKnownOrders();known.add(order.id);setKnownOrders(known);clearOrderForm();renderAll();toast(edit?'تم تعديل الطلب':'تم حفظ الطلب');if(!edit){const k=String(order.id);let ids=[];try{ids=JSON.parse(localStorage.getItem(WA_NOTIFIED_KEY)||'[]')}catch{};if(!ids.includes(k)){ids.push(k);localStorage.setItem(WA_NOTIFIED_KEY,JSON.stringify(ids.slice(-1000)))}/* WhatsApp handled by database webhook */}}
 function editOrder(id){markOrderSeen(id);const x=roleFilteredOrders(load(KEYS.ORD)).find(o=>o.id===id);if(!x)return;showPage('orders');get('editingOrderId').value=x.id;get('orderFormTitle').textContent='تعديل طلب '+x.id;get('oName').value=x.name||'';get('oPhone').value=x.phone||'';setAdminServiceSelection((x.services&&x.services.length)?x.services:(x.service||'صيانة مكيفات'));if(get('oRegion'))get('oRegion').value=x.region||inferRegion(x.city||'');fillOrderCities(x.city||'');fillOrderCompaniesByRegion(x.companyId||'');get('oCity').value=x.city||'خميس مشيط';fillOrderCompaniesByRegion(x.companyId||'');get('oPrice').value=x.price||0;get('oStatus').value=x.status||'جديدة';get('oPayment').value=x.paymentStatus||'غير مدفوعة';fillOrderTechsByCompany();get('oTech').value=x.techId||'';get('oNotes').value=x.notes||'';window.scrollTo({top:0,behavior:'smooth'})}
 function clearOrderForm(){['editingOrderId','oName','oPhone','oPrice','oNotes'].forEach(id=>get(id).value='');setAdminServiceSelection('');get('orderFormTitle').textContent='إضافة طلب';get('oStatus').value='جديدة';get('oPayment').value='غير مدفوعة';get('oTech').value='';if(get('oCompany'))get('oCompany').value='';fillOrderCompaniesByRegion()}
 async function deleteOrder(id){if(!confirm('حذف الطلب '+id+'؟'))return;save(KEYS.ORD,load(KEYS.ORD).filter(x=>x.id!==id));await deleteOrderCloud(id);renderAll();toast('تم حذف الطلب')}
@@ -921,57 +829,9 @@ async function diagnoseOrders(){
  }catch(e){el.textContent='خطأ فحص الطلبات: '+(e.message||String(e));}
 }
 
-function fpFilterSelectOptions(id,items,base){const el=get(id);if(!el)return;const previous=el.value;const vals=[...new Set(items.filter(x=>x!==null&&x!==undefined&&String(x).trim()!=='').map(String))].sort((a,b)=>a.localeCompare(b,'ar'));el.innerHTML=base+vals.map(v=>`<option value="${safe(v)}">${safe(v)}</option>`).join('');el.value=previous;if(el.value!==previous)el.value='';}
-function fpOrderDate(o){const d=o.date||o.created_at||o.createdAt||'';if(!d)return '';const raw=String(d);if(/^\d{4}-\d{2}-\d{2}/.test(raw))return raw.slice(0,10);const dt=new Date(raw);return Number.isNaN(dt.getTime())?'':dt.toISOString().slice(0,10)}
-function fpClearOrderFilters(){['fpFilterText','fpFilterStatus','fpFilterTech','fpFilterCompany','fpFilterCity','fpFilterPayment','fpFilterFrom','fpFilterTo'].forEach(id=>{const e=get(id);if(e)e.value=''});const sort=get('fpFilterSort');if(sort)sort.value='new';renderOrders()}
-function fpFilterOrders(orders){const val=id=>get(id)?.value||'';const text=val('fpFilterText').trim().toLowerCase(),status=val('fpFilterStatus'),tech=val('fpFilterTech'),company=val('fpFilterCompany'),city=val('fpFilterCity'),payment=val('fpFilterPayment'),from=val('fpFilterFrom'),to=val('fpFilterTo');return orders.filter(o=>{const isClosed=techIsClosed(o);if(text&&![o.id,o.name,o.phone,displayServices(o)].some(x=>String(x||'').toLowerCase().includes(text)))return false;if(status==='__closed'&&!isClosed)return false;if(status==='__active'&&isClosed)return false;if(status&&!status.startsWith('__')&&String(o.status||'')!==status)return false;if(tech==='__none'&&o.techId)return false;if(tech&&tech!=='__none'&&String(o.techId||'')!==tech)return false;if(company&&String(o.companyId||o.company_id||o.company||'')!==company)return false;if(city&&String(o.city||'')!==city)return false;if(payment&&String(o.paymentStatus||'غير مدفوعة')!==payment)return false;const date=fpOrderDate(o);if(from&&(!date||date<from))return false;if(to&&(!date||date>to))return false;return true}).sort((a,b)=>{const sort=val('fpFilterSort');if(sort==='price_desc')return Number(b.price||0)-Number(a.price||0);if(sort==='price_asc')return Number(a.price||0)-Number(b.price||0);const da=fpOrderDate(a),db=fpOrderDate(b);return sort==='old'?da.localeCompare(db):db.localeCompare(da)})}
-let fpCurrentOrderFlow='all';
-function fpOrderFlowCategory(o){
- const s=String(o.status||'').trim().toLowerCase();
- if(['مكتملة','مكتمل','completed','done','closed','مغلق'].includes(s))return 'completed';
- if(['ملغاة','ملغي','مرفوضة','مرفوض','cancelled','canceled','rejected'].includes(s))return 'archive';
- if(['تم الانتهاء','انتهى الفني','انتهى منها الفني','بانتظار اعتماد الإدارة','بانتظار الاعتماد','finished','technician_finished'].includes(s)||o.technicianFinishedAt)return 'finished';
- if(['قيد التنفيذ','قيد العمل','جاري التنفيذ','in progress','in_progress','في الطريق','الفني تحرك','وصل الفني','متأخرة'].includes(s))return 'active';
- if(['تم الإسناد','assigned'].includes(s))return 'assigned';
- if(['جديد','جديدة','new','pending','قيد الانتظار','تحت الانتظار'].includes(s))return o.techId?'assigned':'pending';
- return o.techId?'assigned':'pending';
-}
-function fpSetOrderFlow(flow){fpCurrentOrderFlow=flow;if(flow==='all'&&typeof fpClearOrderFilters==='function')fpClearOrderFilters();else renderOrders()}
-function fpRenderOrderFlowCounts(orders){
- const counts={pending:0,assigned:0,active:0,finished:0,completed:0,archive:0,all:orders.length};
- orders.forEach(o=>counts[fpOrderFlowCategory(o)]++);
- const ids={pending:'fpFlowPending',assigned:'fpFlowAssigned',active:'fpFlowActive',finished:'fpFlowFinished',completed:'fpFlowCompleted',archive:'fpFlowArchive',all:'fpFlowAll'};
- Object.keys(ids).forEach(k=>{const el=document.getElementById(ids[k]);if(el)el.textContent=counts[k]});
- document.querySelectorAll('#fpWorkflowTabs [data-flow]').forEach(b=>{const active=b.dataset.flow===fpCurrentOrderFlow;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
-}
-function renderOrders(){
- const target=get('allOrders');
- if(!target){console.error('Fanni Pro: #allOrders not found');return;}
- try{
-  const all=roleFilteredOrders(load(KEYS.ORD)),techs=load(KEYS.TECH);
-  if(!all.length){const d=get('ordersDiagnostic');if(d)d.textContent='لا توجد طلبات ظاهرة لهذا الحساب. اضغط فحص الطلبات للتحقق من عدد سجلات Supabase وصلاحيات الحساب.';}
-  fpFilterSelectOptions('fpFilterTech',techs.map(t=>t.id),'<option value="">كل الفنيين</option><option value="__none">بدون إسناد</option>');
-  const te=get('fpFilterTech');if(te){[...te.options].forEach(op=>{const t=techs.find(x=>String(x.id)===op.value);if(t)op.textContent=t.name})}
-  fpFilterSelectOptions('fpFilterCity',all.map(o=>o.city),'<option value="">كل المدن</option>');
-  fpFilterSelectOptions('fpFilterCompany',all.map(o=>o.companyId||o.company_id||o.company),'<option value="">كل الشركات</option>');
-  fpRenderOrderFlowCounts(all);
-  const filtered=fpFilterOrders(all);
-  if(!filtered.length&&all.length){const note=get('ordersDiagnostic');if(note)note.textContent='يوجد '+all.length+' طلب، لكن الفلاتر الحالية لا تعرض نتائج. اضغط مسح الفلاتر أو جميع الطلبات.';}
-  const orders=fpCurrentOrderFlow==='all'?filtered:filtered.filter(o=>fpOrderFlowCategory(o)===fpCurrentOrderFlow);
-  const diagnostic=get('ordersDiagnostic');if(diagnostic&&!diagnostic.dataset.checked)diagnostic.textContent='المحفوظ محليًا: '+load(KEYS.ORD).length+' | الظاهر بعد الصلاحيات والبحث: '+all.length+' — اضغط فحص الطلبات لمعرفة العدد على السيرفر.';
-  const count=get('ordersCount');if(count)count.textContent=orders.length+' طلب';
-  const summary=get('fpFilterSummary');if(summary)summary.textContent='عرض '+orders.length+' من '+all.length+' طلب';
-  const latest=get('latestOrders');if(latest){try{latest.innerHTML=all.filter(o=>!['completed','archive'].includes(fpOrderFlowCategory(o))).slice(0,5).map(orderCardCompact).join('')||'<div class="empty-state">لا توجد طلبات</div>'}catch(err){console.error('latest orders render',err)}}
-  if(!orders.length){target.innerHTML='<div class="empty-state">لا توجد طلبات مطابقة للفلاتر</div>';return;}
-  // Render each order independently: a malformed record must never hide the other orders.
-  const fragments=[];let failed=0;
-  for(const order of orders){try{fragments.push(orderCardFull(order,techs))}catch(err){failed++;console.error('Failed rendering order',order?.id,err);fragments.push(`<div class="item-card"><div><b>طلب ${safe(order?.id||'-')}</b><p>${safe(order?.name||'')} — تعذر عرض التفاصيل الكاملة</p></div><button class="btn small light" onclick="editOrder('${safe(String(order?.id||'').replace(/'/g,'&#39;'))}')">فتح الطلب</button></div>`)}}
-  target.innerHTML=fragments.join('');
-  if(failed){const note=document.createElement('div');note.className='danger-note';note.textContent='تعذر عرض التفاصيل الكاملة لعدد '+failed+' طلب؛ بقية الطلبات معروضة. راجع Console لمعرفة الخطأ.';target.prepend(note)}
- }catch(err){console.error('Fanni Pro orders render failure',err);target.innerHTML='<div class="danger-note">حدث خطأ أثناء عرض الطلبات: '+safe(err?.message||String(err))+' — البيانات محفوظة ولم يتم تعديلها.</div>'}
-}
+function renderOrders(){const orders=qfilter(load(KEYS.ORD)),techs=load(KEYS.TECH);const diagnostic=get('ordersDiagnostic');if(diagnostic&&!diagnostic.dataset.checked)diagnostic.textContent='المحفوظ محليًا: '+load(KEYS.ORD).length+' | الظاهر بعد الصلاحيات والبحث: '+orders.length+' — اضغط فحص الطلبات لمعرفة العدد على السيرفر.';get('ordersCount').textContent=orders.length+' طلب';get('latestOrders').innerHTML=orders.slice(0,5).map(orderCardCompact).join('')||'<div class="empty-state">لا توجد طلبات</div>';get('allOrders').innerHTML=orders.map(o=>orderCardFull(o,techs)).join('')||'<div class="empty-state">لا توجد طلبات</div>'}
 function techName(id){return (load(KEYS.TECH).find(t=>t.id===id)||{}).name||'غير مسند'}
-function orderCardCompact(x){const locked=techIsClosed(x);const isNew=getNewOrderIds().has(x.id);return `<div class="item-card ${isNew?'new-order-highlight':''}"><div><b>${safe(x.id)} - ${safe(displayServices(x))}</b><p>عميل: ${safe(x.name)} · فني: ${safe(techName(x.techId))}</p></div><span class="status ${locked?'paid':orderStatusClass(x.status)}">${locked?'🔒 تم الانتهاء منها':safe(x.status)}</span></div>`}
+function orderCardCompact(x){const isNew=getNewOrderIds().has(x.id);return `<div class="item-card ${isNew?'new-order-highlight':''}"><div><b>${safe(x.id)} - ${safe(displayServices(x))}</b><p>عميل: ${safe(x.name)} · فني: ${safe(techName(x.techId))}</p></div><span class="status ${orderStatusClass(x.status)}">${safe(x.status)}</span></div>`}
 function sendInvoiceToTech(id){const arr=load(KEYS.ORD).map(x=>x.id===id?{...x,invoiceSent:true,invoiceSentAt:new Date().toISOString()}:x);save(KEYS.ORD,arr);renderAll();toast('تم إرسال الفاتورة للفني')}
 function orderCardFull(x,techs){const techOptions='<option value="">إسناد</option>'+techs.map(t=>`<option value="${safe(t.id)}" ${x.techId===t.id?'selected':''}>${safe(t.name)}</option>`).join('');const isNew=getNewOrderIds().has(x.id);return `<div class="item-card ${isNew?'new-order-highlight':''}"><div style="min-width:0"><b>${safe(x.id)} - ${safe(displayServices(x))}</b><p>${safe(x.name)} · ${customerPhoneAction(x.phone)} · ${safe(x.city)} · ${fmt(x.price)} ر.س<br>الفني: ${safe(techName(x.techId))} · الدفع: ${safe(x.paymentStatus||'غير مدفوعة')} · الفاتورة للفني: ${x.invoiceSent?'مرسلة':'غير مرسلة'}</p></div><div class="actions"><span class="status ${orderStatusClass(x.status)}">${safe(x.status)}</span><select onchange="assignOrder('${safe(x.id)}',this.value)" style="height:34px;border:1px solid var(--line);border-radius:10px">${techOptions}</select><button class="btn small light" onclick="editOrder('${safe(x.id)}')">تعديل</button><button class="btn small green" onclick="updateOrderStatus('${safe(x.id)}','مكتملة')">إنهاء</button><button class="btn small orange" onclick="updateOrderStatus('${safe(x.id)}','الفني تحرك')">تحرك</button><button class="btn small" onclick="printInvoice('${safe(x.id)}')">فاتورة</button><button class="btn small green" onclick="sendInvoiceToTech('${safe(x.id)}')">إرسال للفني</button><button class="btn small red" onclick="deleteOrder('${safe(x.id)}')">حذف</button></div></div>`}
 function renderTech(){const techs=qfilter(load(KEYS.TECH));get('techCount').textContent=techs.length+' فني';get('techList').innerHTML=techs.map(t=>`<div class="item-card"><div style="display:flex;gap:12px;align-items:center"><div class="avatar">👨‍🔧</div><div><b>${safe(t.name)}</b><p>${safe(t.skill)} · ${safe(t.city)} · ${safe(t.available)} · خبرة ${safe(t.experience||0)} سنوات</p></div></div><div class="actions"><b>★ ${safe(t.rate)}</b><button class="btn small light" onclick="editTech('${safe(t.id)}')">تعديل</button><button class="btn small red" onclick="deleteTech('${safe(t.id)}')">حذف</button></div></div>`).join('')||'<div class="empty-state">لا يوجد فنيين</div>';fillTechSelects()}
@@ -986,19 +846,13 @@ function renderAssign(){
  const working=orders.filter(o=>o.status==='قيد التنفيذ');
  const finished=orders.filter(o=>['مكتملة','متأخرة'].includes(o.status));
  const groups=[['بانتظار الإسناد',unassigned],['بانتظار فني من الشركة',companyPending],['تم الإسناد للفني',assigned],['قيد التنفيذ',working],['مكتملة/متأخرة',finished]];
- get('assignBoard').innerHTML=(!orders.length?'<div class="danger-note">لا توجد طلبات محملة لهذا الحساب. تحقق من اتصال Supabase وصلاحيات RLS، أو اضغط تحديث البيانات.</div>':'')+groups.map(g=>`<div class="lane"><h4>${g[0]} <small class="muted">${g[1].length}</small></h4>${g[1].map(orderCardCompact).join('')||'<div class="empty-state">فارغ</div>'}</div>`).join('');
+ get('assignBoard').innerHTML=groups.map(g=>`<div class="lane"><h4>${g[0]} <small class="muted">${g[1].length}</small></h4>${g[1].map(orderCardCompact).join('')||'<div class="empty-state">فارغ</div>'}</div>`).join('');
  get('assignBoard').style.gridTemplateColumns='repeat(auto-fit,minmax(210px,1fr))';
  get('quickAssign').innerHTML=unassigned.slice(0,6).map(o=>`<div class="time-item"><div class="time-box"><b>${safe(o.id)} - ${safe(displayServices(o))}</b><p class="muted">اختر الفني المناسب</p><select onchange="assignOrder('${safe(o.id)}',this.value)" style="width:100%;height:40px;border:1px solid var(--line);border-radius:10px;margin-top:8px"><option value="">اختيار فني</option>${techs.map(t=>`<option value="${safe(t.id)}">${safe(t.name)} - ${safe(t.skill)}</option>`).join('')}</select></div><div class="time-dot">🔗</div></div>`).join('')||'<div class="empty-state">لا توجد طلبات جديدة بانتظار الإسناد</div>';
 }
 function autoAssignAll(){let orders=load(KEYS.ORD),techs=load(KEYS.TECH).filter(t=>t.available==='متاح للعمل');if(!techs.length){toast('لا يوجد فني متاح');return}let i=0;orders=orders.map(o=>!o.techId?{...o,techId:techs[i++%techs.length].id,status:'تم الإسناد'}:o);save(KEYS.ORD,orders);renderAll();toast('تم الإسناد التلقائي')}
 function renderClients(){const orders=roleFilteredOrders(load(KEYS.ORD)),map={};orders.forEach(o=>{const k=o.phone||o.name;if(!map[k])map[k]={name:o.name,phone:o.phone,total:0,count:0,last:o.date};map[k].total+=Number(o.price||0);map[k].count++;map[k].last=o.date});const clients=Object.values(map);get('clientsList').innerHTML=clients.map(c=>`<div class="item-card"><div><b>${safe(c.name)}</b><p>${safe(c.phone)} · عدد الطلبات: ${c.count} · آخر طلب: ${safe(c.last)}</p></div><b>${fmt(c.total)} ر.س</b></div>`).join('')||'<div class="empty-state">لا يوجد عملاء</div>'}
-function techIsClosed(o){
- if(!o)return false;
- const closedStatuses=['مكتملة','مكتمل','تم الانتهاء منها','تم الانتهاء','انتهى منها الفني','بانتظار اعتماد الإدارة','تم الاكتمال','تم الإكمال','تم الاغلاق','تم الإغلاق','مغلق','مغلقة','completed','complete','done','closed','issued'];
- const state=String(o.status||o.order_status||'').trim().toLowerCase();
- const invoiceIssued=typeof fpInvoices!=='undefined'&&Array.isArray(fpInvoices)&&fpInvoices.some(i=>String(i.order_id)===String(o.id)&&i.status==='issued');
- return o.technicianLocked===true||o.technician_locked===true||o.is_closed===true||!!o.closed_at||closedStatuses.includes(state)||invoiceIssued;
-}
+function techIsClosed(o){return !!o && (o.technicianLocked===true || ['مكتملة','مكتمل','completed','done','closed','مغلق'].includes(String(o.status||'').trim().toLowerCase()));}
 function techUpdateOrder(id,patch,msg){const current=load(KEYS.ORD).find(x=>String(x.id)===String(id));if(techIsClosed(current)){toast('الطلب مغلق ولا يمكن تعديله');return;}const arr=load(KEYS.ORD).map(x=>x.id===id?{...x,...patch}:x);save(KEYS.ORD,arr);renderAll();toast(msg||'تم تحديث الطلب')}
 
 function photosHtml(list){
@@ -1047,14 +901,9 @@ function printProfessionalReport(id){
  const x=load(KEYS.ORD).find(o=>String(o.id)===String(id));if(!x){toast('الطلب غير موجود');return;}
  const tech=load(KEYS.TECH).find(t=>String(t.id)===String(x.techId));
  const field=(key,prefix)=>fpReportValue(prefix,id)||(x[key]||'—');
- const row=(label,value)=>`<div class="datum"><small>${safe(label)}</small><b>${safe(String(value??'—'))}</b></div>`;
- const photoSection=(items,title)=>`<section class="section"><h2>${title}</h2><div class="photos">${(Array.isArray(items)?items:[]).slice(0,6).filter(src=>typeof src==='string'&&/^(data:image\/(png|jpeg|webp);base64,|https:\/\/)/i.test(src)).map(src=>`<figure><img src="${safe(src)}" alt="${title}"><figcaption>${title}</figcaption></figure>`).join('')||'<p class="empty">لا توجد صور مرفقة</p>'}</div></section>`;
- const date=x.reportAt?new Date(x.reportAt):new Date();
- const reportDate=Number.isNaN(date.getTime())?new Date().toLocaleDateString('ar-SA'):date.toLocaleDateString('ar-SA');
- const status=String(x.status||'غير محدد');
- const html=`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>تقرير صيانة - ${safe(x.id)}</title><style>
- *{box-sizing:border-box}body{margin:0;background:#eaf0f8;color:#132c4a;font-family:Tahoma,Arial,sans-serif;line-height:1.7}.toolbar{max-width:900px;margin:18px auto;display:flex;justify-content:flex-end}.print{background:#1169e9;color:#fff;border:0;border-radius:11px;padding:12px 25px;cursor:pointer;font-weight:bold}.paper{width:min(900px,calc(100% - 24px));margin:0 auto 30px;background:white;box-shadow:0 20px 55px #17345a20;border-radius:16px;overflow:hidden}.topline{height:8px;background:linear-gradient(90deg,#00b3c9,#176df7,#0b2344)}.head{background:#0b2344;color:white;padding:29px 36px;display:flex;justify-content:space-between;align-items:center;gap:18px}.brand{font-size:24px;font-weight:900}.brand small{display:block;font-size:11px;letter-spacing:2px;color:#93c5fd}.head h1{font-size:25px;margin:7px 0 0}.ref{background:#ffffff16;border:1px solid #ffffff35;border-radius:13px;padding:12px 16px;text-align:center;min-width:150px}.ref small{display:block;color:#cbdff8}.ref b{font-size:20px;overflow-wrap:anywhere}.body{padding:28px 36px}.summary{display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:1px solid #e1e9f3;padding-bottom:18px}.pill{display:inline-block;background:#e9f8f2;color:#087c56;border:1px solid #bce9d7;border-radius:999px;padding:5px 13px;font-weight:bold}.muted{color:#74859d;font-size:12px}.section{margin-top:24px;break-inside:avoid}.section h2{font-size:16px;border-right:4px solid #176df7;padding-right:12px;margin:0 0 13px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.datum{background:#f6f9fe;border:1px solid #e3eaf4;border-radius:10px;padding:11px 13px;min-width:0;break-inside:avoid}.datum small{display:block;color:#71819a;font-size:11px;margin-bottom:3px}.datum b{display:block;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}.photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.photos figure{margin:0;border:1px solid #e2eaf5;border-radius:10px;overflow:hidden;break-inside:avoid}.photos img{display:block;width:100%;height:140px;object-fit:cover}.photos figcaption{text-align:center;font-size:11px;color:#667994;padding:5px}.empty{color:#8291a7;background:#f6f9fe;padding:14px;border-radius:10px;grid-column:1/-1}.signatures{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:45px}.signature{border-top:1px dashed #9caec5;text-align:center;padding-top:10px;color:#667994;font-size:12px}.foot{margin-top:26px;background:#f4f8ff;border-top:1px solid #e1eaf6;padding:14px 36px;display:flex;justify-content:space-between;gap:12px;font-size:11px;color:#71819a}@media(max-width:600px){.head{padding:22px;flex-direction:column;align-items:stretch}.body{padding:20px}.grid{grid-template-columns:1fr}.photos{grid-template-columns:repeat(2,1fr)}.summary{flex-wrap:wrap}.foot{padding:12px 20px}}@media print{@page{size:A4;margin:10mm}body{background:white;-webkit-print-color-adjust:exact;print-color-adjust:exact}.toolbar{display:none}.paper{width:100%;margin:0;box-shadow:none;border-radius:0}.head{padding:22px 28px}.body{padding:20px 28px}.foot{padding:12px 28px}.photos img{height:115px}.section{break-inside:auto}.datum,figure{break-inside:avoid}}
- </style></head><body><div class="toolbar"><button class="print" onclick="window.print()">طباعة / حفظ PDF</button></div><main class="paper"><div class="topline"></div><header class="head"><div><div class="brand">فني برو <small>FANNI PRO · MAINTENANCE SERVICES</small></div><h1>تقرير إنجاز أعمال الصيانة</h1></div><div class="ref"><small>رقم الطلب</small><b>${safe(x.id)}</b></div></header><div class="body"><div class="summary"><div><b>تقرير الخدمة الفنية</b><div class="muted">تاريخ التقرير: ${safe(reportDate)}</div></div><span class="pill">${safe(status)}</span></div><section class="section"><h2>بيانات الطلب والعميل</h2><div class="grid">${row('اسم العميل',x.name||'—')}${row('رقم التواصل',x.phone||'—')}${row('المدينة',x.city||'—')}${row('عنوان الخدمة',x.address||x.notes||'—')}${row('نوع الخدمة',displayServices(x))}${row('الفني المسؤول',tech?.name||'—')}</div></section><section class="section"><h2>التشخيص والأعمال المنفذة</h2><div class="grid">${row('تشخيص العطل',field('technicianDiagnosis','diagnosis'))}${row('الأعمال والإصلاحات',field('technicianAction','action'))}${row('قطع الغيار المستخدمة',field('technicianParts','parts'))}${row('نتيجة الزيارة',field('technicianResult','result'))}${row('مدة العمل بالدقائق',field('technicianDuration','duration'))}${row('التوصيات الفنية',field('technicianRecommendations','recommend'))}</div></section><section class="section"><h2>ملاحظات الفني</h2>${row('تفاصيل إضافية',field('workReport','report'))}</section>${photoSection(x.beforePhotos,'صور قبل الصيانة')}${photoSection(x.afterPhotos,'صور بعد الصيانة')}<div class="signatures"><div class="signature">اسم وتوقيع الفني</div><div class="signature">مراجعة واعتماد الإدارة</div></div></div><footer class="foot"><span>فني برو | خدمات الصيانة المتكاملة</span><span>تم إنشاء التقرير من بيانات الطلب المسجلة بالنظام</span></footer></main>
+ const row=(label,value)=>`<div class="datum"><small>${safe(label)}</small><b>${safe(value)}</b></div>`;
+ const photos=(items,title)=>`<h3>${title}</h3><div class="photos">${(Array.isArray(items)?items:[]).slice(0,6).map(src=>`<img src="${safe(src)}">`).join('')||'<p>لا توجد صور</p>'}</div>`;
+ const html=`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>تقرير صيانة ${safe(x.id)}</title><style>body{font-family:Tahoma,Arial,sans-serif;color:#10213d;margin:0;background:#eef3fa}.paper{background:white;max-width:820px;margin:25px auto;padding:35px;box-shadow:0 10px 40px #0001}.head{background:#0b2b52;color:white;padding:25px;border-radius:16px;display:flex;justify-content:space-between;align-items:center}.head h1{margin:5px 0}.head small{color:#bcd8ff}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}.datum{background:#f5f8fd;border:1px solid #e1eaf5;border-radius:10px;padding:13px;white-space:pre-wrap;overflow-wrap:anywhere}.datum small{display:block;color:#667b99;margin-bottom:6px}.section{border-top:2px solid #e8eef7;padding-top:14px;margin-top:20px}.photos{display:flex;flex-wrap:wrap;gap:10px}.photos img{width:170px;height:130px;object-fit:cover;border-radius:10px}.footer{margin-top:40px;display:flex;justify-content:space-between;gap:20px;color:#64748b}.print{margin:20px auto;display:block;padding:12px 24px;background:#176df7;color:#fff;border:0;border-radius:10px;cursor:pointer}@media print{body{background:white}.paper{margin:0;box-shadow:none;padding:10mm}.print{display:none}@page{size:A4;margin:10mm}}</style></head><body><button class="print" onclick="window.print()">طباعة / حفظ PDF</button><main class="paper"><div class="head"><div><small>FANNI PRO · SERVICE REPORT</small><h1>تقرير فني للصيانة</h1><div>رقم الطلب: ${safe(x.id)}</div></div><div>🔧 فني برو</div></div><div class="grid">${row('العميل',x.name||'—')}${row('جوال العميل',x.phone||'—')}${row('المدينة',x.city||'—')}${row('العنوان',x.address||x.notes||'—')}${row('نوع الخدمة',displayServices(x))}${row('الفني',tech?.name||'—')}${row('حالة الطلب',x.status||'—')}${row('تاريخ التقرير',new Date().toLocaleString('ar-SA'))}</div><section class="section"><h2>تفاصيل الصيانة</h2><div class="grid">${row('التشخيص',field('technicianDiagnosis','diagnosis'))}${row('الأعمال المنفذة',field('technicianAction','action'))}${row('قطع الغيار',field('technicianParts','parts'))}${row('التوصيات',field('technicianRecommendations','recommend'))}${row('نتيجة الزيارة',field('technicianResult','result'))}${row('مدة العمل بالدقائق',field('technicianDuration','duration'))}</div>${row('ملاحظات إضافية',field('workReport','report'))}</section><section class="section">${photos(x.beforePhotos,'صور قبل الصيانة')}${photos(x.afterPhotos,'صور بعد الصيانة')}</section><div class="footer"><span>اسم وتوقيع الفني: __________________</span><span>مراجعة الإدارة: __________________</span></div></main>
 
 
 
@@ -1072,7 +921,37 @@ function techClearPhotos(orderId,type){const lockedOrder=load(KEYS.ORD).find(o=>
 }
 
 function techMoveOrder(id){techUpdateOrder(id,{status:'الفني تحرك'},'تم تسجيل تحرك الفني')}
-function techFinishOrder(id){const existing=load(KEYS.ORD).find(o=>String(o.id)===String(id));if(techIsClosed(existing)){toast('الطلب منتهٍ ومغلق للقراءة فقط');return;}if(!confirm('تأكيد الانتهاء من الطلب؟ سيتم قفله ولن يتمكن الفني من تعديله.'))return;const key='report_'+String(id).replace(/[^a-zA-Z0-9]/g,'_');const el=get(key);const saved=(load(KEYS.ORD).find(o=>o.id===id)||{}).workReport||'';const note=(el&&el.value?el.value.trim():saved);techUpdateOrder(id,{status:'تم الانتهاء منها',technicianLocked:true,technicianFinishedAt:new Date().toISOString(),workReport:note,completedAt:new Date().toISOString()},'تم الانتهاء من الطلب وقفله')}
+async function techFinishOrder(id){
+  if(!confirm('إغلاق الطلب نهائياً؟ لن يتمكن الفني من تعديله بعد الإغلاق.'))return;
+  if(!sb||!cloudEnabled){toast('لا يمكن إغلاق الطلب بدون اتصال بقاعدة البيانات');return;}
+  const current=load(KEYS.ORD).find(o=>String(o.id)===String(id));
+  if(!current){toast('الطلب غير موجود');return;}
+  if(techIsClosed(current)){toast('الطلب مغلق بالفعل');return;}
+  const key='report_'+String(id).replace(/[^a-zA-Z0-9]/g,'_');
+  const el=get(key);
+  const note=(el&&el.value?el.value.trim():current.workReport||'');
+  const closedAt=new Date().toISOString();
+  try{
+    // Read the authoritative record first. Never trust stale browser cache for closure.
+    const {data:remote,error:readError}=await sb.from('orders').select('*').eq('id',id).single();
+    if(readError)throw readError;
+    if(techIsClosed(fromDbOrder(remote))){await refreshFromCloud(false);toast('الطلب مغلق بالفعل على السيرفر');return;}
+    const raw={...(remote.raw||{}),technicianLocked:true,workReport:note,completedAt:closedAt};
+    const {data:updated,error:writeError}=await sb.from('orders')
+      .update({status:'مكتملة',raw,updated_at:closedAt})
+      .eq('id',id).eq('updated_at',remote.updated_at).select('*');
+    if(writeError)throw writeError;
+    if(!updated||updated.length!==1)throw new Error('تغير الطلب أثناء الحفظ؛ حدّث الصفحة وأعد المحاولة');
+    // Confirm persisted state by reading from Supabase, not from localStorage.
+    const {data:verified,error:verifyError}=await sb.from('orders').select('*').eq('id',id).single();
+    if(verifyError)throw verifyError;
+    if(!techIsClosed(fromDbOrder(verified)))throw new Error('لم يتم تأكيد إغلاق الطلب في قاعدة البيانات');
+    pulling=true;
+    try{const arr=load(KEYS.ORD).map(o=>String(o.id)===String(id)?fromDbOrder(verified):o);localStorage.setItem(KEYS.ORD,JSON.stringify(arr));}
+    finally{pulling=false;}
+    renderAll();toast('تم إغلاق الطلب وحفظه في Supabase بنجاح');
+  }catch(e){console.error('techFinishOrder persistence error',e);toast('لم يتم تأكيد إغلاق الطلب: '+(e.message||e));await refreshFromCloud(false);}
+}
 function techCollectInvoice(id){if(!confirm('تأكيد تحصيل الفاتورة من العميل؟'))return;techUpdateOrder(id,{paymentStatus:'مدفوعة',collectedAt:new Date().toISOString()},'تم تسجيل تحصيل الفاتورة')}
 function customerWhatsAppLink(phone){
   let digits=String(phone||'').replace(/\D/g,'');
@@ -1086,12 +965,82 @@ function customerPhoneAction(phone){
  const url=customerWhatsAppLink(phone);
  return url?`<a href="${url}" target="_blank" rel="noopener noreferrer" class="customer-wa-link" title="فتح واتساب العميل">📱 ${safe(phone)} <span>واتساب ↗</span></a>`:`<span>${safe(phone||'-')}</span>`;
 }
-function techOrderDetailCard(x){const isNew=getNewOrderIds().has(x.id);const address=x.address||x.notes||'-';const locked=techIsClosed(x);const safeId=String(x.id).replace(/[^a-zA-Z0-9]/g,'_');return `<div class="tech-order-detail ${locked?'fp-locked':''} ${isNew?'new-order-highlight':''}"><div class="tech-detail-head"><div><h3>${safe(x.id)} - ${safe(displayServices(x))}</h3><p class="muted">${safe(x.name)} · ${safe(x.phone)} · ${safe(x.city)}</p></div><span class="status ${orderStatusClass(x.status)}">${safe(x.status)}</span></div>${locked?`<div class="danger-note">🔒 الطلب مغلق نهائيًا — للعرض والطباعة فقط، لا يمكن للفني تعديله.</div>`:''}<div class="tech-detail-grid"><div class="tech-detail-box"><small>عنوان العميل</small><b>${safe(address)}</b></div><div class="tech-detail-box"><small>الخدمات</small><b>${safe(displayServices(x))}</b></div><div class="tech-detail-box"><small>قيمة الفاتورة</small><b>${fmt(x.price)} ر.س</b></div><div class="tech-detail-box"><small>حالة الدفع</small><b>${safe(x.paymentStatus||'غير مدفوعة')}</b></div></div><div class="tech-invoice-box"><b>الفاتورة من الأدمن:</b> ${x.invoiceSent?'تم إرسالها للفني':'لم يرسلها الأدمن بعد'} ${x.invoiceSentAt?`<br><small class="muted">وقت الإرسال: ${safe(new Date(x.invoiceSentAt).toLocaleString('ar-SA'))}</small>`:''}</div><div class="tech-photo-grid"><div class="tech-photo-panel"><h4>صور قبل الصيانة</h4><div class="tech-photo-list">${photosHtml(x.beforePhotos)}</div><div class="tech-photo-actions" ${locked?'style="display:none"':''}><label class="btn small light" for="before_${safeId}">رفع صور قبل</label><input class="tech-photo-input" id="before_${safeId}" type="file" accept="image/*" multiple onchange="techUploadPhotos('${safe(x.id)}','before',this)"><button class="btn small red" onclick="techClearPhotos('${safe(x.id)}','before')">مسح</button></div></div><div class="tech-photo-panel"><h4>صور بعد الصيانة</h4><div class="tech-photo-list">${photosHtml(x.afterPhotos)}</div><div class="tech-photo-actions" ${locked?'style="display:none"':''}><label class="btn small light" for="after_${safeId}">رفع صور بعد</label><input class="tech-photo-input" id="after_${safeId}" type="file" accept="image/*" multiple onchange="techUploadPhotos('${safe(x.id)}','after',this)"><button class="btn small red" onclick="techClearPhotos('${safe(x.id)}','after')">مسح</button></div></div></div><div class="tech-detail-box"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><b>📋 تقرير الصيانة الاحترافي</b><span class="fp-report-tag">${safe(x.id)}</span></div><div class="fp-report-fields" ${locked?'style="pointer-events:none;opacity:.7"':''}><div class="field"><label>تشخيص العطل</label><textarea ${locked?'readonly tabindex="-1"':''} id="diagnosis_${safeId}" placeholder="نتيجة الفحص والتشخيص">${safe(x.technicianDiagnosis||'')}</textarea></div><div class="field"><label>الإجراءات والأعمال المنفذة</label><textarea ${locked?'readonly tabindex="-1"':''} id="action_${safeId}" placeholder="تفاصيل الإصلاح">${safe(x.technicianAction||'')}</textarea></div><div class="field"><label>قطع الغيار المستخدمة</label><textarea ${locked?'readonly tabindex="-1"':''} id="parts_${safeId}" placeholder="القطعة والكمية">${safe(x.technicianParts||'')}</textarea></div><div class="field"><label>التوصيات والملاحظات</label><textarea ${locked?'readonly tabindex="-1"':''} id="recommend_${safeId}" placeholder="التوصيات للعميل">${safe(x.technicianRecommendations||'')}</textarea></div><div class="field"><label>نتيجة الزيارة</label><select id="result_${safeId}"><option value="">اختر النتيجة</option>${['تم الإصلاح','يحتاج قطع غيار','زيارة متابعة','تعذر الإصلاح'].map(v=>`<option value="${v}" ${x.technicianResult===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>مدة العمل (بالدقائق)</label><input type="number" min="0" id="duration_${safeId}" value="${safe(x.technicianDuration||'')}" placeholder="مثال: 90"></div></div><small style="display:block;margin-top:12px">ملاحظات إضافية</small><textarea ${locked?'readonly tabindex="-1"':''} ${locked?'readonly':''} id="report_${safeId}" class="tech-report-area" placeholder="اكتب الأعمال التي تمت وقطع الغيار والملاحظات...">${safe(x.workReport||'')}</textarea><div class="tech-actions-row" style="margin-top:8px"><button ${locked?'disabled style="display:none"':''} class="btn small light" onclick="techSaveProfessionalReport('${safe(x.id)}')">حفظ التقرير</button><button class="btn small green" onclick="printProfessionalReport('${safe(x.id)}')">🖨️ طباعة / PDF</button></div></div><div class="tech-actions-row" ${locked?'style="display:none"':''}><button class="btn small orange" onclick="techMoveOrder('${safe(x.id)}')">تسجيل التحرك</button><button class="btn small green" onclick="techFinishOrder('${safe(x.id)}')">إنهاء العمل</button><button class="btn small" onclick="techCollectInvoice('${safe(x.id)}')">تحصيل الفاتورة</button>${x.invoiceSent?`<button class="btn small light" onclick="printInvoice('${safe(x.id)}')">عرض الفاتورة</button>`:''}</div>${x.completedAt?`<div class="tech-detail-box"><small>وقت إنهاء العمل</small><b>${safe(new Date(x.completedAt).toLocaleString('ar-SA'))}</b></div>`:''}</div>`}
+
+// قوالب رسائل الفني — يفتح واتساب مع رسالة جاهزة ولا يرسل دون تأكيد المستخدم.
+const TECH_WA_TEMPLATES = [
+ ['confirm','📅 تأكيد الموعد'],['way','🚗 أنا في الطريق'],['arrived','📍 وصلت للموقع'],
+ ['delay','🕒 تأجيل الزيارة'],['parts','🔧 انتظار قطع الغيار'],
+ ['done','✅ انتهاء الصيانة'],['rating','⭐ تقييم الخدمة']
+];
+// رسوم الزيارة: نموذج يحدد فيه الفني المبلغ ثم يفتح واتساب برسالة جاهزة.
+async function techSendVisitFee(orderId){
+ const order=load(KEYS.ORD).find(o=>String(o.id)===String(orderId));
+ if(!order){toast('الطلب غير موجود');return;}
+ const techId=typeof currentTechId==='function'?currentTechId():null;
+ if(!techId || String(order.techId)!==String(techId)){toast('هذا الطلب غير مسند لك');return;}
+ const phone=formatWhatsAppPhone(order.phone);
+ if(!phone){toast('رقم جوال العميل غير صالح');return;}
+ const field=document.getElementById('visitFee_'+String(orderId).replace(/[^a-zA-Z0-9]/g,'_'));
+ const raw=String(field?.value||'').trim();
+ const amount=Number(raw);
+ if(!raw||!Number.isFinite(amount)||amount<=0||amount>100000){toast('أدخل رسوم زيارة صحيحة بالريال');field?.focus();return;}
+ if(!sb||!cloudEnabled){toast('الإرسال التلقائي يتطلب اتصال Supabase');return;}
+ const button=field?.closest('.fp-visit-fee')?.querySelector('.fp-send-fee');
+ if(button?.disabled)return;
+ const formatted=amount.toFixed(2);
+ const msg=`مرحبًا ${order.name||'عميلنا العزيز'} 🌹\nمعك فني منصة فني برو للصيانة المتكاملة.\n📋 رقم الطلب: ${order.id}\n🔧 الخدمة: ${displayServices(order)||order.service||'الصيانة'}\n💰 رسوم الزيارة والفحص: ${formatted} ريال سعودي.\nيرجى تأكيد الموافقة على رسوم الزيارة قبل بدء الخدمة.\nشكرًا لاختياركم فني برو 💙`;
+ try{
+   if(button){button.disabled=true;button.textContent='⏳ جارٍ الإرسال...';}
+   const {data:{session},error:sessionError}=await sb.auth.getSession();
+   if(sessionError||!session?.access_token)throw new Error('سجّل دخول الفني أولًا');
+   const res=await fetch(CONFIG.SUPABASE_URL+'/functions/v1/send-whatsapp',{
+     method:'POST',
+     headers:{'Content-Type':'application/json','apikey':CONFIG.SUPABASE_ANON_KEY,'Authorization':'Bearer '+session.access_token},
+     body:JSON.stringify({phone,message:msg,order_id:String(order.id),message_type:'visit_fee',visit_fee:amount})
+   });
+   const body=await res.text();
+   let result;try{result=JSON.parse(body)}catch{result={error:body.slice(0,250)}}
+   if(!res.ok||!(result?.ok===true||result?.success===true))throw new Error(result?.error||result?.message||'فشل الإرسال');
+   toast('تم قبول إرسال رسوم الزيارة إلى واتساب العميل');
+   // نجاح API ليس دليل تسليم أو قراءة العميل. يلزم webhook للتأكيد.
+ }catch(e){console.error('visit fee send failed',e);toast('تعذر إرسال الرسالة: '+(e.message||'خطأ غير معروف'));}
+ finally{if(button){button.disabled=false;button.textContent='📤 إرسال المبلغ للعميل';}}
+}
+function techWhatsAppTemplatesCard(order){
+ const link=customerWhatsAppLink(order.phone);
+ const buttons=TECH_WA_TEMPLATES.map(([key,label])=>`<button type="button" class="btn small light" onclick="techSendWhatsAppTemplate('${safe(String(order.id))}','${key}')" ${link?'':'disabled title="رقم العميل غير صالح"'}>${label}</button>`).join('');
+ const feeId='visitFee_'+String(order.id).replace(/[^a-zA-Z0-9]/g,'_');
+ return `<div class="tech-detail-box fp-wa-templates"><div class="fp-visit-fee" style="padding:12px;background:#effaf4;border:1px solid #bcebd0;border-radius:12px;margin-bottom:12px"><b>💰 إرسال رسوم الزيارة للعميل</b><p class="muted" style="margin:6px 0">اكتب المبلغ ثم اضغط إرسال؛ سيرسل النظام الرسالة مباشرة عبر خدمة واتساب المرتبطة. موافقة العميل خطوة منفصلة.</p><div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-top:10px"><div class="field" style="flex:1;min-width:160px"><label for="${feeId}">رسوم الزيارة (ر.س)</label><input id="${feeId}" type="number" min="0.01" max="100000" step="0.01" inputmode="decimal" placeholder="مثال: 75.00"></div><button type="button" class="btn green fp-send-fee" onclick="techSendVisitFee('${safe(String(order.id))}')" ${link?'':'disabled title="رقم العميل غير صالح"'}>📤 إرسال المبلغ للعميل</button></div></div><b>💬 رسائل واتساب جاهزة للعميل</b><p class="muted" style="margin:6px 0 12px">اختر الرسالة، ثم اضغط إرسال من واتساب.</p><div class="tech-actions-row" style="display:flex;flex-wrap:wrap;gap:8px">${buttons}</div></div>`;
+}
+function techSendWhatsAppTemplate(orderId,template){
+ const order=load(KEYS.ORD).find(o=>String(o.id)===String(orderId));
+ if(!order){toast('الطلب غير موجود');return;}
+ // تحقق من صلاحية الفني الحالي وعدم السماح باستخدام طلب غير مسند له.
+ const techId=typeof currentTechId==='function'?currentTechId():null;
+ if(techId && String(order.techId)!==String(techId)){toast('هذا الطلب غير مسند لك');return;}
+ const base=customerWhatsAppLink(order.phone);
+ if(!base){toast('رقم جوال العميل غير صالح');return;}
+ const customer=order.name||'عميلنا العزيز';
+ const ref=order.id;
+ const service=displayServices(order)||order.service||'الصيانة';
+ const messages={
+  confirm:`مرحبًا ${customer}، معك فني منصة فني برو. نود تأكيد موعد زيارة الصيانة لخدمة ${service}، رقم الطلب ${ref}. هل الموعد مناسب لكم؟`,
+  way:`مرحبًا ${customer}، معك فني منصة فني برو. أنا الآن في الطريق إلى موقعكم لتنفيذ طلب الصيانة رقم ${ref}.`,
+  arrived:`مرحبًا ${customer}، معك فني منصة فني برو. وصلت إلى موقعكم بخصوص طلب الصيانة رقم ${ref}، برجاء التكرم بالتواصل معي.`,
+  delay:`مرحبًا ${customer}، نعتذر عن التأخير في زيارة الصيانة الخاصة بالطلب رقم ${ref}. نرجو التنسيق معكم لتحديد موعد بديل مناسب.`,
+  parts:`مرحبًا ${customer}، بخصوص طلب الصيانة رقم ${ref}، يحتاج العمل إلى توفير قطع غيار قبل استكمال الصيانة. سنوافيكم بالتحديثات بعد التنسيق مع الإدارة.`,
+  done:`مرحبًا ${customer}، تم الانتهاء من أعمال الصيانة الخاصة بالطلب رقم ${ref}. نشكركم على ثقتكم بمنصة فني برو.`,
+  rating:`مرحبًا ${customer}، نشكركم على اختيار فني برو لخدمة ${service}، رقم الطلب ${ref}. يسعدنا معرفة تقييمكم للخدمة وملاحظاتكم لتحسين تجربتكم.`
+ };
+ if(!Object.prototype.hasOwnProperty.call(messages,template))return;
+ window.open(base+'?text='+encodeURIComponent(messages[template]),'_blank','noopener,noreferrer');
+}
+function techOrderDetailCard(x){const isNew=getNewOrderIds().has(x.id);const address=x.address||x.notes||'-';const locked=techIsClosed(x);const safeId=String(x.id).replace(/[^a-zA-Z0-9]/g,'_');return `<div class="tech-order-detail ${locked?'fp-locked':''} ${isNew?'new-order-highlight':''}"><div class="tech-detail-head"><div><h3>${safe(x.id)} - ${safe(displayServices(x))}</h3><p class="muted">${safe(x.name)} · ${customerPhoneAction(x.phone)} · ${safe(x.city)}</p></div><span class="status ${orderStatusClass(x.status)}">${safe(x.status)}</span></div>${techWhatsAppTemplatesCard(x)}${!locked?`<button class="btn small orange" onclick="fpOpenTransfer('${safe(x.id)}')">تحويل الطلب لفني آخر</button>`:''}${locked?`<div class="danger-note">🔒 الطلب مغلق نهائيًا — للعرض والطباعة فقط، لا يمكن للفني تعديله.</div>`:''}<div class="tech-detail-grid"><div class="tech-detail-box"><small>عنوان العميل</small><b>${safe(address)}</b></div><div class="tech-detail-box"><small>الخدمات</small><b>${safe(displayServices(x))}</b></div><div class="tech-detail-box"><small>قيمة الفاتورة</small><b>${fmt(x.price)} ر.س</b></div><div class="tech-detail-box"><small>حالة الدفع</small><b>${safe(x.paymentStatus||'غير مدفوعة')}</b></div></div><div class="tech-invoice-box"><b>الفاتورة من الأدمن:</b> ${x.invoiceSent?'تم إرسالها للفني':'لم يرسلها الأدمن بعد'} ${x.invoiceSentAt?`<br><small class="muted">وقت الإرسال: ${safe(new Date(x.invoiceSentAt).toLocaleString('ar-SA'))}</small>`:''}</div><div class="tech-photo-grid"><div class="tech-photo-panel"><h4>صور قبل الصيانة</h4><div class="tech-photo-list">${photosHtml(x.beforePhotos)}</div><div class="tech-photo-actions" ${locked?'style="display:none"':''}><label class="btn small light" for="before_${safeId}">رفع صور قبل</label><input class="tech-photo-input" id="before_${safeId}" type="file" accept="image/*" multiple onchange="techUploadPhotos('${safe(x.id)}','before',this)"><button class="btn small red" onclick="techClearPhotos('${safe(x.id)}','before')">مسح</button></div></div><div class="tech-photo-panel"><h4>صور بعد الصيانة</h4><div class="tech-photo-list">${photosHtml(x.afterPhotos)}</div><div class="tech-photo-actions" ${locked?'style="display:none"':''}><label class="btn small light" for="after_${safeId}">رفع صور بعد</label><input class="tech-photo-input" id="after_${safeId}" type="file" accept="image/*" multiple onchange="techUploadPhotos('${safe(x.id)}','after',this)"><button class="btn small red" onclick="techClearPhotos('${safe(x.id)}','after')">مسح</button></div></div></div><div class="tech-detail-box"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><b>📋 تقرير الصيانة الاحترافي</b><span class="fp-report-tag">${safe(x.id)}</span></div><div class="fp-report-fields" ${locked?'style="pointer-events:none;opacity:.7"':''}><div class="field"><label>تشخيص العطل</label><textarea id="diagnosis_${safeId}" placeholder="نتيجة الفحص والتشخيص">${safe(x.technicianDiagnosis||'')}</textarea></div><div class="field"><label>الإجراءات والأعمال المنفذة</label><textarea id="action_${safeId}" placeholder="تفاصيل الإصلاح">${safe(x.technicianAction||'')}</textarea></div><div class="field"><label>قطع الغيار المستخدمة</label><textarea id="parts_${safeId}" placeholder="القطعة والكمية">${safe(x.technicianParts||'')}</textarea></div><div class="field"><label>التوصيات والملاحظات</label><textarea id="recommend_${safeId}" placeholder="التوصيات للعميل">${safe(x.technicianRecommendations||'')}</textarea></div><div class="field"><label>نتيجة الزيارة</label><select id="result_${safeId}"><option value="">اختر النتيجة</option>${['تم الإصلاح','يحتاج قطع غيار','زيارة متابعة','تعذر الإصلاح'].map(v=>`<option value="${v}" ${x.technicianResult===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>مدة العمل (بالدقائق)</label><input type="number" min="0" id="duration_${safeId}" value="${safe(x.technicianDuration||'')}" placeholder="مثال: 90"></div></div><small style="display:block;margin-top:12px">ملاحظات إضافية</small><textarea ${locked?'readonly':''} id="report_${safeId}" class="tech-report-area" placeholder="اكتب الأعمال التي تمت وقطع الغيار والملاحظات...">${safe(x.workReport||'')}</textarea><div class="tech-actions-row" style="margin-top:8px"><button ${locked?'disabled style="display:none"':''} class="btn small light" onclick="techSaveProfessionalReport('${safe(x.id)}')">حفظ التقرير</button><button class="btn small green" onclick="printProfessionalReport('${safe(x.id)}')">🖨️ طباعة / PDF</button></div></div><div class="tech-actions-row" ${locked?'style="display:none"':''}><button class="btn small orange" onclick="techMoveOrder('${safe(x.id)}')">تسجيل التحرك</button><button class="btn small green" onclick="techFinishOrder('${safe(x.id)}')">إنهاء العمل</button><button class="btn small" onclick="techCollectInvoice('${safe(x.id)}')">تحصيل الفاتورة</button>${x.invoiceSent?`<button class="btn small light" onclick="printInvoice('${safe(x.id)}')">عرض الفاتورة</button>`:''}</div>${x.completedAt?`<div class="tech-detail-box"><small>وقت إنهاء العمل</small><b>${safe(new Date(x.completedAt).toLocaleString('ar-SA'))}</b></div>`:''}</div>`}
 function techOrderCategory(o){
  const status=String(o.status||'').trim().toLowerCase();
  const result=String(o.technicianResult||'').trim();
  if(['ملغاة','ملغي','مرفوضة','مرفوض','cancelled','canceled','rejected'].includes(status))return 'cancelled';
- if(['مكتملة','مكتمل','تم الانتهاء منها','completed','done','closed','مغلق'].includes(status))return 'finished';
+ if(['مكتملة','مكتمل','completed','done','closed','مغلق'].includes(status))return 'completed';
  if(['تم الانتهاء','انتهى الفني','انتهى منها الفني','بانتظار اعتماد الإدارة','بانتظار الاعتماد','finished','technician_finished'].includes(status)||o.technicianFinishedAt)return 'finished';
  if(['جديد','جديدة','new','pending','قيد الانتظار','تم الإسناد','assigned'].includes(status))return 'new';
  if(['قيد التنفيذ','قيد العمل','جاري التنفيذ','in progress','in_progress','في الطريق','الفني تحرك','وصل الفني'].includes(status))return 'active';
@@ -1102,27 +1051,77 @@ function renderTechPortal(){
  const tech=load(KEYS.TECH).find(t=>String(t.id)===String(id));
  const orders=load(KEYS.ORD).filter(o=>String(o.techId)===String(id));
  const count=cat=>orders.filter(o=>techOrderCategory(o)===cat).length;
- get('portalSummary').innerHTML=tech?`<div class="profile-hero"><div><h2>${safe(tech.name)}</h2><p>${safe(tech.skill)} · ${safe(tech.city)} · ${safe(tech.available)}</p></div><b>★ ${safe(tech.rate)}</b></div><div class="metric-grid"><div class="metric"><small>كل الطلبات</small><b>${orders.length}</b></div><div class="metric"><small>جديدة / مسندة</small><b>${count('new')}</b></div><div class="metric"><small>قيد التنفيذ</small><b>${count('active')}</b></div><div class="metric"><small>تم الانتهاء منها 🔒</small><b>${count('finished')}</b></div><div class="metric"><small>مكتملة</small><b>${count('completed')}</b></div><div class="metric"><small>ملغاة / مرفوضة</small><b>${count('cancelled')}</b></div><div class="metric"><small>حالات أخرى</small><b>${count('other')}</b></div><div class="metric"><small>المحصل</small><b>${fmt(orders.filter(o=>o.paymentStatus==='مدفوعة').reduce((a,o)=>a+Number(o.price||0),0))}</b></div></div>`:'<div class="empty-state">اختر فني</div>';
+ get('portalSummary').innerHTML=tech?`<div class="profile-hero"><div><h2>${safe(tech.name)}</h2><p>${safe(tech.skill)} · ${safe(tech.city)} · ${safe(tech.available)}</p></div><b>★ ${safe(tech.rate)}</b></div><div class="metric-grid"><div class="metric"><small>كل الطلبات</small><b>${orders.length}</b></div><div class="metric"><small>جديدة / مسندة</small><b>${count('new')}</b></div><div class="metric"><small>قيد التنفيذ</small><b>${count('active')}</b></div><div class="metric"><small>انتهى منها الفني</small><b>${count('finished')}</b></div><div class="metric"><small>مكتملة</small><b>${count('completed')}</b></div><div class="metric"><small>ملغاة / مرفوضة</small><b>${count('cancelled')}</b></div><div class="metric"><small>حالات أخرى</small><b>${count('other')}</b></div><div class="metric"><small>المحصل</small><b>${fmt(orders.filter(o=>o.paymentStatus==='مدفوعة').reduce((a,o)=>a+Number(o.price||0),0))}</b></div></div>`:'<div class="empty-state">اختر فني</div>';
  const filter=get('techOrderStatusFilter')?.value||'all';
  const search=(get('techOrderSearch')?.value||'').trim().toLowerCase();
  const visible=orders.filter(o=>(filter==='all'||techOrderCategory(o)===filter)&&(!search||[o.id,o.name,o.phone,o.city,displayServices(o)].some(v=>String(v||'').toLowerCase().includes(search))));
  get('techFilterCount').textContent='المعروض: '+visible.length+' من أصل '+orders.length+' طلب';
- get('portalOrders').innerHTML=(filter==='all'&&!search?(['new','active','other','finished','completed','cancelled'].map(cat=>{const subset=visible.filter(o=>techOrderCategory(o)===cat);if(!subset.length)return '';const titles={new:'⏳ الطلبات الجديدة وتحت الانتظار',active:'🔧 قيد التنفيذ',other:'📋 طلبات أخرى',finished:'🔒 تم الانتهاء منها',completed:'🔒 المكتملة القديمة',cancelled:'🗃️ الملغاة'};return '<h3 class="fp-tech-group-title">'+titles[cat]+' <small>('+subset.length+')</small></h3>'+subset.map(techOrderDetailCard).join('')}).join('')):visible.map(techOrderDetailCard).join(''))||'<div class="empty-state">لا توجد طلبات مطابقة للفلتر الحالي</div>';
+ get('portalOrders').innerHTML=visible.map(techOrderDetailCard).join('')||'<div class="empty-state">لا توجد طلبات مطابقة للفلتر الحالي</div>';
 }
 
-function printTechnicianAllOrdersReport(){
+function fpTechReportData(){
  const id=(isTechnicianRole()&&currentTechnicianId)?currentTechnicianId:get('portalTech').value;
- if(!id){toast('اختر الفني أولاً');return;}
  const tech=load(KEYS.TECH).find(t=>String(t.id)===String(id));
- const orders=roleFilteredOrders(load(KEYS.ORD)).filter(o=>String(o.techId)===String(id));
- if(!orders.length){toast('لا توجد طلبات مسندة لهذا الفني');return;}
- const done=o=>['مكتملة','مكتمل','تم الانتهاء','completed','done'].includes(String(o.status||'').trim().toLowerCase());
- const completed=orders.filter(done).length;
- const total=orders.reduce((a,o)=>a+(Number(o.price)||0),0);
- const paid=orders.filter(o=>o.paymentStatus==='مدفوعة').reduce((a,o)=>a+(Number(o.price)||0),0);
- const rows=orders.map((o,i)=>`<tr><td>${i+1}</td><td>${safe(o.id)}</td><td>${safe(o.name||'-')}</td><td>${safe(displayServices(o))}</td><td>${safe(o.city||'-')}</td><td>${safe(o.status||'-')}</td><td>${safe(o.technicianResult||'-')}</td><td>${safe(o.price||0)}</td></tr>`).join('');
- const html=`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>تقرير طلبات الفني - ${safe(tech?.name||id)}</title><style>body{font-family:Tahoma,Arial,sans-serif;background:#edf3fb;color:#10213d;margin:0}.paper{max-width:1100px;margin:24px auto;background:#fff;padding:30px;box-shadow:0 12px 45px #10213d18}.head{background:linear-gradient(120deg,#071b34,#176df7);color:#fff;padding:26px;border-radius:15px}.head small{color:#cfe1ff}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{background:#f3f7fe;padding:15px;border-radius:12px}.stat b{display:block;font-size:24px;margin-top:6px}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border-bottom:1px solid #e5edf8;padding:10px;text-align:right;vertical-align:top}th{background:#eaf2ff}tr:nth-child(even){background:#f9fbff}.foot{margin-top:28px;color:#667b99;font-size:12px}.print{display:block;margin:20px auto;background:#176df7;color:white;border:0;padding:12px 24px;border-radius:10px;cursor:pointer}@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.paper{padding:12px;overflow:auto}}@media print{body{background:#fff}.paper{box-shadow:none;margin:0;padding:0}.print{display:none}@page{size:A4 landscape;margin:10mm}}</style></head><body><button class="print" onclick="window.print()">طباعة / حفظ PDF</button><main class="paper"><div class="head"><small>FANNI PRO · TECHNICIAN WORK ORDERS</small><h1>تقرير جميع طلبات الفني</h1><p>الفني: ${safe(tech?.name||id)} | تاريخ الإصدار: ${safe(new Date().toLocaleDateString('ar-SA'))}</p></div><div class="stats"><div class="stat">إجمالي الطلبات<b>${orders.length}</b></div><div class="stat">مكتملة<b>${completed}</b></div><div class="stat">غير مكتملة<b>${orders.length-completed}</b></div><div class="stat">إجمالي قيمة الطلبات<b>${fmt(total)} ر.س</b></div></div><p>المبلغ المحصل: <b>${fmt(paid)} ر.س</b></p><h2>تفاصيل الطلبات</h2><table><thead><tr><th>م</th><th>رقم الطلب</th><th>العميل</th><th>الخدمة</th><th>المدينة</th><th>الحالة</th><th>نتيجة الزيارة</th><th>القيمة (ر.س)</th></tr></thead><tbody>${rows}</tbody></table><div class="foot">تم إنشاء هذا التقرير من الطلبات المسندة للفني في فني برو. لا يشمل طلبات الفنيين الآخرين.</div></main></body></html>`;
- const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة لطباعة التقرير');return;}w.document.open();w.document.write(html);w.document.close();
+ const from=document.getElementById('techReportFrom')?.value||'';
+ const to=document.getElementById('techReportTo')?.value||'';
+ const orders=roleFilteredOrders(load(KEYS.ORD)).filter(o=>{
+  if(String(o.techId)!==String(id))return false;
+  const d=String(o.date||o.createdAt||'').slice(0,10);
+  return (!from||!d||d>=from)&&(!to||!d||d<=to);
+ });
+ return {id,tech,orders,from,to};
+}
+function fpTechReportDate(v){if(!v)return 'غير مسجل';const d=new Date(v);return Number.isNaN(d.getTime())?String(v):d.toLocaleString('ar-SA');}
+function fpTechReportFields(o){return [
+ ['رقم الطلب',o.id],['اسم العميل',o.name],['جوال العميل',o.phone],['المدينة',o.city],['العنوان',o.address||o.notes],['نوع الخدمة',displayServices(o)],['حالة الطلب',o.status],['تاريخ الطلب',fpTechReportDate(o.date||o.createdAt)],['وقت الإسناد',fpTechReportDate(o.assignedAt||o.technicianAssignedAt)],['وقت التحرك',fpTechReportDate(o.movedAt||o.technicianMovedAt)],['وقت إغلاق الطلب',fpTechReportDate(o.completedAt||o.technicianFinishedAt)],['تشخيص العطل',o.technicianDiagnosis],['الأعمال المنفذة',o.technicianAction],['قطع الغيار',o.technicianParts],['التوصيات',o.technicianRecommendations],['نتيجة الزيارة',o.technicianResult],['مدة العمل بالدقائق',o.technicianDuration],['تقرير الفني',o.workReport],['رسوم الزيارة',o.visitFee||o.technicianVisitFee],['قيمة الطلب (ريال)',o.price],['حالة الدفع',o.paymentStatus],['وقت التقرير',fpTechReportDate(o.reportAt)],['عدد صور قبل',Array.isArray(o.beforePhotos)?o.beforePhotos.length:0],['عدد صور بعد',Array.isArray(o.afterPhotos)?o.afterPhotos.length:0]
+ ];}
+function printTechnicianAllOrdersReport(){
+ const {id,tech,orders,from,to}=fpTechReportData();
+ if(!id){toast('اختر الفني أولاً');return;}
+ if(!orders.length){toast('لا توجد طلبات لهذا الفني في الفترة المختارة');return;}
+ const count=c=>orders.filter(o=>techOrderCategory(o)===c).length;
+ const total=orders.reduce((n,o)=>n+(Number(o.price)||0),0);
+ const paid=orders.filter(o=>o.paymentStatus==='مدفوعة').reduce((n,o)=>n+(Number(o.price)||0),0);
+ const block=(label,value)=>`<div class="item"><small>${safe(label)}</small><div>${safe(value===undefined||value===null||value===''?'غير مسجل':String(value))}</div></div>`;
+ const entries=orders.map((o,i)=>`<section class="order"><h2>الطلب ${i+1} — ${safe(o.id)} <span>${safe(o.status||'')}</span></h2><div class="fields">${fpTechReportFields(o).map(([k,v])=>block(k,v)).join('')}</div><div class="photos">${[['صور قبل الصيانة',o.beforePhotos],['صور بعد الصيانة',o.afterPhotos]].map(([label,arr])=>`<div><h3>${label}</h3>${Array.isArray(arr)&&arr.length?arr.map(src=>typeof src==='string'&&src.startsWith('data:image/')?`<img src="${src}" alt="صورة صيانة">`:'<p>الصورة محفوظة في النظام؛ افتح الطلب لعرضها</p>').join(''):'<p>لا توجد صور</p>'}</div>`).join('')}</div></section>`).join('');
+ const html=`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>التقرير الشامل للفني ${safe(tech?.name||id)}</title><style>body{font-family:Tahoma,Arial,sans-serif;background:#edf3fb;color:#10213d;margin:0}.paper{max-width:1050px;margin:24px auto;background:white;padding:30px}.head{background:#123d69;color:white;padding:24px;border-radius:12px}.head h1{margin:5px 0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}.stat,.item{background:#f3f7fc;border:1px solid #e1e9f4;border-radius:9px;padding:12px}.stat b{display:block;font-size:22px}.order{border-top:3px solid #176df7;margin-top:26px;padding-top:12px;break-inside:avoid-page}.order h2{font-size:18px}.order h2 span{float:left;font-size:13px}.fields{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.item{overflow-wrap:anywhere;white-space:pre-wrap}.item small{display:block;color:#657b93;margin-bottom:5px}.photos{display:flex;gap:20px;flex-wrap:wrap}.photos img{max-width:160px;max-height:120px;object-fit:cover;margin:4px}.print{display:block;margin:20px auto;background:#176df7;color:#fff;border:0;border-radius:9px;padding:12px 22px;cursor:pointer}@media print{body{background:white}.paper{margin:0;padding:0}.print{display:none}@page{size:A4;margin:12mm}}@media(max-width:650px){.stats,.fields{grid-template-columns:repeat(2,1fr)}.paper{padding:12px}}</style></head><body><button class="print" onclick="window.print()">طباعة / حفظ PDF</button><main class="paper"><header class="head"><small>FANNI PRO · TECHNICIAN FULL REPORT</small><h1>التقرير التفصيلي لجميع طلبات الفني</h1><p>الفني: ${safe(tech?.name||id)} | التخصص: ${safe(tech?.skill||'-')} | المدينة: ${safe(tech?.city||'-')}</p><p>الفترة: ${safe(from||'كل الفترات')} — ${safe(to||'حتى الآن')} | تاريخ الإصدار: ${safe(new Date().toLocaleString('ar-SA'))}</p></header><div class="stats">${[['إجمالي الطلبات',orders.length],['الجديدة',count('new')],['قيد التنفيذ',count('active')],['انتهى منها الفني',count('finished')],['المكتملة',count('completed')],['الملغاة',count('cancelled')],['قيمة الطلبات',fmt(total)+' ر.س'],['المدفوع',fmt(paid)+' ر.س']].map(([k,v])=>`<div class="stat">${safe(k)}<b>${safe(v)}</b></div>`).join('')}</div>${entries}<p>ملاحظة: البيانات غير المسجلة تظهر «غير مسجل». سجل العمليات المركزي لا يظهر إلا بعد ربطه بمصدره.</p></main></body></html>`;
+ const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة');return;}w.document.open();w.document.write(html);w.document.close();
+}
+function exportTechnicianReportCSV(){
+ const {id,tech,orders,from,to}=fpTechReportData();
+ if(!id||!orders.length){toast('اختر فنيًا لديه طلبات في الفترة المختارة');return;}
+ if(typeof XLSX==='undefined'){toast('تعذر تحميل مكتبة Excel؛ تأكد من الاتصال بالإنترنت');return;}
+ const name=tech?.name||String(id), money=n=>Number(n)||0;
+ const total=orders.reduce((v,o)=>v+money(o.price),0);
+ const visits=orders.reduce((v,o)=>v+money(o.visitFee||o.technicianVisitFee),0);
+ const completed=orders.filter(o=>techOrderCategory(o)==='done').length;
+ const wb=XLSX.utils.book_new();wb.Props={Title:'فني برو | التقرير التفصيلي للفني',Subject:'سجل الطلبات والزيارات',Author:'فني برو'};
+ const navy='123D69',blue='176DF7',light='EAF2FF',green='DFF7EA';
+ function sheet(title,headers,rows,widths,amountColumns=[]){
+  const grid=[[title],['اسم الفني: '+name],['الفترة: '+(from||'البداية')+' إلى '+(to||'اليوم')],['تاريخ التصدير: '+new Date().toLocaleString('ar-SA')],[],headers,...rows];
+  const ws=XLSX.utils.aoa_to_sheet(grid),last=headers.length-1;
+  ws['!merges']=[0,1,2,3].map(r=>({s:{r,c:0},e:{r,c:last}}));
+  ws['!cols']=widths.map(w=>({wch:w}));ws['!rows']=[{hpt:35},{hpt:25},{hpt:25},{hpt:25},{hpt:10},{hpt:30}];
+  ws['!autofilter']={ref:XLSX.utils.encode_range({s:{r:5,c:0},e:{r:Math.max(5,grid.length-1),c:last}})};
+  for(let r=0;r<grid.length;r++)for(let c=0;c<headers.length;c++){
+   const cell=ws[XLSX.utils.encode_cell({r,c})];if(!cell)continue;
+   cell.s={font:{name:'Arial',sz:r===0?18:11,bold:r===0||r===5,color:r===0||r===5?'FFFFFF':'17365E'},fill:{fgColor:{rgb:r===0?navy:r===5?blue:r%2===0&&r>5?'F2F7FD':'FFFFFF'}},alignment:{horizontal:'right',vertical:'center',wrapText:true},border:r>=5?{bottom:{style:'hair',color:{rgb:'DDE7F3'}}}:undefined};
+   if(r>=6&&amountColumns.includes(c)&&typeof cell.v==='number'){cell.z='#,##0.00 "ر.س"';}
+  }
+  ws['!sheetViews']=[{rightToLeft:true}];return ws;
+ }
+ const summary=[['الفني',name],['عدد الطلبات',orders.length],['الطلبات المكتملة',completed],['الطلبات غير المكتملة',orders.length-completed],['إجمالي قيمة الطلبات (ر.س)',total],['إجمالي رسوم الزيارات (ر.س)',visits],['الفترة من',from||'الكل'],['الفترة إلى',to||'الكل']];
+ XLSX.utils.book_append_sheet(wb,sheet('فني برو | ملخص أداء الفني',['المؤشر','القيمة'],summary,[37,48],[1]),'ملخص الفني');
+ const fields=fpTechReportFields(orders[0]);const headers=['م',...fields.map(x=>x[0])];
+ const details=orders.map((o,i)=>[i+1,...fpTechReportFields(o).map(([key,value])=>['رسوم الزيارة','قيمة الطلب (ريال)','مدة العمل بالدقائق','عدد صور قبل','عدد صور بعد'].includes(key)?money(value):(value??''))]);
+ const amountCols=headers.map((x,i)=>['رسوم الزيارة','قيمة الطلب (ريال)'].includes(x)?i:-1).filter(x=>x>=0);
+ XLSX.utils.book_append_sheet(wb,sheet('فني برو | سجل طلبات الفني',headers,details,headers.map((h,i)=>i===0?7:['تشخيص العطل','الأعمال المنفذة','التوصيات','تقرير الفني','العنوان'].includes(h)?42: h.includes('وقت')||h.includes('تاريخ')?24:22),amountCols),'تفاصيل الطلبات');
+ const statuses=[...new Set(orders.map(o=>String(o.status||'غير محدد')))];
+ const byStatus=statuses.map(st=>[st,orders.filter(o=>String(o.status||'غير محدد')===st).length,orders.filter(o=>String(o.status||'غير محدد')===st).reduce((v,o)=>v+money(o.price),0)]);
+ XLSX.utils.book_append_sheet(wb,sheet('فني برو | تحليل حالات الطلبات',['الحالة','عدد الطلبات','قيمة الطلبات (ر.س)'],byStatus,[28,22,30],[2]),'تحليل الحالات');
+ const stamp=new Date().toISOString().slice(0,10);
+ try{XLSX.writeFile(wb,'Fanni_Pro_Technician_'+String(id).replace(/[^a-zA-Z0-9_-]/g,'_')+'_'+stamp+'.xlsx');toast('تم تصدير تقرير الفني الاحترافي بثلاث أوراق');}
+ catch(e){toast('تعذر تصدير Excel: '+(e.message||e));}
 }
 function copyTechReport(){const id=(isTechnicianRole()&&currentTechnicianId)?currentTechnicianId:get('portalTech').value,orders=load(KEYS.ORD).filter(o=>String(o.techId)===String(id)),tech=load(KEYS.TECH).find(t=>String(t.id)===String(id));const txt=`تقرير الفني: ${tech?.name||'-'}\nعدد الطلبات: ${orders.length}\n`+orders.map(o=>`${o.id} - ${o.service} - ${o.status}`).join('\n');navigator.clipboard.writeText(txt).then(()=>toast('تم نسخ التقرير'))}
 function renderTracking(){const q=get('trackInput').value.trim();if(!q){get('trackingResult').innerHTML='<div class="empty-state">اكتب رقم الطلب أو الجوال لعرض التتبع</div>';return}const o=roleFilteredOrders(load(KEYS.ORD)).find(x=>x.id===q||x.phone===q||String(x.id).replace('#','')===q.replace('#',''));if(!o){get('trackingResult').innerHTML='<div class="empty-state">لم يتم العثور على الطلب</div>';return}const steps=['جديدة','تم الإسناد','الفني تحرك','قيد التنفيذ','مكتملة'];const idx=Math.max(0,steps.indexOf(o.status));get('trackingResult').innerHTML=`<div class="card"><div class="card-head"><h3>${safe(o.id)} - ${safe(o.service)}</h3><span class="status ${orderStatusClass(o.status)}">${safe(o.status)}</span></div><p class="muted">العميل: ${safe(o.name)} · الفني: ${safe(techName(o.techId))} · المدينة: ${safe(o.city)}</p><br><div class="timeline">${steps.map((s,i)=>`<div class="time-item"><div class="time-box"><b>${s}</b><p class="muted">${i<=idx?'تم الوصول لهذه المرحلة':'بانتظار التحديث'}</p></div><div class="time-dot">${i<=idx?'✅':'○'}</div></div>`).join('')}</div></div>`}
@@ -1256,15 +1255,13 @@ async function companyUpdateStatus(orderId,status){
   }catch(e){console.error('company status',e);toast('فشل التحديث: '+(e.message||e));}
 }
 function showPage(id){if(!canOpenPage(id)){toast('غير مسموح لهذا الحساب بفتح هذه الصفحة');id=allowedPagesForRole(currentUserRole)[0]||'techPortal';}document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));const page=get(id);if(page)page.classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));if(id==='techPortal')renderTechPortal();if(id==='companyPortal')renderCompanyPortal();if(id==='clientTracking')renderTracking();window.scrollTo({top:0,behavior:'smooth'})}
-function renderAll(){
- const steps=[initAdminServiceCards,fillTechSelects,renderNumbers,renderOrders,renderTech,renderInvoices,renderAlerts,renderAssign,renderClients,renderTechPortal,renderCompanyPortal,...(!isTechnicianRole()?[renderUsers]:[]),renderChart,()=>applyRolePermissions(currentUserRole,currentTechnicianId)];
- for(const fn of steps){try{fn()}catch(err){console.error('فني برو: تعذر عرض '+(fn.name||'قسم'),err);const d=get('dbStatus');if(d)d.textContent='خطأ عرض في '+(fn.name||'قسم')+': '+(err.message||err)+' — بقية الأقسام مستمرة.';}}
-}
+function renderAll(){initAdminServiceCards();fillTechSelects();renderNumbers();renderOrders();renderTech();renderInvoices();renderAlerts();renderAssign();renderClients();renderTechPortal();renderCompanyPortal();if(!isTechnicianRole())renderUsers();renderChart();applyRolePermissions(currentUserRole,currentTechnicianId)}
 document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('button[data-page]');if(b)showPage(b.dataset.page)});
 window.addEventListener('storage',e=>{if(e.key===KEYS.ORD){const orders=load(KEYS.ORD);detectIncomingOrders(orders);renderAll();}});
 window.addEventListener('load',async()=>{await initSupabase();const logged=await requireLogin();if(logged){await restoreSessionProfile();await refreshFromCloud(false);detectIncomingOrders(roleFilteredOrders(load(KEYS.ORD)));renderAll();if(currentUserRole==='technician')showPage('techPortal');startFastOrderNotifications();}else{renderAll();}});
 </script>
-<script id="fpInvoiceWorkflow">
+<script>
+
 /* Invoice workflow: backend RPC enforces roles, ownership and state transitions. */
 let fpInvoices=[], fpActiveInvoice=null, fpActiveOrder=null;
 function fpInvoiceClose(){get('fpInvoiceModal').classList.add('hidden')}
@@ -1281,217 +1278,155 @@ function fpInvoicePrint(){const i=fpActiveInvoice;if(!i||i.status!=='issued'){to
 const fpOldTechRender=renderTechPortal;renderTechPortal=function(){fpOldTechRender();const cards=get('portalOrders');if(!cards)return;const id=(isTechnicianRole()&&currentTechnicianId)?currentTechnicianId:get('portalTech').value;const orders=load(KEYS.ORD).filter(o=>String(o.techId)===String(id));const existing=get('fpInvoiceTechActions');if(existing)existing.remove();const panel=document.createElement('div');panel.id='fpInvoiceTechActions';panel.className='card';panel.style='margin:12px 0';panel.innerHTML='<h3>فواتير طلبات الفني</h3><p class="muted">اختر الطلب لإضافة البنود وإرسالها لاعتماد الإدارة. الطلبات المغلقة للعرض فقط.</p><div class="actions" style="margin-top:12px">'+orders.map(o=>`<button class="btn small light" onclick="fpInvoiceOpen('${safe(o.id)}')">فاتورة ${safe(o.id)}</button>`).join('')+'</div>';cards.parentNode.insertBefore(panel,cards)};
 const fpOldShowPage=showPage;showPage=function(id){fpOldShowPage(id);if(id==='payments')fpInvoiceRefresh()};
 
+
 </script>
-<script id="fpMobileProfessionalNav2026">
-(function(){
- const setup=()=>{
-  if(document.querySelector('.fp-mobile-shade'))return;
-  const shade=document.createElement('div');
-  shade.className='fp-mobile-shade';
-  shade.setAttribute('aria-hidden','true');
-  document.body.appendChild(shade);
-  const close=()=>{document.body.classList.remove('fp-mobile-nav-open');document.querySelector('.hamb')?.setAttribute('aria-expanded','false')};
-  const hamburger=document.querySelector('.hamb');
-  if(hamburger){
-    hamburger.setAttribute('aria-label','فتح قائمة التنقل');
-    hamburger.setAttribute('aria-expanded','false');
-    hamburger.removeAttribute('onclick');
-    hamburger.addEventListener('click',()=>{
-      if(window.matchMedia('(max-width:850px)').matches){
-       const open=document.body.classList.toggle('fp-mobile-nav-open');
-       hamburger.setAttribute('aria-expanded',String(open));
-      }else document.querySelector('.sidebar')?.scrollIntoView({behavior:'smooth'});
-    });
+<!-- Audit trail viewer (admin only, database-backed) -->
+<div id="fpAuditPanel" class="card" style="margin:16px;display:none" dir="rtl">
+ <h3>🕓 سجل عمليات الطلبات والفواتير</h3>
+ <p class="muted">يوضح التغييرات المحفوظة فعليًا في Supabase بعد تفعيل ملف SQL. السجل للمدير فقط.</p>
+ <div class="actions" style="margin:12px 0"><input id="fpAuditOrderId" placeholder="رقم الطلب (اتركه فارغًا لآخر العمليات)" style="height:42px;padding:10px;border:1px solid #ddd;border-radius:10px"><button class="btn" onclick="fpLoadAudit()">عرض السجل</button></div>
+ <div id="fpAuditResults" class="list-card"></div>
+</div>
+<script>
+async function fpLoadAudit(){
+ const panel=document.getElementById('fpAuditResults'); if(!panel)return;
+ panel.textContent='جارٍ جلب سجل العمليات...';
+ try{
+  if(!sb)throw Error('اتصال Supabase غير متاح');
+  if(currentUserRole!=='admin')throw Error('السجل متاح للمدير فقط');
+  const orderId=document.getElementById('fpAuditOrderId').value.trim();
+  let q=sb.from('fp_activity_log').select('id,source_table,record_id,action,actor_email,actor_role,happened_at,changes').order('happened_at',{ascending:false}).limit(100);
+  if(orderId)q=q.eq('record_id',orderId);
+  const {data,error}=await q; if(error)throw error;
+  panel.replaceChildren();
+  if(!data?.length){panel.textContent='لا توجد عمليات مسجلة. يبدأ التسجيل بعد تشغيل SQL، ولا يسترجع العمليات القديمة.';return;}
+  for(const r of data){
+   const item=document.createElement('div');item.className='item-card';item.style.display='block';
+   const title=document.createElement('b');title.textContent=`${r.source_table==='orders'?'طلب':'فاتورة'} ${r.record_id} — ${r.action==='INSERT'?'إنشاء':r.action==='UPDATE'?'تعديل':'حذف'}`;
+   const who=document.createElement('p');who.textContent=`بواسطة: ${r.actor_email||'غير معروف (عملية خادم)'} | الصلاحية: ${r.actor_role||'غير محددة'} | ${new Date(r.happened_at).toLocaleString('ar-SA')}`;
+   const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='عرض الحقول التي تغيرت';
+   const pre=document.createElement('pre');pre.style.cssText='white-space:pre-wrap;direction:ltr;text-align:left;max-height:250px;overflow:auto';pre.textContent=JSON.stringify(r.changes,null,2);
+   details.append(summary,pre);item.append(title,who,details);panel.append(item);
   }
-  shade.addEventListener('click',close);
-  document.querySelector('.sidebar .nav')?.addEventListener('click',e=>{if(e.target.closest('button'))close()});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
-  window.addEventListener('resize',()=>{if(window.innerWidth>850)close()});
- };
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);
- else setup();
-})();
-</script>
-
-<script id="fpTechReport2026">
-(function(){
- const $=id=>document.getElementById(id);
- const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const num=v=>{const n=Number(v);return Number.isFinite(n)?n:0};
- const money=v=>num(v).toLocaleString('ar-SA',{minimumFractionDigits:2,maximumFractionDigits:2});
- const date=v=>{if(!v)return '';const d=new Date(v);return Number.isNaN(d.getTime())?String(v):d.toLocaleDateString('ar-SA')};
- const status=o=>String(o.status||'');
- const category=o=>typeof techOrderCategory==='function'?techOrderCategory(o):'other';
- const completed=o=>['completed','finished'].includes(category(o))||['مكتملة','مكتمل','completed','done'].includes(status(o).toLowerCase());
- const isPaid=o=>['مدفوعة','paid','تم الدفع','مسدد'].includes(String(o.paymentStatus||'').toLowerCase());
- const fields=['technicianDiagnosis','technicianAction','technicianParts','technicianRecommendations','technicianResult','technicianDuration','workReport'];
- const pictureItems=photos=>{
-  if(!Array.isArray(photos))return [];
-  return photos.map(p=>typeof p==='string'?p:(p?.url||p?.src||p?.dataUrl||'')).filter(x=>/^https?:\/\//i.test(x)||/^data:image\//i.test(x));
- };
- const getData=()=>{
-  const id=(typeof isTechnicianRole==='function'&&isTechnicianRole()&&currentTechnicianId)?currentTechnicianId:$('portalTech')?.value;
-  if(!id){toast('اختر الفني أولًا');return null}
-  const tech=load(KEYS.TECH).find(t=>String(t.id)===String(id));
-  const all=roleFilteredOrders(load(KEYS.ORD)).filter(o=>String(o.techId)===String(id));
-  const from=$('fpTrFrom')?.value||'',to=$('fpTrTo')?.value||'',filter=$('fpTrStatus')?.value||'all';
-  const orders=all.filter(o=>{
-   const d=String(o.date||'').slice(0,10);
-   return (!from||d>=from)&&(!to||d<=to)&&(filter==='all'||category(o)===filter);
-  });
-  const done=orders.filter(completed),paid=orders.filter(isPaid);
-  const total=orders.reduce((a,o)=>a+num(o.price),0),collected=paid.reduce((a,o)=>a+num(o.price),0);
-  const ratings=orders.map(o=>num(o.customerRating||o.rating)).filter(v=>v>0&&v<=5);
-  const avgRating=ratings.length?ratings.reduce((a,b)=>a+b,0)/ratings.length:null;
-  return {id,tech,orders,done,total,collected,unpaid:total-collected,avgRating,ratings};
- };
- const preview=()=>{
-  const d=getData();if(!d)return;
-  const cards=[
-   ['إجمالي الطلبات',d.orders.length],['مكتملة / منتهية',d.done.length],
-   ['قيد التنفيذ',d.orders.filter(o=>category(o)==='active').length],
-   ['نسبة الإنجاز',d.orders.length?(d.done.length/d.orders.length*100).toFixed(1)+'%':'0%'],
-   ['قيمة الطلبات',money(d.total)+' ر.س'],['المحصّل',money(d.collected)+' ر.س'],
-   ['غير المحصّل',money(d.unpaid)+' ر.س'],
-   ['تقييم العملاء',d.avgRating===null?'غير مسجل':d.avgRating.toFixed(1)+'/5'],
-   ['تقارير الصيانة',d.orders.filter(o=>fields.some(k=>o[k])).length]
-  ];
-  $('fpTrPreview').innerHTML='<div class="fp-tr-stats">'+cards.map(([a,b])=>`<div class="fp-tr-stat"><small>${esc(a)}</small><b>${esc(b)}</b></div>`).join('')+'</div><small>الأرقام محسوبة من بيانات الطلبات المتاحة للحساب. المستحقات الشخصية للفني لا تُحتسب لعدم وجود حقل عمولة موثّق.</small>';
- };
- const headers=['م','رقم الطلب','العميل','الجوال','الخدمة','المدينة','العنوان','تاريخ الطلب','تاريخ الإغلاق','الحالة','حالة الدفع','قيمة الطلب (ر.س)','تشخيص العطل','الأعمال المنفذة','قطع الغيار','التوصيات','نتيجة الصيانة','المدة','تقرير الفني','تقييم العميل','عدد صور قبل','عدد صور بعد'];
- const row=(o,i)=>[i+1,o.id,o.name,o.phone,typeof displayServices==='function'?displayServices(o):o.service,o.city,o.address,o.date,o.completedAt,o.status,o.paymentStatus,num(o.price),o.technicianDiagnosis,o.technicianAction,o.technicianParts,o.technicianRecommendations,o.technicianResult,o.technicianDuration,o.workReport,o.customerRating||o.rating||'',pictureItems(o.beforePhotos).length,pictureItems(o.afterPhotos).length];
- const csvCell=v=>{let x=String(v??'');if(/^[=+\-@\t\r]/.test(x))x="'"+x;return '"'+x.replace(/"/g,'""')+'"'};
- window.fpTrExcel=function(){
-  const d=getData();if(!d||!d.orders.length){toast('لا توجد طلبات للتصدير');return}
-  const summary=[['تقرير طلبات الفني',d.tech?.name||d.id],['إجمالي الطلبات',d.orders.length],['المكتملة',d.done.length],['قيمة الطلبات',d.total],['المحصّل',d.collected],['غير المحصّل',d.unpaid],['تقييم العملاء',d.avgRating===null?'غير مسجل':d.avgRating.toFixed(2)],[],headers,...d.orders.map(row)];
-  const csv='\uFEFF'+summary.map(r=>r.map(csvCell).join(',')).join('\r\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
-  a.href=url;a.download='تقرير_الفني_'+String(d.id).replace(/[^\w-]/g,'_')+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
- };
- window.fpTrPdf=function(){
-  const d=getData();if(!d||!d.orders.length){toast('لا توجد طلبات للتقرير');return}
-  const orderRows=d.orders.map((o,i)=>`<tr>${[i+1,o.id,o.name,typeof displayServices==='function'?displayServices(o):o.service,o.city,o.date,o.status,o.paymentStatus,money(o.price)].map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('');
-  const detail=d.orders.map(o=>{
-   const pics=(label,arr)=>pictureItems(arr).length?`<h4>${label}</h4><div class="photos">${pictureItems(arr).map(src=>`<img src="${esc(src)}" alt="${label}" loading="lazy">`).join('')}</div>`:'';
-   return `<section class="detail"><h3>الطلب ${esc(o.id)} — ${esc(o.name)}</h3><p><b>الخدمة:</b> ${esc(typeof displayServices==='function'?displayServices(o):o.service)} | <b>الحالة:</b> ${esc(o.status)} | <b>التاريخ:</b> ${esc(o.date)}</p>${fields.map(k=>o[k]?`<p><b>${esc(({technicianDiagnosis:'التشخيص',technicianAction:'الأعمال المنفذة',technicianParts:'قطع الغيار',technicianRecommendations:'التوصيات',technicianResult:'النتيجة',technicianDuration:'المدة',workReport:'التقرير'}[k]))}:</b> ${esc(o[k])}</p>`:'').join('')}<p><b>تقييم العميل:</b> ${esc(o.customerRating||o.rating||'غير مسجل')}</p>${pics('صور قبل الصيانة',o.beforePhotos)}${pics('صور بعد الصيانة',o.afterPhotos)}</section>`;
-  }).join('');
-  const html=`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>تقرير الفني ${esc(d.tech?.name||d.id)}</title><style>body{font-family:Tahoma,Arial,sans-serif;color:#12243f;background:#f1f5fa;margin:0}.page{max-width:1150px;margin:20px auto;padding:26px;background:white}.hero{background:linear-gradient(120deg,#081d39,#176df7);color:white;padding:24px;border-radius:15px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}.stat{background:#f0f5ff;padding:12px;border-radius:10px}.stat b{display:block;font-size:20px;margin-top:7px}table{width:100%;border-collapse:collapse;font-size:11px}td,th{border:1px solid #dfe6f0;padding:8px;text-align:right;overflow-wrap:anywhere}th{background:#e8f0ff}.detail{page-break-inside:avoid;border-top:2px solid #e7eff9;margin-top:18px;padding-top:12px}.detail p{line-height:1.7;white-space:pre-wrap}.photos{display:flex;flex-wrap:wrap;gap:8px}.photos img{width:160px;height:130px;object-fit:contain;border:1px solid #e0e7f2}.print{margin:12px;padding:12px 22px;background:#176df7;color:white;border:0;border-radius:10px;cursor:pointer}@media print{body{background:white}.page{margin:0;padding:0}.print{display:none}@page{size:A4 landscape;margin:10mm}}</style></head><body><button class="print" onclick="window.print()">طباعة / حفظ PDF</button><main class="page"><header class="hero"><small>FANNI PRO | TECHNICIAN PERFORMANCE REPORT</small><h1>تقرير جميع طلبات الفني</h1><p>الفني: ${esc(d.tech?.name||d.id)} | المدينة: ${esc(d.tech?.city||'-')} | تاريخ الإصدار: ${esc(new Date().toLocaleDateString('ar-SA'))}</p></header><div class="stats">${[['إجمالي الطلبات',d.orders.length],['المكتملة',d.done.length],['نسبة الإنجاز',d.orders.length?(d.done.length/d.orders.length*100).toFixed(1)+'%':'0%'],['قيمة الطلبات',money(d.total)+' ر.س'],['المحصّل',money(d.collected)+' ر.س'],['غير المحصّل',money(d.unpaid)+' ر.س'],['تقييم العملاء',d.avgRating===null?'غير مسجل':d.avgRating.toFixed(1)+'/5'],['تقارير الصيانة',d.orders.filter(o=>fields.some(k=>o[k])).length]].map(([a,b])=>`<div class="stat">${esc(a)}<b>${esc(b)}</b></div>`).join('')}</div><h2>تفاصيل الطلبات</h2><table><thead><tr>${['م','رقم الطلب','العميل','الخدمة','المدينة','التاريخ','الحالة','الدفع','القيمة'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${orderRows}</tbody></table><h2>تقارير الصيانة والصور</h2>${detail}<p>ملاحظة: القيم المالية مستخرجة من قيمة الطلب وحالة الدفع، ولا تمثل صافي مستحقات الفني.</p><div style="margin-top:35px;display:flex;justify-content:space-between"><span>إعداد التقرير: __________________</span><span>اعتماد الإدارة: __________________</span></div></main></body></html>`;
-  const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة');return}w.document.open();w.document.write(html);w.document.close();
- };
- const setup=()=>{
-  const portal=$('techPortal');if(!portal||$('fpTrPanel'))return;
-  const panel=document.createElement('div');panel.id='fpTrPanel';panel.className='card';panel.style.margin='14px 0';
-  panel.innerHTML='<h3>📊 التقرير الشامل لأداء الفني</h3><p class="muted">ملخص الأداء • الطلبات • التقرير المالي • الصيانة والصور • تقييم العملاء</p><div class="fp-tr-controls"><label>من تاريخ<input type="date" id="fpTrFrom"></label><label>إلى تاريخ<input type="date" id="fpTrTo"></label><label>حالة الطلب<select id="fpTrStatus"><option value="all">كل الحالات</option><option value="new">جديدة / مسندة</option><option value="active">قيد التنفيذ</option><option value="finished">انتهى منها الفني</option><option value="completed">مكتملة</option><option value="other">أخرى</option></select></label></div><div id="fpTrPreview" class="fp-tr-preview">اختر الفني لعرض مؤشرات الأداء</div><div class="actions"><button class="btn green" onclick="fpTrPdf()">📄 طباعة / حفظ PDF</button><button class="btn light" onclick="fpTrExcel()">📊 تصدير Excel (CSV)</button><button class="btn light" onclick="document.getElementById(\'fpTrFrom\').value=\'\';document.getElementById(\'fpTrTo\').value=\'\';document.getElementById(\'fpTrStatus\').value=\'all\';fpTrPreview()">مسح الفلاتر</button></div>';
-  const target=portal.querySelector('.wide-grid');target?.parentNode.insertBefore(panel,target.nextSibling);
-  panel.querySelectorAll('input,select').forEach(el=>el.addEventListener('change',preview));
-  $('portalTech')?.addEventListener('change',preview);
-  preview();
- };
- window.fpTrPreview=preview;
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();
-})();
-</script>
-<script id="fpFinanceIsolated">
-/* Isolated finance feature: does not override any existing application function. */
-(function(){
-'use strict';
-const el=id=>document.getElementById(id);
-const num=id=>Number(el(id)?.value||0);
-const msg=(value,bad=false)=>{const e=el('fpFinMessage');if(e){e.textContent=value;e.style.color=bad?'#dc2626':'#15803d'}};
-const escFin=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const format=n=>Number(n||0).toFixed(2);
-const methods={cash:'كاش',network:'شبكة',transfer:'تحويل',mixed:'مختلط'};
-function recalc(){el('fpFinNet').value=format(num('fpFinAmount')-num('fpFinExpense'))}
-function populate(){
- const select=el('fpFinOrder');if(!select||typeof load!=='function'||typeof KEYS==='undefined')return;
- const selected=select.value;const orders=load(KEYS.ORD)||[];
- select.innerHTML='<option value="">اختر طلبًا</option>'+orders.map(o=>'<option value="'+escFin(o.id)+'">'+escFin(o.id)+' — '+escFin(o.name||o.phone||'عميل')+'</option>').join('');
- select.value=selected;
+ }catch(e){panel.textContent='تعذر عرض السجل: '+(e.message||String(e));}
 }
-async function reload(){
- populate();if(typeof sb==='undefined'||!sb||!cloudEnabled){msg('لا يوجد اتصال فعّال بـ Supabase',true);return}
- const {data,error}=await sb.from('fp_finance_entries').select('order_id,entry_date,amount,method,expense,expense_type,notes').order('entry_date',{ascending:false}).limit(500);
- if(error){msg('تعذر قراءة سجل التحصيل: '+error.message+' — قد تحتاج إنشاء الجدول والصلاحيات',true);return}
- const rows=data||[];el('fpFinSumAmount').textContent=format(rows.reduce((n,r)=>n+Number(r.amount||0),0));
- el('fpFinSumExpense').textContent=format(rows.reduce((n,r)=>n+Number(r.expense||0),0));
- el('fpFinSumNet').textContent=format(rows.reduce((n,r)=>n+Number(r.amount||0)-Number(r.expense||0),0));
- el('fpFinRows').innerHTML=rows.map(r=>'<tr><td>'+escFin(r.order_id)+'</td><td>'+escFin(r.entry_date)+'</td><td>'+format(r.amount)+'</td><td>'+escFin(methods[r.method]||r.method)+'</td><td>'+format(r.expense)+'</td><td>'+format(Number(r.amount)-Number(r.expense))+'</td></tr>').join('')||'<tr><td colspan="6">لا توجد عمليات تحصيل</td></tr>';
- msg('تم تحميل سجل التحصيل من Supabase');
-}
-async function saveEntry(){
- if(typeof currentUserRole==='undefined'||currentUserRole!=='admin'){msg('هذه العملية متاحة للأدمن فقط',true);return}
- if(typeof sb==='undefined'||!sb||!cloudEnabled){msg('تعذر الحفظ: Supabase غير متصل',true);return}
- const order=el('fpFinOrder').value,date=el('fpFinDate').value,amount=num('fpFinAmount'),expense=num('fpFinExpense');
- if(!order||!date||!Number.isFinite(amount)||!Number.isFinite(expense)||amount<0||expense<0){msg('اختر الطلب والتاريخ وأدخل مبالغ صحيحة',true);return}
- if(!confirm('تأكيد تسجيل تحصيل بقيمة '+format(amount)+' ومصروف '+format(expense)+' للطلب '+order+'؟'))return;
- const row={order_id:order,entry_date:date,amount,method:el('fpFinMethod').value,expense,expense_type:el('fpFinExpenseType').value,notes:el('fpFinNotes').value.trim()};
- const {error}=await sb.from('fp_finance_entries').insert(row);
- if(error){msg('لم يتم الحفظ: '+error.message,true);return}
- msg('تم حفظ التحصيل في Supabase');el('fpFinAmount').value='0';el('fpFinExpense').value='0';el('fpFinNotes').value='';recalc();await reload();
-}
-window.fpFinReload=reload;window.fpFinSave=saveEntry;
-window.addEventListener('DOMContentLoaded',()=>{
- el('fpFinDate').value=new Date().toLocaleDateString('en-CA');
- ['fpFinAmount','fpFinExpense'].forEach(id=>el(id).addEventListener('input',recalc));
- const payments=el('payments');if(payments){const observer=new MutationObserver(()=>{if(payments.classList.contains('active'))populate()});observer.observe(payments,{attributes:true,attributeFilter:['class']})}
-});
-})();
+function fpAuditVisibility(){const p=document.getElementById('fpAuditPanel');if(p)p.style.display=currentUserRole==='admin'?'block':'none';}
+setInterval(fpAuditVisibility,1500);
 </script>
-<script id="fpActualOrderReport">
-/* Fanni Pro actual-order report: read same local state used by renderOrders and renderInvoices. */
-(function(){
- const $=id=>document.getElementById(id);
- const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const num=v=>{const n=Number(v);return Number.isFinite(n)?n:0};
- let current=[];
- let audit=new Map(), auditMessage='لم يتم تحميل سجل الإسناد';
- async function fetchAudit(){
-   audit=new Map();
-   if(typeof sb==='undefined'||!sb||typeof cloudEnabled==='undefined'||!cloudEnabled){auditMessage='قاعدة البيانات غير متصلة';return;}
-   try{
-     const {data,error}=await sb.from('fp_assignment_audit').select('order_id,from_tech_id,to_tech_id,actor_name,changed_at').order('changed_at',{ascending:true}).limit(10000);
-     if(error)throw error;
-     (data||[]).forEach(e=>{const k=String(e.order_id);if(!audit.has(k))audit.set(k,[]);audit.get(k).push(e)});
-     auditMessage='لا يوجد سجل محفوظ لهذا الطلب';
-   }catch(e){auditMessage='سجل الإسناد غير متاح: '+(e.message||e);console.warn(auditMessage)}
+<script>
+/* Cash ledger: Supabase is the only source of truth; no local writes. */
+let fpCashEntries=[];
+function fpCashMoney(n){return Number(n||0).toLocaleString('ar-SA',{minimumFractionDigits:2,maximumFractionDigits:2})+' ر.س'}
+function fpCashToggleOrder(){const f=get('fpCashOrderField');if(f)f.style.display=get('fpCashType')?.value==='collection'?'':'none'}
+function fpCashPrepare(){const panel=get('fpCashAdmin');if(!panel)return;panel.style.display=currentUserRole==='admin'?'':'none';if(currentUserRole!=='admin')return;
+ const select=get('fpCashTech'),value=select.value;select.innerHTML='<option value="">اختر الفني</option>'+load(KEYS.TECH).map(t=>'<option value="'+safe(t.id)+'">'+safe(t.name||t.id)+'</option>').join('');select.value=value;fpCashToggleOrder();}
+async function fpCashRefresh(){fpCashPrepare();if(currentUserRole!=='admin')return;const msg=get('fpCashMsg');if(!sb){msg.textContent='لا يوجد اتصال بقاعدة البيانات';return;}
+ const {data,error}=await sb.rpc('fp_cash_report');if(error){msg.textContent='تعذر قراءة الحسابات: '+error.message;return;}fpCashEntries=data||[];msg.textContent='تم تحميل '+fpCashEntries.length+' حركة مالية من Supabase';fpCashRender();}
+function fpCashRender(){const names=new Map(load(KEYS.TECH).map(t=>[String(t.id),t.name||String(t.id)]));const totals=new Map();const byId=new Map(fpCashEntries.map(e=>[e.id,e]));const reversed=new Set(fpCashEntries.filter(e=>e.entry_type==='reversal').map(e=>e.reverses_entry_id));
+ for(const e of fpCashEntries){const id=String(e.technician_id);if(!totals.has(id))totals.set(id,{collected:0,handed:0});const t=totals.get(id);let type=e.entry_type;if(type==='reversal'){const old=byId.get(e.reverses_entry_id);type=old?.entry_type==='collection'?'reverse_collection':'reverse_handover'}
+ if(type==='collection')t.collected+=Number(e.amount);if(type==='handover')t.handed+=Number(e.amount);if(type==='reverse_collection')t.collected-=Number(e.amount);if(type==='reverse_handover')t.handed-=Number(e.amount);}
+ get('fpCashSummary').innerHTML=[...totals].map(([id,t])=>'<tr><td>'+safe(names.get(id)||id)+'</td><td>'+fpCashMoney(t.collected)+'</td><td>'+fpCashMoney(t.handed)+'</td><td><b>'+fpCashMoney(t.collected-t.handed)+'</b></td></tr>').join('')||'<tr><td colspan="4">لا توجد حركات مالية بعد</td></tr>';
+ get('fpCashRows').innerHTML=fpCashEntries.map(e=>'<tr><td>'+safe(new Date(e.created_at).toLocaleString('ar-SA'))+'</td><td>'+safe(names.get(String(e.technician_id))||e.technician_id)+'</td><td>'+safe({collection:'تحصيل',handover:'تسليم للشركة',reversal:'عكس قيد'}[e.entry_type])+'</td><td>'+safe(e.order_id||'—')+'</td><td>'+fpCashMoney(e.amount)+'</td><td>'+safe(e.note||'—')+'</td><td>'+(e.entry_type!=='reversal'&&!reversed.has(e.id)?'<button class="btn small red" data-entry="'+safe(e.id)+'" data-tech="'+safe(e.technician_id)+'" onclick="fpCashReverse(this.dataset.entry,this.dataset.tech)">عكس القيد</button>':'—')+'</td></tr>').join('')||'<tr><td colspan="7">لا توجد حركات</td></tr>';}
+async function fpCashSubmit(){if(currentUserRole!=='admin')return;const id=get('fpCashTech').value,type=get('fpCashType').value,amount=Number(get('fpCashAmount').value),order=get('fpCashOrder').value.trim(),note=get('fpCashNote').value.trim();
+ if(!id||!Number.isFinite(amount)||amount<=0||!Number.isInteger(amount*100)||type==='collection'&&!order){toast('حدد الفني ورقم الطلب والمبلغ الصحيح');return;}
+ if(!confirm('تأكيد تسجيل '+fpCashMoney(amount)+' كـ '+(type==='collection'?'تحصيل':'تسليم للشركة')+'؟'))return;
+ const btn=get('fpCashSubmit');btn.disabled=true;try{const {error}=await sb.rpc('fp_cash_action',{p_type:type,p_technician_id:id,p_amount:amount,p_order_id:type==='collection'?order:null,p_note:note,p_reverses_entry_id:null});if(error)throw error;get('fpCashAmount').value='';get('fpCashNote').value='';toast('تم حفظ العملية في Supabase');await fpCashRefresh();}catch(e){get('fpCashMsg').textContent='فشل الحفظ: '+e.message;}finally{btn.disabled=false;}}
+async function fpCashReverse(entryId,techId){if(currentUserRole!=='admin')return;const note=prompt('سبب عكس القيد (إلزامي):');if(!note?.trim())return;if(!confirm('تأكيد عكس القيد؟ سيظل القيد الأصلي محفوظًا.'))return;
+ const {error}=await sb.rpc('fp_cash_action',{p_type:'reversal',p_technician_id:String(techId),p_amount:null,p_order_id:null,p_note:note.trim(),p_reverses_entry_id:entryId});if(error){toast('فشل: '+error.message);return;}toast('تم تسجيل قيد عكسي');await fpCashRefresh();}
+function fpCashExport(){
+ if(currentUserRole!=='admin'){toast('هذا التقرير متاح للإدارة فقط');return;}
+ if(typeof XLSX==='undefined'){toast('تعذر تحميل مكتبة Excel؛ تأكد من الاتصال بالإنترنت');return;}
+ const names=new Map(load(KEYS.TECH).map(t=>[String(t.id),String(t.name||t.id)]));
+ const byId=new Map(fpCashEntries.map(e=>[String(e.id),e]));
+ const totals=new Map();
+ const entries=[...fpCashEntries].sort((a,b)=>String(a.created_at||'').localeCompare(String(b.created_at||'')));
+ const typeNames={collection:'تحصيل نقدي',handover:'تسليم للشركة',reversal:'قيد عكسي'};
+ const rows=[];
+ for(const e of entries){
+   const id=String(e.technician_id),amount=Number(e.amount||0);
+   if(!totals.has(id))totals.set(id,{collected:0,handed:0});
+   const t=totals.get(id);let coll=0,hand=0;
+   if(e.entry_type==='collection')coll=amount;
+   else if(e.entry_type==='handover')hand=amount;
+   else if(e.entry_type==='reversal'){
+     const old=byId.get(String(e.reverses_entry_id));
+     if(old?.entry_type==='collection')coll=-amount;
+     if(old?.entry_type==='handover')hand=-amount;
+   }
+   t.collected+=coll;t.handed+=hand;
+   rows.push({id,name:names.get(id)||id,date:e.created_at||'',type:typeNames[e.entry_type]||e.entry_type,order:String(e.order_id||''),collected:coll,handed:hand,balance:t.collected-t.handed,note:String(e.note||''),actor:String(e.created_by||''),entry:String(e.id||''),reverse:String(e.reverses_entry_id||'')});
  }
-
- async function update(){
-   await fetchAudit();
-   if(!$('fpARrows')||typeof load!=='function'||typeof KEYS==='undefined')return;
-   const orders=typeof roleFilteredOrders==='function'?roleFilteredOrders(load(KEYS.ORD)):load(KEYS.ORD);
-   const techs=load(KEYS.TECH)||[];
-   const select=$('fpARtech'),old=select.value;
-   select.innerHTML='<option value="">جميع الفنيين</option>'+techs.map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join('');select.value=old;
-   const f=$('fpARfrom').value,to=$('fpARto').value;
-   current=orders.filter(o=>(!select.value||String(o.techId||'')===select.value)&&(!f||String(o.date||'')>=f)&&(!to||String(o.date||'')<=to));
-   const techName=id=>techs.find(t=>String(t.id)===String(id))?.name||'غير مسند';
-   const money=n=>num(n).toLocaleString('ar-SA',{minimumFractionDigits:2,maximumFractionDigits:2});
-   $('fpARrows').innerHTML=current.map(o=>{
-     const raw=o.raw||{};
-     const assigned=raw.assignedAt||o.assignedAt||raw.assigned_at||o.assigned_at||'';
-     const by=raw.assignedByName||o.assignedByName||raw.assignedBy||o.assignedBy||'';
-     const prev=raw.previousTechName||o.previousTechName||raw.transferredFrom||o.transferredFrom||'';
-     const events=audit.get(String(o.id))||[];
-     const last=events[events.length-1];
-     const stamp=last?new Date(last.changed_at).toLocaleString('ar-SA',{timeZone:'Asia/Riyadh',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}):assigned;
-     const actor=last?.actor_name||by;
-     const source=last?.from_tech_id?techName(last.from_tech_id):prev;
-     const timeline=events.length?events.map(e=>`${new Date(e.changed_at).toLocaleString('ar-SA',{timeZone:'Asia/Riyadh',dateStyle:'short',timeStyle:'medium'})} | ${techName(e.from_tech_id)} ← ${techName(e.to_tech_id)} | ${e.actor_name||'غير معروف'}`).join(' ؛ '):auditMessage;
-     const values=[techName(o.techId),o.id,o.name,o.phone,o.service,o.date,o.time,o.status,o.paymentStatus,money(o.price),stamp,actor,source,timeline];
-     return '<tr>'+values.map(v=>`<td>${esc(v||'—')}</td>`).join('')+'</tr>';
-   }).join('')||'<tr><td colspan="14">لا توجد طلبات مطابقة</td></tr>';
-   $('fpARtotal').textContent=money(current.reduce((s,o)=>s+num(o.price),0))+' ر.س';
-   $('fpARpaid').textContent=money(current.filter(o=>o.paymentStatus==='مدفوعة').reduce((s,o)=>s+num(o.price),0))+' ر.س';
-   $('fpARcount').textContent=current.length;
+ const wb=XLSX.utils.book_new();wb.Props={Title:'فني برو | تقرير عهدة الفنيين',Subject:'حسابات وتحصيلات الفنيين',Author:'فني برو'};
+ const navy='102B52',blue='176DF7',pale='EAF2FF',white='FFFFFF',gray='64748B',green='DCFCE7',red='FEE2E2';
+ const titleStyle={font:{name:'Arial',sz:18,bold:true,color:{rgb:white}},fill:{fgColor:{rgb:navy}},alignment:{horizontal:'center',vertical:'center'}};
+ const headStyle={font:{name:'Arial',sz:11,bold:true,color:{rgb:white}},fill:{fgColor:{rgb:blue}},alignment:{horizontal:'center',vertical:'center',wrapText:true},border:{bottom:{style:'thin',color:{rgb:navy}}}};
+ const moneyFmt='#,##0.00 "ر.س";[Red](#,##0.00) "ر.س"';
+ function addSheet(name,heading,headers,data,widths,moneyCols){
+   const grid=[[heading],['فني برو | تقرير مالي للإدارة فقط'],['تاريخ التصدير: '+new Date().toLocaleString('ar-SA')],[],headers,...data];
+   const ws=XLSX.utils.aoa_to_sheet(grid);const n=headers.length;
+   ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:n-1}},{s:{r:1,c:0},e:{r:1,c:n-1}},{s:{r:2,c:0},e:{r:2,c:n-1}}];
+   ws['!cols']=widths.map(w=>({wch:w}));ws['!rows']=[{hpt:36},{hpt:24},{hpt:22},{hpt:12},{hpt:32}];
+   ws['!autofilter']={ref:XLSX.utils.encode_range({s:{r:4,c:0},e:{r:Math.max(4,grid.length-1),c:n-1}})};
+   ws['!views']=[{rightToLeft:true}];
+   for(let r=0;r<grid.length;r++)for(let c=0;c<n;c++){
+     const cell=ws[XLSX.utils.encode_cell({r,c})];if(!cell)continue;
+     if(r===0)cell.s=titleStyle;
+     else if(r===1||r===2)cell.s={font:{name:'Arial',sz:11,bold:r===1,color:{rgb:gray}},alignment:{horizontal:'center',vertical:'center'}};
+     else if(r===4)cell.s=headStyle;
+     else if(r>4){cell.s={font:{name:'Arial',sz:10,color:{rgb:navy}},fill:{fgColor:{rgb:r%2===0?'F1F6FF':white}},alignment:{vertical:'center',horizontal:moneyCols.includes(c)?'center':'right',wrapText:true},border:{bottom:{style:'hair',color:{rgb:'DCE7F5'}}}};if(moneyCols.includes(c)&&typeof cell.v==='number')cell.z=moneyFmt;}
+   }
+   XLSX.utils.book_append_sheet(wb,ws,name);
  }
- async function exportExcel(){await update();const table=$('fpARtable').cloneNode(true);const header='<h2 style="text-align:center;color:#176df7">فني برو | FANNI PRO</h2><h3 style="text-align:center">التقرير التفصيلي للفنيين</h3><p>الفترة: '+esc($('fpARfrom').value||'الكل')+' إلى '+esc($('fpARto').value||'الكل')+'</p><p>قيمة الطلب ليست بالضرورة مبلغًا محصلًا فعليًا.</p>';
- const html='\ufeff<html dir="rtl"><head><meta charset="utf-8"><style>table{border-collapse:collapse}td,th{border:1px solid #cbd5e1;padding:9px}th{background:#176df7;color:white}</style></head><body>'+header+table.outerHTML+'</body></html>';
- const blob=new Blob([html],{type:'application/vnd.ms-excel;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='فني_برو_تقرير_الفنيين.xls';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
- }
- document.addEventListener('DOMContentLoaded',()=>{if(!$('fpARrefresh'))return;$('fpARrefresh').addEventListener('click',update);$('fpARexcel').addEventListener('click',exportExcel);$('fpARtech').addEventListener('change',update);update();});
- window.fpActualReportRefresh=update;
-})();
+ const all=[...totals].map(([id,t],i)=>[i+1,names.get(id)||id,id,t.collected,t.handed,t.collected-t.handed,(t.collected-t.handed)>0?'عليه عهدة':(t.collected-t.handed)<0?'مراجعة رصيد':'مسوّى']);
+ const sum=(i)=>all.reduce((n,r)=>n+Number(r[i]||0),0);
+ all.push(['','الإجمالي','',sum(3),sum(4),sum(5),'']);
+ addSheet('ملخص العهدة','ملخص الحسابات والعهد النقدية',['م','الفني','معرف الفني','إجمالي التحصيل','المسلّم للشركة','المتبقي في العهدة','الحالة'],all,[7,29,22,22,22,23,18],[3,4,5]);
+ const detail=rows.map((r,i)=>[i+1,r.date,r.name,r.id,r.type,r.order,r.collected,r.handed,r.balance,r.note,r.actor,r.entry,r.reverse]);
+ addSheet('سجل الحركات','سجل الحركات النقدية والتسويات',['م','تاريخ ووقت الحركة','الفني','معرف الفني','نوع الحركة','رقم الطلب','التحصيل (+/-)','التسليم (+/-)','رصيد الفني بعد الحركة','ملاحظات / إيصال','المنفذ','معرف القيد','القيد المعكوس'],detail,[7,25,28,21,19,19,20,20,25,38,30,40,40],[6,7,8]);
+ const outstanding=all.slice(0,-1).filter(r=>Number(r[5])>0);
+ addSheet('عهد مستحقة','الفنيون المطلوب منهم تسليم نقدية',['م','الفني','معرف الفني','إجمالي التحصيل','المسلّم للشركة','المبلغ المطلوب','الحالة'],outstanding,[7,29,22,22,22,23,18],[3,4,5]);
+ const stamp=new Date().toISOString().slice(0,10);
+ try{XLSX.writeFile(wb,'Fanni_Pro_Technicians_Cash_Report_'+stamp+'.xlsx');toast('تم تجهيز تقرير Excel بثلاث أوراق');}
+ catch(err){toast('تعذر تصدير التقرير: '+(err.message||err));}
+}
+const fpCashOldShowPage=showPage;showPage=function(id){fpCashOldShowPage(id);if(id==='payments'){fpCashPrepare();if(currentUserRole==='admin')fpCashRefresh();}};
+</script>
+<!-- Technician transfer: database-verified, no local optimistic reassignment -->
+<div id="fpTransferModal" class="hidden" style="position:fixed;inset:0;z-index:999999;background:#06172dba;display:grid;place-items:center;padding:15px">
+ <div class="card" style="width:min(520px,100%);max-height:90vh;overflow:auto">
+  <h3>تحويل طلب إلى فني آخر</h3><p id="fpTransferOrderLabel" class="muted"></p>
+  <div class="field" style="margin-top:12px"><label>الفني المستلم</label><select id="fpTransferTarget"></select></div>
+  <div class="field" style="margin-top:12px"><label>سبب التحويل (إجباري)</label><textarea id="fpTransferReason" maxlength="1000" placeholder="اشرح سبب تحويل الطلب بالتفصيل"></textarea></div>
+  <p id="fpTransferMessage" class="muted"></p>
+  <div class="actions" style="margin-top:12px"><button id="fpTransferSubmit" class="btn" onclick="fpSubmitTransfer()">تأكيد التحويل والحفظ</button><button class="btn light" onclick="fpCloseTransfer()">إلغاء</button></div>
+ </div>
+</div>
+<script>
+let fpTransferOrderId=null;
+function fpCloseTransfer(){document.getElementById('fpTransferModal').classList.add('hidden');fpTransferOrderId=null}
+function fpOpenTransfer(orderId){
+ const o=load(KEYS.ORD).find(x=>String(x.id)===String(orderId));
+ if(!o||techIsClosed(o)){toast('الطلب غير متاح للتحويل');return}
+ if(currentUserRole==='technician'&&String(o.techId)!==String(currentTechnicianId)){toast('هذا الطلب غير مسند لك');return}
+ fpTransferOrderId=String(orderId);
+ const opts=load(KEYS.TECH).filter(t=>String(t.id)!==String(o.techId)&&String(t.companyId||'')===String(o.companyId||''));
+ const sel=document.getElementById('fpTransferTarget');sel.innerHTML='<option value="">اختر الفني المستلم</option>';
+ opts.forEach(t=>{const opt=document.createElement('option');opt.value=String(t.id);opt.textContent=t.name||t.id;sel.appendChild(opt)});
+ document.getElementById('fpTransferOrderLabel').textContent='رقم الطلب: '+orderId;
+ document.getElementById('fpTransferReason').value='';document.getElementById('fpTransferMessage').textContent='';
+ document.getElementById('fpTransferModal').classList.remove('hidden');
+}
+async function fpSubmitTransfer(){
+ const id=fpTransferOrderId,to=document.getElementById('fpTransferTarget').value,reason=document.getElementById('fpTransferReason').value.trim();
+ if(!id||!to||reason.length<10){document.getElementById('fpTransferMessage').textContent='اختر الفني واكتب سببًا لا يقل عن 10 أحرف';return}
+ if(!sb||!cloudEnabled){document.getElementById('fpTransferMessage').textContent='لا يوجد اتصال بقاعدة البيانات؛ لم يتم الحفظ';return}
+ const btn=document.getElementById('fpTransferSubmit');btn.disabled=true;
+ try{
+  const {error}=await sb.rpc('fp_technician_transfer_order',{p_order_id:id,p_to_technician_id:to,p_reason:reason});
+  if(error)throw error;
+  fpCloseTransfer();await refreshFromCloud(false);renderAll();toast('تم تحويل الطلب وحفظ السبب في Supabase');
+ }catch(e){document.getElementById('fpTransferMessage').textContent='لم يتم التحويل: '+(e.message||e)}finally{btn.disabled=false}
+}
 </script>
 </body>
 </html>
