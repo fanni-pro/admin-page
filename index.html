@@ -145,7 +145,9 @@
 @media(max-width:600px){.fp-tr-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 <style id="fpOrdersWorkflowStyle">.fp-workflow-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0}.fp-workflow-tab{background:#f5f8ff;border:1px solid #dce7f6;border-radius:13px;padding:12px 8px;color:#213b60;text-align:center;font-weight:900;transition:.15s}.fp-workflow-tab.active{background:#176df7;color:white;border-color:#176df7;box-shadow:0 8px 22px #176df72b}.fp-workflow-tab .fp-workflow-number{display:block;font-size:21px;margin-top:4px}.fp-workflow-caption{font-size:12px;color:#64748b;margin:8px 0 14px}@media(max-width:650px){.fp-workflow-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}</style>
-<style>.fp-tech-group-title{padding:13px 16px;background:#eaf2ff;color:#103b73;border-radius:12px;margin:16px 0 10px;border-right:5px solid #176df7}.fp-locked{background:#f6faf8;border-color:#bce9d3}.fp-locked textarea{background:#edf2f6;cursor:not-allowed}</style></head>
+<style>.fp-tech-group-title{padding:13px 16px;background:#eaf2ff;color:#103b73;border-radius:12px;margin:16px 0 10px;border-right:5px solid #176df7}.fp-locked{background:#f6faf8;border-color:#bce9d3}.fp-locked textarea{background:#edf2f6;cursor:not-allowed}</style>
+<style id="financeSafeStyle">#financeSafePanel{margin:18px 0;padding:18px;border:1px solid #dbe7f6;border-radius:16px;background:#fff}#financeSafePanel .fin-grid{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:10px}#financeSafePanel label{display:grid;gap:5px;font-weight:800}#financeSafePanel input,#financeSafePanel select{padding:11px;border:1px solid #dce6f3;border-radius:10px;width:100%}#financeSafePanel .fin-summary{display:flex;gap:18px;flex-wrap:wrap;margin:14px 0;font-weight:900}#financeSafePanel table{width:100%;border-collapse:collapse}#financeSafePanel td,#financeSafePanel th{padding:8px;border-bottom:1px solid #e5edf6;text-align:right}@media(max-width:650px){#financeSafePanel .fin-grid{grid-template-columns:1fr 1fr}}</style>
+</head>
 <body>
 <div id="loginScreen" class="login-screen hidden">
   <div class="fp-login-layout">
@@ -1054,6 +1056,33 @@ function printProfessionalReport(id){
 
 
 
+
+<script id="financeSafeScript">
+(function(){
+'use strict';
+const KEY='fanni_pro_finance_safe_v1';
+function el(id){return document.getElementById(id)}
+function money(n){return (Number(n)||0).toLocaleString('ar-SA',{maximumFractionDigits:2})}
+function entries(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return []}}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function show(){
+ const panel=el('financeSafePanel');if(!panel)return;
+ const rows=entries();const gross=rows.reduce((a,r)=>a+r.amount,0),expenses=rows.reduce((a,r)=>a+r.expense,0);
+ el('finSummary').textContent='إجمالي المحصل: '+money(gross)+' ريال | المصروف: '+money(expenses)+' ريال | الصافي: '+money(gross-expenses)+' ريال';
+ el('finRows').innerHTML=rows.map((r,i)=>'<tr><td>'+esc(r.order)+'</td><td>'+esc(r.method)+'</td><td>'+money(r.amount)+'</td><td>'+money(r.expense)+'</td><td>'+money(r.amount-r.expense)+'</td><td><button type="button" class="btn small red" data-fin-remove="'+i+'">حذف</button></td></tr>').join('')||'<tr><td colspan="6">لا توجد قيود تحصيل</td></tr>';
+}
+function mount(){
+ const target=el('invoiceRows');if(!target||el('financeSafePanel'))return;
+ const parent=target.closest('.card')||target.closest('section')||target.parentElement.parentElement;
+ const panel=document.createElement('section');panel.id='financeSafePanel';
+ panel.innerHTML='<h3>التحصيل والمصروفات — لوحة الأدمن</h3><p class="muted">سجل مالي تجريبي محفوظ في هذا المتصفح فقط؛ لا يغلق الفواتير في Supabase.</p><div class="fin-grid"><label>رقم الطلب / الفاتورة<input id="finOrder" placeholder="رقم الطلب" /></label><label>المبلغ المحصل<input id="finAmount" type="number" min="0" step="0.01" value="0" /></label><label>المصروف<input id="finExpense" type="number" min="0" step="0.01" value="0" /></label><label>طريقة التحصيل<select id="finMethod"><option>كاش</option><option>شبكة</option><option>تحويل</option><option>مختلط</option></select></label></div><div class="fin-summary" id="finSummary"></div><button type="button" class="btn" id="finAdd">إضافة التحصيل</button><div class="table-wrap"><table><thead><tr><th>الطلب</th><th>الطريقة</th><th>المحصل</th><th>المصروف</th><th>الصافي</th><th></th></tr></thead><tbody id="finRows"></tbody></table></div>';
+ parent.insertAdjacentElement('afterend',panel);
+ el('finAdd').addEventListener('click',()=>{const order=el('finOrder').value.trim(),amount=Number(el('finAmount').value),expense=Number(el('finExpense').value);if(!order||!Number.isFinite(amount)||!Number.isFinite(expense)||amount<0||expense<0){alert('أدخل رقم الطلب والمبالغ بشكل صحيح');return}const rows=entries();rows.push({order,amount,expense,method:el('finMethod').value});localStorage.setItem(KEY,JSON.stringify(rows));show()});
+ el('finRows').addEventListener('click',e=>{const btn=e.target.closest('[data-fin-remove]');if(!btn)return;const rows=entries();rows.splice(Number(btn.dataset.finRemove),1);localStorage.setItem(KEY,JSON.stringify(rows));show()});show();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
+})();
+</script>
 </body></html>`;
  const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة لطباعة التقرير');return;}w.document.open();w.document.write(html);w.document.close();
 }
