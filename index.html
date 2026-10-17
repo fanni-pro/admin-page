@@ -913,7 +913,7 @@ function fpOrderCreatedDate(x){
 }
 function orderCardCompact(x){const isNew=getNewOrderIds().has(x.id);return `<div class="item-card ${isNew?'new-order-highlight':''}"><div><b>${safe(x.id)} - ${safe(displayServices(x))}</b><p>📅 تاريخ الطلب: <b>${safe(fpOrderCreatedDate(x))}</b><br>عميل: ${safe(x.name)} · فني: ${safe(techName(x.techId))}</p></div><span class="status ${orderStatusClass(x.status)}">${safe(x.status)}</span></div>`}
 function sendInvoiceToTech(id){const arr=load(KEYS.ORD).map(x=>x.id===id?{...x,invoiceSent:true,invoiceSentAt:new Date().toISOString()}:x);save(KEYS.ORD,arr);renderAll();toast('تم إرسال الفاتورة للفني')}
-function orderCardFull(x,techs){const techOptions='<option value="">إسناد</option>'+techs.map(t=>`<option value="${safe(t.id)}" ${x.techId===t.id?'selected':''}>${safe(t.name)}</option>`).join('');const isNew=getNewOrderIds().has(x.id);return `<div class="item-card ${isNew?'new-order-highlight':''}"><div style="min-width:0"><b>${safe(x.id)} - ${safe(displayServices(x))}</b><p><span class="fp-admin-order-date">📅 تاريخ الطلب: <b>${safe(fpOrderCreatedDate(x))}</b></span><br>${safe(x.name)} · ${customerPhoneAction(x.phone)} · ${safe(x.city)} · ${fmt(x.price)} ر.س<br>الفني: ${safe(techName(x.techId))} · الدفع: ${safe(x.paymentStatus||'غير مدفوعة')} · الفاتورة للفني: ${x.invoiceSent?'مرسلة':'غير مرسلة'}</p></div><div class="actions"><span class="status ${orderStatusClass(x.status)}">${safe(x.status)}</span><select onchange="assignOrder('${safe(x.id)}',this.value)" style="height:34px;border:1px solid var(--line);border-radius:10px">${techOptions}</select><button class="btn small light" onclick="editOrder('${safe(x.id)}')">تعديل</button><button class="btn small green" onclick="updateOrderStatus('${safe(x.id)}','مكتملة')">إنهاء</button><button class="btn small orange" onclick="updateOrderStatus('${safe(x.id)}','الفني تحرك')">تحرك</button><button class="btn small" onclick="printInvoice('${safe(x.id)}')">فاتورة</button><button class="btn small green" onclick="sendInvoiceToTech('${safe(x.id)}')">إرسال للفني</button><button class="btn small red" onclick="deleteOrder('${safe(x.id)}')">حذف</button></div></div>`}
+function orderCardFull(x,techs){const techOptions='<option value="">إسناد</option>'+techs.map(t=>`<option value="${safe(t.id)}" ${x.techId===t.id?'selected':''}>${safe(t.name)}</option>`).join('');const isNew=getNewOrderIds().has(x.id);return `<div class="item-card ${isNew?'new-order-highlight':''}"><div style="min-width:0"><b>${safe(x.id)} - ${safe(displayServices(x))}</b><p><span class="fp-admin-order-date">📅 تاريخ الطلب: <b>${safe(fpOrderCreatedDate(x))}</b></span><br>${safe(x.name)} · ${customerPhoneAction(x.phone)} · ${safe(x.city)} · ${fmt(x.price)} ر.س<br>الفني: ${safe(techName(x.techId))} · الدفع: ${safe(x.paymentStatus||'غير مدفوعة')} · الفاتورة للفني: ${x.invoiceSent?'مرسلة':'غير مرسلة'}</p></div><div class="actions"><span class="status ${orderStatusClass(x.status)}">${safe(x.status)}</span><select onchange="assignOrder('${safe(x.id)}',this.value)" style="height:34px;border:1px solid var(--line);border-radius:10px">${techOptions}</select><button class="btn small light" onclick="editOrder('${safe(x.id)}')">تعديل</button><button class="btn small orange" onclick="fpOpenTransfer('${safe(x.id)}')">🔄 تحويل لفني آخر</button><button class="btn small green" onclick="updateOrderStatus('${safe(x.id)}','مكتملة')">إنهاء</button><button class="btn small orange" onclick="updateOrderStatus('${safe(x.id)}','الفني تحرك')">تحرك</button><button class="btn small" onclick="printInvoice('${safe(x.id)}')">فاتورة</button><button class="btn small green" onclick="sendInvoiceToTech('${safe(x.id)}')">إرسال للفني</button><button class="btn small red" onclick="deleteOrder('${safe(x.id)}')">حذف</button></div></div>`}
 function renderTech(){const techs=qfilter(load(KEYS.TECH));get('techCount').textContent=techs.length+' فني';get('techList').innerHTML=techs.map(t=>`<div class="item-card"><div style="display:flex;gap:12px;align-items:center"><div class="avatar">👨‍🔧</div><div><b>${safe(t.name)}</b><p>${safe(t.skill)} · ${safe(t.city)} · ${safe(t.available)} · خبرة ${safe(t.experience||0)} سنوات</p></div></div><div class="actions"><b>★ ${safe(t.rate)}</b><button class="btn small light" onclick="editTech('${safe(t.id)}')">تعديل</button><button class="btn small red" onclick="deleteTech('${safe(t.id)}')">حذف</button></div></div>`).join('')||'<div class="empty-state">لا يوجد فنيين</div>';fillTechSelects()}
 function renderInvoices(){const orders=roleFilteredOrders(load(KEYS.ORD));const rows=orders.map(x=>`<tr><td>INV-${safe(String(x.id).replace('#',''))}</td><td>${safe(x.name)}</td><td>${safe(displayServices(x))}</td><td>${safe(x.date)}</td><td>${fmt(x.price)} ر.س</td><td><span class="status ${paymentClass(x.paymentStatus)}">${safe(x.paymentStatus||'غير مدفوعة')}</span></td><td><button class="btn small" onclick="printInvoice('${safe(x.id)}')">طباعة</button></td></tr>`).join('');get('invoiceRows').innerHTML=rows||'<tr><td colspan="6">لا توجد فواتير</td></tr>';get('invoiceRows2').innerHTML=rows||'<tr><td colspan="7">لا توجد فواتير</td></tr>'}
 function renderNumbers(){const o=roleFilteredOrders(load(KEYS.ORD)),t=load(KEYS.TECH);const total=o.reduce((a,x)=>a+Number(x.price||0),0),paid=o.filter(x=>x.paymentStatus==='مدفوعة'||x.status==='مكتملة').reduce((a,x)=>a+Number(x.price||0),0),done=o.filter(x=>x.status==='مكتملة').length,work=o.filter(x=>['قيد التنفيذ','تم الإسناد','الفني تحرك'].includes(x.status)).length,late=o.filter(x=>x.status==='متأخرة').length,p=n=>o.length?Math.round(n/o.length*100):0;get('kPaid').textContent=fmt(paid);get('kInvoices').textContent=fmt(total);get('kOrders').textContent=o.length;get('kTechs').textContent=t.length;get('sideTotal').textContent=fmt(total)+' ر.س';get('netProfit').textContent=fmt(total*.72)+' ر.س';get('needFollow').textContent=late+o.filter(x=>!x.techId).length;get('donutTotal').textContent=o.length;get('donePercent').textContent=p(done)+'%';get('workPercent').textContent=p(work)+'%';get('latePercent').textContent=p(late)+'%';get('completeRate').textContent=p(done)+'%';get('avgOrder').textContent=fmt(o.length?total/o.length:0);get('lateOrdersKpi').textContent=late;get('activeTechsKpi').textContent=t.filter(x=>x.available==='متاح للعمل').length;get('notifBadge').textContent=late+o.filter(x=>!x.techId).length+getNewOrderIds().size}
@@ -1514,11 +1514,11 @@ function fpOpenTransfer(orderId){
  if(!o||techIsClosed(o)){toast('الطلب غير متاح للتحويل');return}
  if(currentUserRole==='technician'&&String(o.techId)!==String(currentTechnicianId)){toast('هذا الطلب غير مسند لك');return}
  fpTransferOrderId=String(orderId);
- const opts=load(KEYS.TECH).filter(t=>String(t.id)!==String(o.techId)&&String(t.companyId||'')===String(o.companyId||''));
+ const opts=load(KEYS.TECH).filter(t=>String(t.id)!==String(o.techId) && (!o.companyId || !t.companyId || String(t.companyId)===String(o.companyId)));
  const sel=document.getElementById('fpTransferTarget');sel.innerHTML='<option value="">اختر الفني المستلم</option>';
  opts.forEach(t=>{const opt=document.createElement('option');opt.value=String(t.id);opt.textContent=t.name||t.id;sel.appendChild(opt)});
  document.getElementById('fpTransferOrderLabel').textContent='رقم الطلب: '+orderId;
- document.getElementById('fpTransferReason').value='';document.getElementById('fpTransferMessage').textContent='';
+ document.getElementById('fpTransferReason').value='';document.getElementById('fpTransferMessage').textContent=opts.length?'':'لا يوجد فني آخر متاح. تأكد من إضافة الفنيين وربطهم بالشركة.';
  document.getElementById('fpTransferModal').classList.remove('hidden');
 }
 async function fpSubmitTransfer(){
@@ -1527,9 +1527,24 @@ async function fpSubmitTransfer(){
  if(!sb||!cloudEnabled){document.getElementById('fpTransferMessage').textContent='لا يوجد اتصال بقاعدة البيانات؛ لم يتم الحفظ';return}
  const btn=document.getElementById('fpTransferSubmit');btn.disabled=true;
  try{
-  const {error}=await sb.rpc('fp_technician_transfer_order',{p_order_id:id,p_to_technician_id:to,p_reason:reason});
+  let {error}=await sb.rpc('fp_technician_transfer_order',{p_order_id:id,p_to_technician_id:to,p_reason:reason});
+  if(error && currentUserRole!=='technician' && /function.*does not exist|could not find the function|PGRST202/i.test(String(error.message||'')+' '+String(error.code||''))){
+    // Admin fallback: use existing orders update policy, then verify persisted assignment.
+    const original=load(KEYS.ORD).find(o=>String(o.id)===String(id));
+    if(!original)throw new Error('الطلب غير موجود');
+    const target=load(KEYS.TECH).find(t=>String(t.id)===String(to));
+    if(!target)throw new Error('الفني المستلم غير موجود');
+    const changed={...original,techId:to,companyId:target.companyId||original.companyId,assignedAt:new Date().toISOString(),status:original.status==='جديدة'?'تم الإسناد':original.status};
+    const {error:writeError}=await sb.from('orders').update(normOrder(changed)).eq('id',id);
+    if(writeError)throw writeError;
+    const {data:verified,error:readError}=await sb.from('orders').select('*').eq('id',id).single();
+    if(readError)throw readError;
+    const actual=verified?.data?.techId??verified?.techId??verified?.data?.tech_id??verified?.tech_id;
+    if(String(actual)!==String(to))throw new Error('لم يتم تأكيد الإسناد في قاعدة البيانات؛ راجع صلاحيات Supabase');
+    error=null;
+  }
   if(error)throw error;
-  fpCloseTransfer();await refreshFromCloud(false);renderAll();toast('تم تحويل الطلب وحفظ السبب في Supabase');
+  fpCloseTransfer();await refreshFromCloud(false);renderAll();toast('تم تحويل الطلب إلى الفني الجديد بنجاح');
  }catch(e){document.getElementById('fpTransferMessage').textContent='لم يتم التحويل: '+(e.message||e)}finally{btn.disabled=false}
 }
 </script>
