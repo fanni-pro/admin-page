@@ -174,6 +174,14 @@
 }
 @media(max-width:380px){#techPortal .card{padding:10px!important}#portalOrders .fp-tech-accordion>summary{padding:10px!important}}
 </style>
+<style id="fpDailyTechnicianDashboard">
+.fp-today-dashboard{background:linear-gradient(140deg,#f4f9ff,#fff);border:1px solid #d9e7f7;border-radius:20px;padding:16px;margin:0 0 16px;box-shadow:0 5px 20px #113a690a;direction:rtl}
+.fp-today-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;color:#173b68}.fp-today-head strong{font-size:17px}.fp-today-head span{font-size:12px;color:#687a92}
+.fp-today-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.fp-today-stat{background:#fff;border:1px solid #e3eaf4;border-radius:14px;padding:12px 10px;min-width:0}.fp-today-stat small{display:block;font-size:12px;color:#50617a;margin-bottom:7px}.fp-today-stat b{display:block;font-size:21px;color:#123d74;line-height:1.25;overflow-wrap:anywhere}.fp-today-stat em{font-style:normal;font-size:11px;font-weight:500}.fp-today-new{border-color:#b7d8ff;background:#f0f7ff}
+.fp-today-foot{margin-top:12px;border-top:1px solid #e0e9f5;padding-top:11px;font-size:13px;color:#34516d}.fp-today-foot strong{color:#087f57}.fp-today-foot small{display:block;color:#718096;font-size:11px;margin-top:5px;line-height:1.7}
+.fp-new-pill{display:inline-block;font-size:10px;font-style:normal;background:#dbeeff;color:#07559d;border-radius:999px;padding:3px 7px;margin-inline-start:6px}
+@media(max-width:600px){.fp-today-dashboard{padding:12px;border-radius:16px}.fp-today-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.fp-today-stat{padding:10px 9px}.fp-today-stat b{font-size:19px}.fp-today-head strong{font-size:15px}}
+</style>
 </head>
 <body>
 <div id="loginScreen" class="login-screen hidden">
@@ -1208,13 +1216,29 @@ function fpAssignmentDateTime(o){
  if(Number.isNaN(d.getTime()))return String(value);
  return new Intl.DateTimeFormat('ar-SA',{timeZone:'Asia/Riyadh',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:true}).format(d);
 }
+function fpTechTodayDay(v){
+ if(!v)return '';
+ const d=new Date(v);
+ if(!Number.isFinite(d.getTime()))return '';
+ return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Riyadh',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
+}
+function fpTechTodayDashboard(orders,activeOrders){
+ const today=fpTechTodayDay(new Date());
+ const finished=orders.filter(o=>['completed','finished'].includes(techOrderCategory(o))&&fpTechTodayDay(o.completedAt||o.technicianFinishedAt||o.closedAt||o.updatedAt)===today);
+ const settled=(typeof fpSettlementRows!=='undefined'&&Array.isArray(fpSettlementRows)?fpSettlementRows:[]).filter(r=>r.status==='closed'&&finished.some(o=>String(o.id)===String(r.order_id)));
+ const cash=settled.reduce((n,r)=>n+Number(r.cash||0),0);
+ const card=settled.reduce((n,r)=>n+Number(r.card||0),0);
+ const expense=settled.reduce((n,r)=>n+Number(r.expenses||0),0);
+ const news=activeOrders.filter(o=>techOrderCategory(o)==='new').length;
+ return `<section class="fp-today-dashboard" aria-label="ملخص شغل الفني اليوم"><div class="fp-today-head"><strong>📊 ملخص شغلك اليوم</strong><span>${safe(today)}</span></div><div class="fp-today-grid"><div class="fp-today-stat fp-today-new"><small>🆕 طلبات جديدة</small><b>${news}</b></div><div class="fp-today-stat"><small>🔧 قيد التنفيذ</small><b>${activeOrders.filter(o=>techOrderCategory(o)==='active').length}</b></div><div class="fp-today-stat"><small>✅ مكتملة اليوم</small><b>${finished.length}</b></div><div class="fp-today-stat"><small>💵 كاش</small><b>${fmt(cash)} <em>ر.س</em></b></div><div class="fp-today-stat"><small>💳 شبكة</small><b>${fmt(card)} <em>ر.س</em></b></div><div class="fp-today-stat"><small>🧾 مصروفات</small><b>${fmt(expense)} <em>ر.س</em></b></div></div><div class="fp-today-foot">صافي التحصيل المسجل اليوم: <strong>${fmt(cash+card-expense)} ر.س</strong><small>المبالغ من التسويات المغلقة المرتبطة بطلبات اليوم (${settled.length})؛ الطلبات غير المسوّاة لا تدخل في الإجمالي.</small></div></section>`;
+}
 function renderTechPortal(){
  const id=(isTechnicianRole()&&currentTechnicianId)?currentTechnicianId:get('portalTech').value;
  const tech=load(KEYS.TECH).find(t=>String(t.id)===String(id));
  const orders=load(KEYS.ORD).filter(o=>String(o.techId)===String(id));
  const count=cat=>orders.filter(o=>techOrderCategory(o)===cat).length;
  const activeOrders=orders.filter(o=>['new','active','other'].includes(techOrderCategory(o))&&!techIsClosed(o));
- get('portalSummary').innerHTML=tech?`<div class="profile-hero"><div><h2>${safe(tech.name)}</h2><p>${safe(tech.skill)} · ${safe(tech.city)} · ${safe(tech.available)}</p></div><b>★ ${safe(tech.rate)}</b></div><div class="metric-grid"><div class="metric"><small>طلبات العمل الحالية</small><b>${activeOrders.length}</b></div><div class="metric"><small>جديدة / مسندة</small><b>${count('new')}</b></div><div class="metric"><small>قيد التنفيذ</small><b>${count('active')}</b></div><div class="metric"><small>انتهى منها الفني</small><b>${count('finished')}</b></div><div class="metric"><small>مكتملة</small><b>${count('completed')}</b></div><div class="metric"><small>ملغاة / مرفوضة</small><b>${count('cancelled')}</b></div><div class="metric"><small>حالات أخرى</small><b>${count('other')}</b></div><div class="metric"><small>المحصل</small><b>${fmt(orders.filter(o=>o.paymentStatus==='مدفوعة').reduce((a,o)=>a+Number(o.price||0),0))}</b></div></div>`:'<div class="empty-state">اختر فني</div>';
+ get('portalSummary').innerHTML=tech?fpTechTodayDashboard(orders,activeOrders)+`<div class="profile-hero"><div><h2>${safe(tech.name)}</h2><p>${safe(tech.skill)} · ${safe(tech.city)} · ${safe(tech.available)}</p></div><b>★ ${safe(tech.rate)}</b></div><div class="metric-grid"><div class="metric"><small>طلبات العمل الحالية</small><b>${activeOrders.length}</b></div><div class="metric"><small>جديدة / مسندة</small><b>${count('new')}</b></div><div class="metric"><small>قيد التنفيذ</small><b>${count('active')}</b></div><div class="metric"><small>انتهى منها الفني</small><b>${count('finished')}</b></div><div class="metric"><small>مكتملة</small><b>${count('completed')}</b></div><div class="metric"><small>ملغاة / مرفوضة</small><b>${count('cancelled')}</b></div><div class="metric"><small>حالات أخرى</small><b>${count('other')}</b></div><div class="metric"><small>المحصل</small><b>${fmt(orders.filter(o=>o.paymentStatus==='مدفوعة').reduce((a,o)=>a+Number(o.price||0),0))}</b></div></div>`:'<div class="empty-state">اختر فني</div>';
  const filter=get('techOrderStatusFilter')?.value||'all';
  const search=(get('techOrderSearch')?.value||'').trim().toLowerCase();
  const from=get('techReportFrom')?.value||'';
@@ -1231,7 +1255,7 @@ function renderTechPortal(){
  });
  get('techFilterCount').textContent='المعروض: '+visible.length+' من أصل '+activeOrders.length+' طلب نشط'+(from||to?' | الفترة: '+(from||'البداية')+' إلى '+(to||'اليوم'):'');
  const ranked=[...visible].sort((a,b)=>{const rank={new:0,active:1,finished:2,completed:3,cancelled:4,other:5};const r=(rank[techOrderCategory(a)]??5)-(rank[techOrderCategory(b)]??5);if(r)return r;const time=o=>{const v=o.assignedAt||o.technicianAssignedAt||o.assigned_at||o.createdAt||o.created_at||o.date||'';const t=Date.parse(v);return Number.isFinite(t)?t:0;};return time(b)-time(a);});
- get('portalOrders').innerHTML=ranked.map((o,i)=>{const category=techOrderCategory(o);const tone={new:'new',active:'active',finished:'finished',completed:'completed',cancelled:'cancelled',other:'other'}[category]||'other';const title=safe(o.name||'عميل غير محدد');const service=safe(displayServices(o));const day=safe(fpOrderDay(o)||String(o.date||'').slice(0,10)||'—');const assigned=safe(fpAssignmentDateTime(o));return `<details class="fp-tech-accordion fp-tech-${tone}" ${i===0?'open':''}><summary><span class="fp-tech-number">#${safe(o.id)}</span><span class="fp-tech-main"><strong>${title}</strong><small>${service} · ${safe(o.city||'بدون مدينة')} · ${day}</small><small class="fp-assignment-stamp">🕒 تاريخ ووقت الإسناد: ${assigned}</small></span><span class="fp-tech-state">${category==='new'?'🆕 جديد · ':''}${safe(o.status||'غير محدد')}</span><span class="fp-tech-expand">⌄</span></summary><div class="fp-tech-expanded">${techOrderDetailCard(o)}</div></details>`;}).join('')||'<div class="empty-state">لا توجد طلبات نشطة حاليًا — الطلبات المكتملة والملغاة محفوظة في سجلات الإدارة والتقارير</div>';
+ get('portalOrders').innerHTML=ranked.map((o,i)=>{const category=techOrderCategory(o);const tone={new:'new',active:'active',finished:'finished',completed:'completed',cancelled:'cancelled',other:'other'}[category]||'other';const title=safe(o.name||'عميل غير محدد');const service=safe(displayServices(o));const day=safe(fpOrderDay(o)||String(o.date||'').slice(0,10)||'—');const assigned=safe(fpAssignmentDateTime(o));return `<details class="fp-tech-accordion fp-tech-${tone}" ${i===0?'open':''}><summary><span class="fp-tech-number">#${safe(o.id)}${category==='new'?'<i class="fp-new-pill">جديد</i>':''}</span><span class="fp-tech-main"><strong>${title}</strong><small>${service} · ${safe(o.city||'بدون مدينة')} · ${day}</small><small class="fp-assignment-stamp">🕒 تاريخ ووقت الإسناد: ${assigned}</small></span><span class="fp-tech-state">${category==='new'?'🆕 جديد · ':''}${safe(o.status||'غير محدد')}</span><span class="fp-tech-expand">⌄</span></summary><div class="fp-tech-expanded">${techOrderDetailCard(o)}</div></details>`;}).join('')||'<div class="empty-state">لا توجد طلبات نشطة حاليًا — الطلبات المكتملة والملغاة محفوظة في سجلات الإدارة والتقارير</div>';
 }
 
 function fpTechReportData(){
