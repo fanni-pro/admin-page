@@ -1549,30 +1549,28 @@ function fpOpenTransfer(orderId){
 }
 async function fpSubmitTransfer(){
  const id=fpTransferOrderId,to=document.getElementById('fpTransferTarget').value,reason=document.getElementById('fpTransferReason').value.trim();
- if(!id||!to){document.getElementById('fpTransferMessage').textContent='اختر الفني المستلم';return}
- if(!sb||!cloudEnabled){document.getElementById('fpTransferMessage').textContent='لا يوجد اتصال بقاعدة البيانات؛ لم يتم الحفظ';return}
+ const message=document.getElementById('fpTransferMessage');
+ if(!id||!to){message.textContent='اختر الفني المستلم';return}
+ if(!sb||!cloudEnabled){message.textContent='لا يوجد اتصال بقاعدة البيانات؛ لم يتم الحفظ';return}
  const btn=document.getElementById('fpTransferSubmit');btn.disabled=true;
  try{
-  let {error}=await sb.rpc('fp_technician_transfer_order',{p_order_id:id,p_to_technician_id:to,p_reason:reason||'تحويل بدون سبب مسجل'});
-  if(error && currentUserRole!=='technician'){
-    // Admin fallback: use existing orders update policy, then verify persisted assignment.
-    const original=load(KEYS.ORD).find(o=>String(o.id)===String(id));
-    if(!original)throw new Error('الطلب غير موجود');
-    const target=load(KEYS.TECH).find(t=>String(t.id)===String(to));
-    if(!target)throw new Error('الفني المستلم غير موجود');
-    const changed={...original,techId:to,companyId:target.companyId||'',assignedAt:new Date().toISOString(),status:original.status==='جديدة'?'تم الإسناد':original.status};
-    const {error:writeError}=await sb.from('orders').update(normOrder(changed)).eq('id',id);
-    if(writeError)throw writeError;
-    const {data:verified,error:readError}=await sb.from('orders').select('*').eq('id',id).single();
-    if(readError)throw readError;
-    const actual=verified?.data?.techId??verified?.techId??verified?.data?.tech_id??verified?.tech_id;
-    if(String(actual)!==String(to))throw new Error('لم يتم تأكيد الإسناد في قاعدة البيانات؛ راجع صلاحيات Supabase');
-    error=null;
-  }
+  const original=load(KEYS.ORD).find(o=>String(o.id)===String(id));
+  const target=load(KEYS.TECH).find(t=>String(t.id)===String(to));
+  if(!original||!target)throw new Error('الطلب أو الفني المستلم غير موجود');
+  const {error}=await sb.rpc('fp_technician_transfer_order',{p_order_id:String(id),p_to_technician_id:String(to),p_reason:reason||''});
   if(error)throw error;
-  fpCloseTransfer();await refreshFromCloud(false);renderAll();toast('تم تحويل الطلب إلى الفني الجديد بنجاح');
- }catch(e){document.getElementById('fpTransferMessage').textContent='لم يتم التحويل: '+(e.message||e)}finally{btn.disabled=false}
+  // Never report success until the database confirms the new technician.
+  const {data:verified,error:readError}=await sb.from('orders').select('id,tech_id,raw').eq('id',id).single();
+  if(readError)throw readError;
+  if(String(verified.tech_id||'')!==String(to))throw new Error('التحويل لم يثبت في قاعدة البيانات، ولم يتم تأكيده');
+  const orders=load(KEYS.ORD).map(o=>String(o.id)===String(id)?{...o,techId:String(to),tech_id:String(to),companyId:target.companyId||'',assignedAt:verified.raw?.assignedAt||new Date().toISOString(),status:o.status==='جديدة'?'تم الإسناد':o.status}:o);
+  localStorage.setItem(KEYS.ORD,JSON.stringify(orders));
+  fpCloseTransfer();renderAll();
+  await refreshFromCloud(false);
+  toast('تم نقل الطلب للفني الجديد وإزالته من طلبات الفني السابق');
+ }catch(e){message.textContent='لم يتم التحويل: '+(e.message||e)}finally{btn.disabled=false}
 }
+
 </script>
 <style id="fpSettlementStyle">#fpSettlementModal{position:fixed;inset:0;background:#06172da8;z-index:999999;display:grid;place-items:center;padding:15px}#fpSettlementModal.hidden{display:none!important}.fps-box{background:white;border-radius:22px;padding:24px;width:min(500px,100%);max-height:95vh;overflow:auto;box-shadow:0 25px 80px #001a3d55}.fps-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}.fps-box input,.fps-box textarea{width:100%;border:1px solid #dbe5f2;border-radius:11px;padding:12px;margin-top:5px}.fps-box label{font-weight:800}.fps-note{background:#f1f7ff;border-radius:12px;padding:12px;line-height:1.9;margin:12px 0}</style>
 <div id="fpSettlementModal" class="hidden" dir="rtl"><div class="fps-box"><div class="actions" style="justify-content:space-between"><h2>🔒 إقفال فاتورة الفني</h2><button class="btn light small" onclick="fpSettlementHide()">✕ إغلاق</button></div><p id="fpsOrderLabel" class="muted"></p><div id="fpsDue" class="fps-note"></div><div class="fps-grid"><label>💵 كاش<input id="fpsCash" type="number" min="0" step="0.01" value="0" oninput="fpSettlementCalc()"></label><label>💳 شبكة<input id="fpsCard" type="number" min="0" step="0.01" value="0" oninput="fpSettlementCalc()"></label><label>🔧 مصروفات (اختياري)<input id="fpsExpense" type="number" min="0" step="0.01" value="0" oninput="fpSettlementCalc()"></label></div><label>ملاحظات المصروفات / التحصيل<textarea id="fpsNote" rows="2" maxlength="1000"></textarea></label><div id="fpsTotals" class="fps-note"></div><p class="fps-note">يمكن تسجيل التحصيل والمصروفات بأي مبالغ غير سالبة، حتى لو اختلف إجمالي التحصيل عن قيمة الفاتورة.</p><p id="fpsError" style="color:#d32f45;font-weight:800"></p><div class="actions"><button class="btn green" id="fpsCloseBtn" onclick="fpSettlementClose()">اعتماد وإقفال الفاتورة</button><button class="btn orange hidden" id="fpsReopenBtn" onclick="fpSettlementReopen()">إعادة فتح (الأدمن فقط)</button></div></div></div>
