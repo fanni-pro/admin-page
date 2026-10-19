@@ -131,7 +131,50 @@
 .fp-tech-accordion>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:13px;padding:16px 18px;min-height:80px}.fp-tech-accordion>summary::-webkit-details-marker{display:none}.fp-tech-accordion[open]>summary{background:#f5faff;border-bottom:1px solid #e1ebf7}.fp-tech-number{font-weight:900;color:#1268ce;white-space:nowrap}.fp-tech-main{min-width:0;flex:1}.fp-tech-main strong{display:block;font-size:17px;color:#102b4b}.fp-tech-main small{display:block;color:#64748b;font-size:12px;line-height:1.7;margin-top:4px;overflow-wrap:anywhere}.fp-tech-state{font-size:12px;font-weight:900;background:#edf4fc;border-radius:100px;padding:8px 10px;white-space:nowrap}.fp-tech-expand{font-size:23px;color:#55728e;transition:transform .2s}.fp-tech-accordion[open] .fp-tech-expand{transform:rotate(180deg)}.fp-tech-expanded{padding:12px}.fp-tech-expanded>.tech-order-detail{margin:0;box-shadow:none;border:0}
 @media(max-width:650px){.fp-tech-accordion>summary{gap:7px;padding:12px 9px;flex-wrap:wrap}.fp-tech-number{font-size:12px}.fp-tech-main{flex-basis:60%}.fp-tech-main strong{font-size:14px}.fp-tech-state{font-size:10px;padding:6px}.fp-tech-expanded{padding:7px}}
 </style>
-<style>.fp-assignment-stamp{display:block!important;margin-top:5px;color:#0756a8;font-weight:800;font-size:12px}.fp-tech-accordion summary .fp-tech-main{min-width:0}</style></head>
+<style>.fp-assignment-stamp{display:block!important;margin-top:5px;color:#0756a8;font-weight:800;font-size:12px}.fp-tech-accordion summary .fp-tech-main{min-width:0}</style>
+<style id="fpMobileTechnicianPolish">
+/* Mobile layout refinements; visual changes only */
+@media (max-width: 767px) {
+ html,body{max-width:100%;overflow-x:hidden}
+ *,*::before,*::after{box-sizing:border-box}
+ input,select,textarea{font-size:16px!important;max-width:100%;min-width:0}
+ #techPortal,#techPortal .wide-grid,#techPortal .card,#techPortal .mini-form,#techPortal .fp-filter-grid{min-width:0;max-width:100%}
+ #techPortal .wide-grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+ #techPortal .card{padding:14px!important;border-radius:16px!important;overflow:visible}
+ #techPortal .page-title{margin-bottom:12px!important}
+ #techPortal .page-title h1{font-size:22px!important}
+ #techPortal .card-head{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:10px!important}
+ #techPortal .card-head .actions{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important;width:100%}
+ #techPortal .card-head .actions .btn{width:100%!important;min-height:44px!important;white-space:normal!important;line-height:1.5;text-align:center}
+ #techPortal .mini-form,#techPortal .fp-filter-grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important}
+ #techPortal .field,#techPortal .fp-filter-grid>label{width:100%;min-width:0}
+ #techPortal .field input,#techPortal .field select,#techPortal .fp-filter-grid input,#techPortal .fp-filter-grid select{width:100%!important;min-height:44px!important}
+ #portalSummary{max-width:100%;overflow-wrap:anywhere}
+ #portalOrders{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important;width:100%;min-width:0}
+ #portalOrders .fp-tech-accordion{min-width:0;width:100%;border-radius:14px}
+ #portalOrders .fp-tech-accordion>summary{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:5px 8px!important;padding:13px 12px!important;min-height:0!important}
+ #portalOrders .fp-tech-accordion>summary .fp-tech-number{grid-column:1;grid-row:1;white-space:normal;overflow-wrap:anywhere;font-size:13px!important}
+ #portalOrders .fp-tech-accordion>summary .fp-tech-main{grid-column:1;grid-row:2;min-width:0;flex-basis:auto!important}
+ #portalOrders .fp-tech-accordion>summary .fp-tech-main strong{font-size:15px!important;line-height:1.5}
+ #portalOrders .fp-tech-accordion>summary .fp-tech-main small{font-size:12px!important;line-height:1.6}
+ #portalOrders .fp-tech-accordion>summary .fp-tech-state{grid-column:2;grid-row:1;justify-self:end;white-space:normal;text-align:center;font-size:11px!important}
+ #portalOrders .fp-tech-accordion>summary .fp-tech-expand{grid-column:2;grid-row:2;justify-self:end}
+ #portalOrders .fp-tech-expanded{padding:8px!important;min-width:0}
+ #portalOrders .tech-order-detail{padding:11px!important;min-width:0;max-width:100%;border-radius:12px!important}
+ #portalOrders .tech-order-detail .tech-detail-grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important}
+ #portalOrders .tech-order-detail .tech-detail-box{min-width:0;padding:10px!important;overflow-wrap:anywhere}
+ #portalOrders .tech-order-detail .tech-actions-row{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important}
+ #portalOrders .tech-order-detail .tech-actions-row .btn{width:100%!important;min-width:0;min-height:44px!important;white-space:normal!important;overflow-wrap:anywhere}
+ #portalOrders .tech-order-detail .tech-detail-head{flex-wrap:wrap!important;gap:8px!important}
+ #portalOrders .tech-order-detail .tech-detail-head h3{font-size:16px!important}
+ #portalOrders .tech-order-detail .tech-invoice-box,#portalOrders .tech-order-detail .tech-photo-panel{padding:11px!important;max-width:100%;overflow-wrap:anywhere}
+ #portalOrders table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+ #portalOrders img,#portalOrders video{max-width:100%;height:auto}
+ #techPortal button{touch-action:manipulation}
+}
+@media(max-width:380px){#techPortal .card{padding:10px!important}#portalOrders .fp-tech-accordion>summary{padding:10px!important}}
+</style>
+</head>
 <body>
 <div id="loginScreen" class="login-screen hidden">
   <div class="fp-login-layout">
