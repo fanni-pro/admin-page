@@ -182,6 +182,33 @@
 .fp-new-pill{display:inline-block;font-size:10px;font-style:normal;background:#dbeeff;color:#07559d;border-radius:999px;padding:3px 7px;margin-inline-start:6px}
 @media(max-width:600px){.fp-today-dashboard{padding:12px;border-radius:16px}.fp-today-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.fp-today-stat{padding:10px 9px}.fp-today-stat b{font-size:19px}.fp-today-head strong{font-size:15px}}
 </style>
+<style id="fpOrdersActionsStyle">
+.fp-orders-actions{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap;margin:12px 0 16px;direction:rtl}
+.fp-orders-action{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:10px 20px;border:1px solid transparent;border-radius:13px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,background .16s ease;white-space:nowrap}
+.fp-orders-action:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(11,45,89,.12)}
+.fp-orders-action:focus-visible{outline:3px solid #82b4ff;outline-offset:2px}
+.fp-orders-action-primary{background:#1166d9;color:#fff;border-color:#1166d9}
+.fp-orders-action-primary:hover{background:#0957c1}
+.fp-orders-action-secondary{background:#edf4ff;color:#1553a0;border-color:#d8e6fa}
+.fp-orders-action-secondary:hover{background:#e1eeff}
+.fp-orders-action-icon{font-size:20px;line-height:1}
+@media(max-width:540px){.fp-orders-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.fp-orders-action{padding:10px 8px;font-size:13px}}
+</style>
+
+<style id="fpProfessionalHeaderFix">
+.topbar{min-width:0;gap:12px}
+.topbar .search{min-width:100px}
+.topbar .top-icons{flex-shrink:0}
+.topbar .fp-header-user{min-width:0;max-width:205px;flex:0 0 auto;gap:10px;padding:0 12px;border-left:1px solid var(--line)}
+.topbar .fp-header-user .avatar{width:44px;height:44px;flex:0 0 44px}
+.topbar .fp-header-identity{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-width:0;gap:3px}
+.topbar .fp-header-identity b{display:block;white-space:nowrap;font-size:14px;line-height:1.3;max-width:125px;overflow:hidden;text-overflow:ellipsis}
+.topbar .fp-connection-status{display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:12px;line-height:1.3}
+.topbar .fp-connection-status:before{content:'';width:7px;height:7px;border-radius:50%;background:#22c55e;flex:none}
+.topbar .fp-connection-status:not(:empty){max-width:145px}
+@media(max-width:850px){.topbar{padding:10px 12px;gap:8px}.topbar .fp-header-user{padding:0 8px;max-width:160px}.topbar .fp-header-user .avatar{width:38px;height:38px;flex-basis:38px}.topbar .top-icons{gap:5px}.topbar .icon-btn{width:38px;height:38px}.topbar .fp-header-identity b{max-width:92px}}
+@media(max-width:560px){.topbar .search{order:5;flex:1 0 100%;max-width:none;margin:0}.topbar .fp-header-user{margin-inline-start:auto}.topbar .hamb{width:38px;height:38px;flex-shrink:0}.topbar .fp-header-identity b{max-width:90px}}
+</style>
 </head>
 <body>
 <div id="loginScreen" class="login-screen hidden">
@@ -211,7 +238,7 @@
       <button class="hamb" onclick="document.querySelector('.sidebar').scrollIntoView({behavior:'smooth'})">☰</button>
       <div class="search"><input id="globalSearch" placeholder="ابحث عن طلب، عميل، فني، فاتورة..." oninput="renderAll()"></div>
       <div class="top-icons"><button class="icon-btn" onclick="toggleTheme()">🌙</button><button class="icon-btn" onclick="showPage('notifications')">🔔<span class="badge" id="notifBadge">0</span></button><button class="icon-btn" onclick="logout()" title="تسجيل خروج">🚪</button></div>
-      <div class="user"><div class="avatar">👨🏻</div><div><b id="currentUserName">مدير النظام</b><small id="connectionStatus">متصل</small></div></div>
+      <div class="user fp-header-user" dir="rtl"><div class="avatar" aria-hidden="true">👨🏻</div><div class="fp-header-identity"><b id="currentUserName">مدير النظام</b><small id="connectionStatus" class="fp-connection-status">متصل</small></div></div>
     </header>
     <section class="content">
       <div id="dashboard" class="page active">
@@ -247,7 +274,7 @@
 <option value="المنطقة الجنوبية">المنطقة الجنوبية</option>
 <option value="المنطقة الشرقية">المنطقة الشرقية</option>
 </select></div>
-<div class="field"><label>المدينة</label><select id="oCity"></select></div><div class="field"><label>السعر</label><input id="oPrice" type="number" min="0" oninput="fpAdminRecalc()"></div><div class="field"><label>الحالة</label><select id="oStatus"><option>جديدة</option><option>تم الإسناد</option><option>الفني تحرك</option><option>قيد التنفيذ</option><option>مكتملة</option><option>متأخرة</option><option>ملغي</option></select></div><div class="field"><label>الشركة المنفذة</label><select id="oCompany" onchange="fillOrderTechsByCompany()"><option value="">كل الشركات</option></select></div><div class="field"><label>الفني</label><select id="oTech"><option value="">بدون إسناد</option></select></div><div class="field"><label>حالة الدفع</label><select id="oPayment"><option>غير مدفوعة</option><option>مدفوعة</option><option>جزئي</option><option>متأخرة</option></select></div><div class="field" style="grid-column:1/-1"><div style="background:#eef5ff;border:1px solid #cfe0fb;border-radius:14px;padding:14px"><h3 style="margin-bottom:12px">💰 التحصيل المالي للطلب — الإدارة</h3><div class="mini-form"><div class="field"><label>كاش (ر.س)</label><input id="oCashCollected" type="number" min="0" step="0.01" value="0" oninput="fpAdminRecalc()"></div><div class="field"><label>شبكة (ر.س)</label><input id="oCardCollected" type="number" min="0" step="0.01" value="0" oninput="fpAdminRecalc()"></div><div class="field"><label>تحويل بنكي (ر.س)</label><input id="oBankCollected" type="number" min="0" step="0.01" value="0" oninput="fpAdminRecalc()"></div><div class="field"><label>المصروفات (ر.س)</label><input id="oExpenseCollected" type="number" min="0" step="0.01" value="0" oninput="fpAdminRecalc()"></div></div><div id="fpAdminTotals" style="margin-top:12px;font-weight:900;line-height:2"></div></div></div><div class="field" style="grid-column:1/-1"><label>العنوان / الملاحظات</label><textarea id="oNotes"></textarea></div></div><br><button class="btn" onclick="saveOrderForm()">حفظ الطلب</button></div><div class="card"><div class="card-head"><h3>كل الطلبات</h3><span class="status new" id="ordersCount">0 طلب</span></div><div id="ordersDiagnostic" class="danger-note" style="margin:10px 0">اضغط فحص الطلبات لمعرفة حالة الربط.</div><button class="btn light" type="button" onclick="diagnoseOrders()" style="margin-bottom:12px">🔎 فحص الطلبات من Supabase</button><button class="btn light" type="button" onclick="resetOrderSearch()" style="margin-bottom:12px">↺ إظهار جميع الطلبات / مسح البحث</button><section class="fp-full-filters" aria-label="فلترة جميع الطلبات"><h3>🔎 فلتر جميع الطلبات</h3><div class="fp-filter-grid"><label>بحث برقم الطلب / العميل / الجوال<input id="fpAllSearch" placeholder="ابحث في الطلبات" oninput="renderOrders()"></label><label>حالة الطلب<select id="fpAllStatus" onchange="renderOrders()"><option value="all">كل الحالات</option><option value="new">جديد / مسند</option><option value="active">قيد التنفيذ</option><option value="finished">انتهى منها الفني</option><option value="completed">مكتمل</option><option value="cancelled">ملغي / مرفوض</option><option value="other">أخرى</option></select></label><label>من تاريخ<input type="date" id="fpAllFrom" onchange="renderOrders()"></label><label>إلى تاريخ<input type="date" id="fpAllTo" onchange="renderOrders()"></label><label>المدينة<input id="fpAllCity" placeholder="كل المدن" oninput="renderOrders()"></label><label>الفني<select id="fpAllTech" onchange="renderOrders()"><option value="">كل الفنيين</option></select></label><label>حالة الدفع<select id="fpAllPayment" onchange="renderOrders()"><option value="">كل طرق الدفع</option><option value="paid">مدفوع</option><option value="unpaid">غير مدفوع</option></select></label></div><div class="fp-filter-footer"><strong id="fpAllFilterCount">جميع الطلبات</strong><button type="button" class="btn light" onclick="fpResetAllFilters()">↺ مسح الفلاتر</button></div></section><div id="allOrders" class="list-card"></div></div></div></div>
+<div class="field"><label>المدينة</label><select id="oCity"></select></div><div class="field"><label>السعر</label><input id="oPrice" type="number" min="0" oninput="fpAdminRecalc()"></div><div class="field"><label>الحالة</label><select id="oStatus"><option>جديدة</option><option>تم الإسناد</option><option>الفني تحرك</option><option>قيد التنفيذ</option><option>مكتملة</option><option>متأخرة</option><option>ملغي</option></select></div><div class="field"><label>الشركة المنفذة</label><select id="oCompany" onchange="fillOrderTechsByCompany()"><option value="">كل الشركات</option></select></div><div class="field"><label>الفني</label><select id="oTech"><option value="">بدون إسناد</option></select></div><div class="field"><label>حالة الدفع</label><select id="oPayment"><option>غير مدفوعة</option><option>مدفوعة</option><option>جزئي</option><option>متأخرة</option></select></div><div class="field" style="grid-column:1/-1"><div style="background:#eef5ff;border:1px solid #cfe0fb;border-radius:14px;padding:14px"><h3 style="margin-bottom:12px">💰 التحصيل المالي للطلب — الإدارة</h3><div class="mini-form"><div class="field"><label>كاش (ر.س)</label><input id="oCashCollected" type="number" min="0" step="0.01" value="0" oninput="fpAdminRecalc()"></div><div class="field"><label>شبكة (ر.س)</label><input id="oCardCollected" type="number" min="0" step="0.01" value="0" oninput="fpAdminRecalc()"></div><div class="field"><label>تحويل بنكي (ر.س)</label><input id="oBankCollected" type="number" min="0" step="0.01" value="0" oninput="fpAdminRecalc()"></div><div class="field"><label>المصروفات (ر.س)</label><input id="oExpenseCollected" type="number" min="0" step="0.01" value="0" oninput="fpAdminRecalc()"></div></div><div id="fpAdminTotals" style="margin-top:12px;font-weight:900;line-height:2"></div></div></div><div class="field" style="grid-column:1/-1"><label>العنوان / الملاحظات</label><textarea id="oNotes"></textarea></div></div><br><button class="btn" onclick="saveOrderForm()">حفظ الطلب</button></div><div class="card"><div class="card-head"><h3>كل الطلبات</h3><span class="status new" id="ordersCount">0 طلب</span></div><div id="ordersDiagnostic" role="status" aria-live="polite" style="display:none"></div><div class="fp-orders-actions"><button class="fp-orders-action fp-orders-action-primary" type="button" onclick="diagnoseOrders()" title="فحص الطلبات وتحديث حالة الربط"><span class="fp-orders-action-icon" aria-hidden="true">⌕</span><span>فحص الطلبات</span></button><button class="fp-orders-action fp-orders-action-secondary" type="button" onclick="resetOrderSearch()" title="إظهار جميع الطلبات ومسح البحث"><span class="fp-orders-action-icon" aria-hidden="true">↻</span><span>فحص</span></button></div><section class="fp-full-filters" aria-label="فلترة جميع الطلبات"><h3>🔎 فلتر جميع الطلبات</h3><div class="fp-filter-grid"><label>بحث برقم الطلب / العميل / الجوال<input id="fpAllSearch" placeholder="ابحث في الطلبات" oninput="renderOrders()"></label><label>حالة الطلب<select id="fpAllStatus" onchange="renderOrders()"><option value="all">كل الحالات</option><option value="new">جديد / مسند</option><option value="active">قيد التنفيذ</option><option value="finished">انتهى منها الفني</option><option value="completed">مكتمل</option><option value="cancelled">ملغي / مرفوض</option><option value="other">أخرى</option></select></label><label>من تاريخ<input type="date" id="fpAllFrom" onchange="renderOrders()"></label><label>إلى تاريخ<input type="date" id="fpAllTo" onchange="renderOrders()"></label><label>المدينة<input id="fpAllCity" placeholder="كل المدن" oninput="renderOrders()"></label><label>الفني<select id="fpAllTech" onchange="renderOrders()"><option value="">كل الفنيين</option></select></label><label>حالة الدفع<select id="fpAllPayment" onchange="renderOrders()"><option value="">كل طرق الدفع</option><option value="paid">مدفوع</option><option value="unpaid">غير مدفوع</option></select></label></div><div class="fp-filter-footer"><strong id="fpAllFilterCount">جميع الطلبات</strong><button type="button" class="btn light" onclick="fpResetAllFilters()">↺ مسح الفلاتر</button></div></section><div id="allOrders" class="list-card"></div></div></div></div>
 
       <div id="companies" class="page">
         <div class="page-title"><div><h1>الشركات والفنيين</h1><p>إدارة الشركات وعرض الفنيين التابعين لكل شركة</p></div></div>
@@ -499,7 +526,7 @@ function applyRolePermissions(role, technicianId){
     btn.style.display=allowed.includes(btn.dataset.page)?'flex':'none';
   });
   const roleTxt=currentUserRole==='admin'?'مدير النظام':currentUserRole==='technician'?'فني':currentUserRole==='company_manager'?'مدير شركة':'مستخدم';
-  const st=get('connectionStatus'); if(st) st.textContent=(cloudEnabled?'Supabase متصل':'متصل')+' · '+roleTxt;
+  const headerName=get('currentUserName');if(headerName)headerName.textContent=roleTxt;
   const portal=get('portalTech');
   if(portal&&currentUserRole==='technician'&&currentTechnicianId){portal.value=currentTechnicianId;portal.disabled=true;}
   if(portal&&currentUserRole!=='technician'){portal.disabled=false;}
@@ -516,7 +543,7 @@ async function loadLoggedUserProfile(user,email){
   }catch(e){console.warn('profile load failed',e.message||e)}
   if(!profile){profile={full_name:email||'مستخدم',role:'viewer',technician_id:null};}
   currentUserProfile=profile;
-  get('currentUserName').textContent=profile.full_name||email||'مستخدم';
+  const headerName=get('currentUserName');if(headerName){headerName.title=profile.full_name||email||'';}
   currentCompanyId=profile.company_id||null; applyRolePermissions(profile.role||'viewer',profile.technician_id||null);
   return profile;
 }
@@ -537,7 +564,7 @@ async function restoreSessionProfile(){
 }
 function canOpenPage(id){return allowedPagesForRole(currentUserRole).includes(id)}
 
-async function initSupabase(){try{if(window.supabase&&CONFIG.SUPABASE_URL.startsWith('http')){sb=window.supabase.createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_ANON_KEY); cloudEnabled=true;get('connectionStatus').textContent='Supabase متصل';get('dbStatus').textContent='الربط مفعل مع Supabase. إذا لم تظهر بيانات العميل تأكد من الجداول والسياسات RLS.';sb.channel('alostol-live').on('postgres_changes',{event:'*',schema:'public',table:'orders'},()=>refreshFromCloud(false)).on('postgres_changes',{event:'*',schema:'public',table:'technicians'},()=>refreshFromCloud(false)).subscribe();}else throw new Error('Supabase library not loaded')}catch(e){cloudEnabled=false;get('connectionStatus').textContent='Supabase غير متصل';get('dbStatus').textContent='تعذر الاتصال بـ Supabase. تسجيل الدخول المحلي غير مفعل في نسخة البيع.'}}
+async function initSupabase(){try{if(window.supabase&&CONFIG.SUPABASE_URL.startsWith('http')){sb=window.supabase.createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_ANON_KEY); cloudEnabled=true;get('connectionStatus').textContent='متصل';get('dbStatus').textContent='النظام متصل وجاهز للعمل.';sb.channel('alostol-live').on('postgres_changes',{event:'*',schema:'public',table:'orders'},()=>refreshFromCloud(false)).on('postgres_changes',{event:'*',schema:'public',table:'technicians'},()=>refreshFromCloud(false)).subscribe();}else throw new Error('Supabase library not loaded')}catch(e){cloudEnabled=false;get('connectionStatus').textContent='غير متصل';get('dbStatus').textContent='الاتصال غير متاح حاليًا.'}}
 async function loginSupabase(){const email=get('loginEmail').value.trim(),pass=get('loginPass').value;if(!email||!pass){showLoginError('اكتب الإيميل وكلمة المرور');return}try{if(!sb) await initSupabase(); if(!sb) throw new Error('Supabase غير متاح');const {data,error}=await sb.auth.signInWithPassword({email,password:pass});if(error) throw error;localStorage.setItem(KEYS.SESSION,JSON.stringify({mode:'supabase',email,time:Date.now()}));await loadLoggedUserProfile(data.user,email);get('loginScreen').classList.add('hidden');toast('تم تسجيل الدخول');await refreshFromCloud();if(currentUserRole==='technician')showPage('techPortal');else if(currentUserRole==='company_manager')showPage('companyPortal');}catch(e){showLoginError('فشل الدخول: '+(e.message||'راجع بيانات الحساب'))}}
 function showLoginError(msg){get('loginError').textContent=msg;get('loginError').classList.remove('hidden')}
 
@@ -742,17 +769,17 @@ async function refreshFromCloud(showToast=true){
       const cloudCompanies=(companyResult.data||[]).map(c=>({...oldMap.get(String(c.id)),id:c.id,name:c.name||'',phone:c.phone||'',city:c.city||'',region:oldMap.get(String(c.id))?.region||inferRegion(c.city||''),status:oldMap.get(String(c.id))?.status||'نشطة',notes:oldMap.get(String(c.id))?.notes||''}));
       localStorage.setItem(KEYS.COMP,JSON.stringify(cloudCompanies));
     }else console.warn('تعذر تحميل الشركات دون التأثير على الطلبات',companyResult?.error||results[1].reason);
-    const db=get('dbStatus');if(db)db.textContent='تم جلب '+localOrders.length+' طلب من Supabase. إذا كان العدد صفرًا، تحقق من وجود الطلبات وصلاحيات RLS للحساب.';
-    const st=get('connectionStatus');if(st)st.textContent='Supabase متصل';
+    const db=get('dbStatus');if(db)db.textContent='الطلبات جاهزة للعرض.';
+    const st=get('connectionStatus');if(st)st.textContent='متصل';
     renderAll();
     if(showToast)toast('تم تحديث الطلبات: '+localOrders.length);
     return true;
   }catch(e){
     const msg=e.message||String(e);
     console.error('refreshFromCloud failed',e);
-    const db=get('dbStatus');if(db)db.textContent=msg+' — راجع صلاحيات RLS والاتصال.';
-    const st=get('connectionStatus');if(st)st.textContent='خطأ في قراءة الطلبات';
-    if(showToast)toast(msg);
+    const db=get('dbStatus');if(db)db.textContent='تعذر تحديث البيانات. يرجى إعادة المحاولة.';
+    const st=get('connectionStatus');if(st)st.textContent='تعذر التحديث';
+    if(showToast)toast('تعذر تحديث الطلبات، يرجى المحاولة مجددًا');
     renderAll();
     return false;
   }finally{pulling=false;refreshFromCloudBusy=false;}
@@ -931,21 +958,23 @@ function resetOrderSearch(){const input=get('globalSearch');if(input)input.value
 
 
 async function diagnoseOrders(){
- const el=get('ordersDiagnostic');if(!el)return;
- el.dataset.checked='1';el.textContent='جاري الاتصال بقاعدة البيانات...';
+ const el=get('ordersDiagnostic');
+ if(el){el.style.display='none';el.textContent='';}
  try{
   if(!sb||!cloudEnabled)throw new Error('اتصال Supabase غير مهيأ');
   const {data:sessionData,error:sessionError}=await sb.auth.getUser();
   if(sessionError)throw sessionError;
-  const user=sessionData?.user;
-  if(!user)throw new Error('لا توجد جلسة دخول صالحة. سجل الخروج ثم الدخول.');
+  if(!sessionData?.user)throw new Error('لا توجد جلسة دخول صالحة');
   const {count,error}=await sb.from('orders').select('*',{count:'exact',head:true});
   if(error)throw error;
-  const {data, error:readError}=await sb.from('orders').select('*').limit(5);
+  const {error:readError}=await sb.from('orders').select('*').limit(5);
   if(readError)throw readError;
-  const local=load(KEYS.ORD),filtered=qfilter(local);
-  el.textContent='الحساب: '+user.email+' | دور الحساب: '+currentUserRole+' | عدد الطلبات المتاحة لهذا الحساب في Supabase: '+count+' | عدد الطلبات المخزنة محليًا: '+local.length+' | المعروضة بعد التصفية: '+filtered.length+' | البحث الحالي: '+(get('globalSearch')?.value||'لا يوجد')+'. '+(count===0?'إذا كانت الطلبات موجودة في Table Editor فافحص RLS أو اختلاف مشروع Supabase.':filtered.length===0?'البيانات متاحة لكن التصفية/التحويل/التحديث يمنع ظهورها.':'الطلبات متاحة؛ افحص قائمة العرض.');
- }catch(e){el.textContent='خطأ فحص الطلبات: '+(e.message||String(e));}
+  console.info('[orders check] completed', {count});
+  toast('تم فحص الطلبات بنجاح');
+ }catch(e){
+  console.error('[orders check] failed',e);
+  toast('تعذر فحص الطلبات، حاول مرة أخرى');
+ }
 }
 
 function fpOrderDay(o){const raw=o.createdAt||o.created_at||o.orderDate||o.order_date||o.date||'';if(!raw)return '';const str=String(raw);if(/^\d{4}-\d{2}-\d{2}/.test(str))return str.slice(0,10);const d=new Date(raw);return Number.isNaN(d.getTime())?'':new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Riyadh',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);}
@@ -954,7 +983,7 @@ function fpOrderMatch(o,prefix){const val=id=>document.getElementById(prefix+id)
 function fpResetAllFilters(){['Search','Status','From','To','City','Tech','Payment'].forEach(k=>{const el=document.getElementById('fpAll'+k);if(el)el.value=k==='Status'?'all':''});renderOrders();}
 function fpResetTechFilters(){['techOrderSearch','techOrderStatusFilter','techReportFrom','techReportTo','fpTechCity','fpTechPayment'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=id==='techOrderStatusFilter'?'all':''});renderTechPortal();}
 function fpPopulateOrderTechFilter(){const el=document.getElementById('fpAllTech');if(!el)return;const current=el.value;const techs=load(KEYS.TECH)||[];const opts=techs.map(t=>'<option value="'+safe(String(t.id))+'">'+safe(t.name||'فني')+'</option>').join('');if(el.dataset.names!==opts){el.innerHTML='<option value="">كل الفنيين</option>'+opts;el.dataset.names=opts;el.value=current;}}
-function renderOrders(){fpPopulateOrderTechFilter();const base=qfilter(load(KEYS.ORD)),orders=base.filter(o=>fpOrderMatch(o,"fpAll")),techs=load(KEYS.TECH);const counter=document.getElementById("fpAllFilterCount");if(counter)counter.textContent="المعروض: "+orders.length+" من "+base.length+" طلب";const diagnostic=get('ordersDiagnostic');if(diagnostic&&!diagnostic.dataset.checked)diagnostic.textContent='المحفوظ محليًا: '+load(KEYS.ORD).length+' | الظاهر بعد الصلاحيات والبحث: '+orders.length+' — اضغط فحص الطلبات لمعرفة العدد على السيرفر.';get('ordersCount').textContent=orders.length+' طلب';get('latestOrders').innerHTML=orders.slice(0,5).map(orderCardCompact).join('')||'<div class="empty-state">لا توجد طلبات</div>';get('allOrders').innerHTML=orders.map(o=>orderCardFull(o,techs)).join('')||'<div class="empty-state">لا توجد طلبات</div>'}
+function renderOrders(){fpPopulateOrderTechFilter();const base=qfilter(load(KEYS.ORD)),orders=base.filter(o=>fpOrderMatch(o,"fpAll")),techs=load(KEYS.TECH);const counter=document.getElementById("fpAllFilterCount");if(counter)counter.textContent="المعروض: "+orders.length+" من "+base.length+" طلب";get('ordersCount').textContent=orders.length+' طلب';get('latestOrders').innerHTML=orders.slice(0,5).map(orderCardCompact).join('')||'<div class="empty-state">لا توجد طلبات</div>';get('allOrders').innerHTML=orders.map(o=>orderCardFull(o,techs)).join('')||'<div class="empty-state">لا توجد طلبات</div>'}
 function techName(id){return (load(KEYS.TECH).find(t=>t.id===id)||{}).name||'غير مسند'}
 function fpOrderCreatedDate(x){
   // A date-only value (YYYY-MM-DD) has no creation time: never display 03:00 from UTC+3 conversion.
