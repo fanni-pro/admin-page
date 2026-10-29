@@ -767,7 +767,7 @@ async function syncOrders(orders){
       const {error}=await sb.from('orders').upsert(rows,{onConflict:'id'});
       if(error) throw error;
     }
-  }catch(e){console.warn('syncOrders failed',e.message||e)}
+  }catch(e){console.warn('syncOrders failed',e.message||e);toast('تنبيه: تعديل الطلب محفوظ على هذا الجهاز فقط ولم يتأكد حفظه على Supabase')}
 }
 
 async function syncTechs(techs){
@@ -1085,7 +1085,7 @@ async function fpCancelByCustomer(id,reason){
  if(!['no_answer','cancelled'].includes(reason)){toast('سبب الإلغاء غير صحيح');return;}
  if(fpCancelPending.has(String(id))){toast('الإلغاء قيد التنفيذ');return;}
  const label=reason==='no_answer'?'العميل لم يرد':'العميل كنسل';
- if(!confirm('تأكيد إلغاء الطلب '+id+'؟\nالسبب: '+label+'\nسيتم إلغاء الفاتورة غير المصدرة وقفل الطلب نهائيًا.'))return;
+ if(!confirm('تأكيد إلغاء الطلب '+id+'؟\nالسبب: '+label+'\nسيُغلق الطلب فقط، وستظل الفاتورة قابلة للإصدار لاحقًا بواسطة الإدارة.'))return;
  if(!sb||!cloudEnabled){toast('لا يمكن إلغاء الطلب بدون اتصال بقاعدة البيانات');return;}
  fpCancelPending.add(String(id));
  try{
@@ -1094,12 +1094,12 @@ async function fpCancelByCustomer(id,reason){
    // The RPC transaction is the only source of truth. Do not rewrite the whole orders cache.
    const orders=load(KEYS.ORD).map(o=>String(o.id)===String(id)?{
      ...o,status:'ملغاة',cancelReason:label,technicianLocked:true,
-     invoiceCancelled:true,invoiceCancelReason:label,cancelledAt:data?.cancelled_at||new Date().toISOString()
+     cancelledAt:data?.cancelled_at||new Date().toISOString()
    }:o);
    pulling=true;
    try{localStorage.setItem(KEYS.ORD,JSON.stringify(orders));}finally{pulling=false;}
    renderAll();
-   toast('تم إلغاء الطلب وقفل الفاتورة غير المصدرة: '+label);
+   toast('تم إغلاق الطلب تشغيليًا، والفاتورة ما زالت متاحة للإدارة: '+label);
    try{await refreshFromCloud(false);if(typeof fpInvoiceRefresh==='function')await fpInvoiceRefresh();renderAll();}
    catch(refreshError){console.warn('Cancellation succeeded, refresh failed:',refreshError);toast('تم الإلغاء على السيرفر، لكن تحديث العرض تعذر. أعد تحديث الصفحة.');}
  }catch(e){toast('فشل الإلغاء، لم يتم تغيير الطلب محليًا: '+(e.message||String(e)));}
@@ -1708,12 +1708,32 @@ function fpApprovalPanel(o){
  ${row?.review_note?`<p class="muted">ملاحظة الإدارة: ${safe(row.review_note)}</p>`:''}</section>`;
 }
 const fpApprovalBaseCard=techOrderDetailCard;
-techOrderDetailCard=function(o){const html=fpApprovalBaseCard(o);return html.replace(/<\/div>\s*$/,fpApprovalPanel(o)+'</div>')};
+techOrderDetailCard=function(o){
+ const html=fpApprovalBaseCard(o), tpl=document.createElement('template');tpl.innerHTML=html.trim();
+ if(tpl.content.firstElementChild)tpl.content.firstElementChild.insertAdjacentHTML('beforeend',fpApprovalPanel(o));
+ return tpl.innerHTML;
+};
 async function fpApprovalLoad(){
- if(!sb||!cloudEnabled)return;
- const {data,error}=await sb.from('fp_collection_approvals').select('*').order('submitted_at',{ascending:false}).limit(1000);
- if(error){console.warn('Approval loading:',error.message);fpApprovalRows=[];fpApprovalRenderAdmin();toast('تعذر تحديث التحصيلات: '+error.message);throw error;}
- fpApprovalRows=data||[];fpApprovalRenderAdmin();
+ if(!sb||!cloudEnabled)throw new Error('الاتصال بـ Supabase غير متاح');
+ const pageSize=500, maxRows=20000, all=[];
+ try{
+  for(let from=0;from<maxRows;from+=pageSize){
+   const {data,error}=await sb.from('fp_collection_approvals').select('*')
+     .order('submitted_at',{ascending:false}).order('order_id',{ascending:true})
+     .range(from,from+pageSize-1);
+   if(error)throw error;
+   all.push(...(data||[]));
+   if(!data||data.length<pageSize)break;
+   if(from+pageSize>=maxRows)throw new Error('تجاوز عدد سجلات التحصيل الحد الآمن للعرض؛ يلزم فلترة على السيرفر');
+  }
+  fpApprovalRows=all;
+  fpApprovalRenderAdmin();
+  return all;
+ }catch(e){
+  console.warn('Approval loading:',e.message||e);
+  fpApprovalRows=[];fpApprovalRenderAdmin();
+  throw e;
+ }
 }
 async function fpApprovalSubmit(orderId,button){
  if(currentUserRole!=='technician'||!sb){toast('يجب تسجيل الدخول كفني متصل');return;}
@@ -1723,7 +1743,7 @@ async function fpApprovalSubmit(orderId,button){
  const id=String(orderId).replace(/[^a-zA-Z0-9]/g,'_');
  const amount=k=>Number(document.getElementById(`fpa_${k}_${id}`)?.value);
  const values=['cash','card','bank','expenses'].map(amount);
- if(values.some(v=>!Number.isFinite(v)||v<0||v>100000000||Math.round(v*100)!==v*100)){toast('راجع المبالغ: أرقام موجبة وبحد أقصى منزلتين عشريتين');return;}
+ if(values.some(v=>!Number.isFinite(v)||v<0||v>100000000||Math.abs(Math.round(v*100)-v*100)>0.000001)){toast('راجع المبالغ: أرقام موجبة وبحد أقصى منزلتين عشريتين');return;}
  const notes=document.getElementById('fpa_notes_'+id)?.value||'';
  button.disabled=true;
  try{
@@ -1751,12 +1771,12 @@ async function fpApprovalReview(orderId,action,button){
  catch(e){toast('لم يتم الاعتماد: '+(e.message||e));}finally{button.disabled=false;}
 }
 const fpApprovalOriginalRefresh=refreshFromCloud;
-refreshFromCloud=async function(...args){const r=await fpApprovalOriginalRefresh(...args);await fpApprovalLoad();return r};
+refreshFromCloud=async function(...args){const r=await fpApprovalOriginalRefresh(...args);try{await fpApprovalLoad();}catch(e){console.warn('Collection refresh unavailable',e);}return r};
 const fpApprovalOriginalShow=showPage;
-showPage=function(id){fpApprovalOriginalShow(id);if(id==='payments')fpApprovalLoad()};
+showPage=function(id){fpApprovalOriginalShow(id);if(id==='payments')fpApprovalLoad().catch(e=>toast('تعذر تحميل التحصيلات: '+(e.message||e)))};
 const fpApprovalOriginalRender=renderTechPortal;
 renderTechPortal=function(){fpApprovalOriginalRender();};
-window.addEventListener('load',()=>setTimeout(()=>fpApprovalLoad(),1300));
+window.addEventListener('load',()=>setTimeout(()=>fpApprovalLoad().catch(e=>console.warn('Initial collection load failed',e)),1300));
 </script>
 
 <script id="fpOrderCollectionVisibility">
@@ -1780,7 +1800,10 @@ window.addEventListener('load',()=>setTimeout(()=>fpApprovalLoad(),1300));
   function visible(){return ['admin','company_manager'].includes(currentUserRole);}
   function card(html,o){
     if(!visible())return html;
-    return html.replace(/<\/div>\s*$/,`<div class="fp-order-collection-summary">${info(o)}</div></div>`);
+    const tpl=document.createElement('template');tpl.innerHTML=html.trim();
+    const root=tpl.content.firstElementChild;
+    if(root){const panel=document.createElement('div');panel.className='fp-order-collection-summary';panel.innerHTML=info(o);root.appendChild(panel);}
+    return tpl.innerHTML;
   }
   orderCardFull=function(o,techs){return card(baseCard(o,techs),o)};
   orderCardCompact=function(o){return card(baseCompact(o),o)};
@@ -1792,7 +1815,7 @@ window.addEventListener('load',()=>setTimeout(()=>fpApprovalLoad(),1300));
     panel.innerHTML=visible()?`<b>تحصيل الفني المسجل على الطلب:</b> ${info(o)}`:'';
   }
   editOrder=function(id){const result=baseEdit(id);const o=load(KEYS.ORD).find(x=>String(x.id)===String(id));if(o)updateEditor(o);return result;};
-  fpApprovalLoad=async function(){let result;try{result=await baseLoad();collectionLoaded=!!(sb&&cloudEnabled);collectionError=false;}catch(e){collectionLoaded=false;collectionError=true;console.warn("Collection display refresh failed",e);}if(document.getElementById('allOrders'))renderOrders();const editId=document.getElementById('editingOrderId')?.value;if(editId){const o=load(KEYS.ORD).find(x=>String(x.id)===String(editId));if(o)updateEditor(o);}return result;};
+  fpApprovalLoad=async function(){let result;try{result=await baseLoad();collectionLoaded=!!(sb&&cloudEnabled);collectionError=false;}catch(e){collectionLoaded=false;collectionError=true;console.warn("Collection display refresh failed",e);toast('تعذر تحميل تحصيل الفني من Supabase');}if(document.getElementById('allOrders'))renderOrders();const editId=document.getElementById('editingOrderId')?.value;if(editId){const o=load(KEYS.ORD).find(x=>String(x.id)===String(editId));if(o)updateEditor(o);}return result;};
   const baseClear=clearOrderForm;
   clearOrderForm=function(...args){const r=baseClear(...args);const panel=document.getElementById('fpOrderTechCollection');if(panel)panel.remove();return r;};
 })();
