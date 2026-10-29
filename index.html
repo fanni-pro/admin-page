@@ -1187,33 +1187,66 @@ function techClearPhotos(orderId,type){const lockedOrder=load(KEYS.ORD).find(o=>
 }
 
 const fpCancelPending=new Set();
+function fpIsCancelledStatus(status){return ['ملغاة','ملغي','cancelled','canceled'].includes(String(status||'').trim().toLowerCase());}
+async function fpReadCancelOrder(id){
+ const {data,error}=await sb.from('orders').select('id,status,raw').eq('id',String(id)).maybeSingle();
+ if(error)throw new Error('تعذر قراءة حالة الطلب من Supabase: '+error.message);
+ return data;
+}
 async function fpCancelByCustomer(id,reason){
- const current=load(KEYS.ORD).find(o=>String(o.id)===String(id));
+ id=String(id);
+ const current=load(KEYS.ORD).find(o=>String(o.id)===id);
  if(!current){toast('الطلب غير موجود');return;}
  if(techIsClosed(current)||techOrderCategory(current)==='cancelled'){toast('الطلب مغلق أو ملغي بالفعل');return;}
  if(isTechnicianRole()&&String(current.techId)!==String(currentTechnicianId)){toast('الطلب غير مسند إليك');return;}
  if(!['no_answer','cancelled'].includes(reason)){toast('سبب الإلغاء غير صحيح');return;}
- if(fpCancelPending.has(String(id))){toast('الإلغاء قيد التنفيذ');return;}
+ if(fpCancelPending.has(id)){toast('الإلغاء قيد التنفيذ');return;}
  const label=reason==='no_answer'?'العميل لم يرد':'العميل كنسل';
  if(!confirm('تأكيد إلغاء الطلب '+id+'؟\nالسبب: '+label+'\nسيُغلق الطلب فقط، وستظل الفاتورة قابلة للإصدار لاحقًا بواسطة الإدارة.'))return;
  if(!sb||!cloudEnabled){toast('لا يمكن إلغاء الطلب بدون اتصال بقاعدة البيانات');return;}
- fpCancelPending.add(String(id));
+ fpCancelPending.add(id);
  try{
-   const {data,error}=await sb.rpc('fp_cancel_close_order',{p_order_id:String(id),p_reason:reason});
-   if(error)throw error;
-   // The RPC transaction is the only source of truth. Do not rewrite the whole orders cache.
-   const orders=load(KEYS.ORD).map(o=>String(o.id)===String(id)?{
-     ...o,status:'ملغاة',cancelReason:label,technicianLocked:true,
-     cancelledAt:data?.cancelled_at||new Date().toISOString(),fpDelayStoppedAt:data?.cancelled_at||new Date().toISOString()
-   }:o);
-   pulling=true;
-   try{localStorage.setItem(KEYS.ORD,JSON.stringify(orders));}finally{pulling=false;}
-   renderAll();
-   toast('تم إغلاق الطلب تشغيليًا، والفاتورة ما زالت متاحة للإدارة: '+label);
-   try{await refreshFromCloud(false);if(typeof fpInvoiceRefresh==='function')await fpInvoiceRefresh();renderAll();}
-   catch(refreshError){console.warn('Cancellation succeeded, refresh failed:',refreshError);toast('تم الإلغاء على السيرفر، لكن تحديث العرض تعذر. أعد تحديث الصفحة.');}
- }catch(e){toast('فشل الإلغاء، لم يتم تغيير الطلب محليًا: '+(e.message||String(e)));}
- finally{fpCancelPending.delete(String(id));}
+   let before=await fpReadCancelOrder(id);
+   if(!before)throw new Error('الطلب غير موجود على السيرفر. تأكد من رقم الطلب كاملًا بما فيه #');
+   if(fpIsCancelledStatus(before.status)){
+     toast('الطلب ملغي بالفعل على السيرفر');
+     await refreshFromCloud(false);
+     return;
+   }
+   let rpcError=null;
+   try{
+     const {data,error}=await sb.rpc('fp_cancel_close_order',{p_order_id:id,p_reason:reason});
+     if(error)rpcError=error;
+     else if(data && data.ok===false)rpcError=new Error(data.message||'دالة الإلغاء رفضت العملية');
+   }catch(e){rpcError=e;}
+   let confirmed=await fpReadCancelOrder(id);
+   if(!confirmed||!fpIsCancelledStatus(confirmed.status)){
+     // Fallback is subject to the database's RLS policies. It never bypasses permissions.
+     // Preserve all existing order fields and invoice data.
+     const now=new Date().toISOString();
+     const raw={...(confirmed?.raw&&typeof confirmed.raw==='object'&&!Array.isArray(confirmed.raw)?confirmed.raw:{}),
+       status:'ملغاة',cancelReason:label,cancelledAt:now,technicianLocked:true,fpDelayStoppedAt:now};
+     const {data:changed,error:writeError}=await sb.from('orders')
+       .update({status:'ملغاة',raw,updated_at:now})
+       .eq('id',id).eq('status',String(confirmed?.status||before.status))
+       .select('id,status').maybeSingle();
+     if(writeError)throw new Error('تعذر حفظ الإلغاء: '+writeError.message+(rpcError?' | دالة الإلغاء: '+(rpcError.message||String(rpcError)) :''));
+     if(!changed)throw new Error('لم يتم تعديل الطلب على السيرفر. قد تكون صلاحيات الفني لا تسمح بالإلغاء أو تغيرت حالة الطلب.'+(rpcError?' دالة الإلغاء: '+(rpcError.message||String(rpcError)):''));
+     confirmed=await fpReadCancelOrder(id);
+   }
+   if(!confirmed||!fpIsCancelledStatus(confirmed.status)||!fpIsCancelledStatus(confirmed.raw?.status))
+     throw new Error('لم يتم تأكيد حالة الإلغاء داخل بيانات الطلب على Supabase');
+   // Server confirmed: only now refresh local view. Never mark locally before confirmation.
+   const refreshed=await refreshFromCloud(false);
+   if(!refreshed){
+     const orders=load(KEYS.ORD).map(o=>String(o.id)===id?fromDbOrder(confirmed):o);
+     pulling=true;
+     try{localStorage.setItem(KEYS.ORD,JSON.stringify(orders));}finally{pulling=false;}
+     renderAll();
+   }
+   toast('تم إلغاء الطلب '+id+' على السيرفر — '+label);
+ }catch(e){console.error('Cancel failed',e);toast('فشل حفظ إلغاء الطلب: '+(e.message||String(e)));}
+ finally{fpCancelPending.delete(id);}
 }
 
 function techMoveOrder(id){techUpdateOrder(id,{status:'الفني تحرك'},'تم تسجيل تحرك الفني')}
