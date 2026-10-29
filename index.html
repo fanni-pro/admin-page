@@ -1792,10 +1792,21 @@ window.addEventListener('load',()=>setTimeout(()=>fpApprovalLoad().catch(e=>cons
     if(collectionError)return '<span class="fp-collection-none">تعذر تحميل تحصيل الفني من Supabase — أعد المحاولة</span>';
     if(!collectionLoaded)return '<span class="fp-collection-none">جارٍ التحقق من تحصيل الفني على السيرفر</span>';
     const r=fpApprovalRows.find(x=>String(x.order_id)===String(o.id));
-    if(!r)return '<span class="fp-collection-none">مبلغ الفني: لم يسجل بعد</span>';
     const statuses={pending:'بانتظار الاعتماد',approved:'معتمد',rejected:'مرفوض'};
-    const state=statuses[r.status]||'غير معروف';
-    return `<span class="fp-collection-amount">💰 مبلغ الفني: <strong>${fpApprovalMoney(r.total)} ر.س</strong></span> <span class="fp-collection-state">${safe(state)}</span><span class="fp-collection-breakdown">كاش ${fpApprovalMoney(r.cash)} | شبكة ${fpApprovalMoney(r.card)} | تحويل ${fpApprovalMoney(r.bank)} | مصروف ${fpApprovalMoney(r.expenses)} | صافي ${fpApprovalMoney(r.net)} ر.س</span>`;
+    if(r){
+      const state=statuses[r.status]||'غير معروف';
+      return `<span class="fp-collection-amount">💰 تحصيل الفني المرسل للاعتماد: <strong>${fpApprovalMoney(r.total)} ر.س</strong></span> <span class="fp-collection-state">${safe(state)}</span><span class="fp-collection-breakdown">كاش ${fpApprovalMoney(r.cash)} | شبكة ${fpApprovalMoney(r.card)} | تحويل ${fpApprovalMoney(r.bank)} | مصروف ${fpApprovalMoney(r.expenses)} | صافي ${fpApprovalMoney(r.net)} ر.س</span>`;
+    }
+    // Historic collections are stored in fp_invoice_settlements, not fp_collection_approvals.
+    const settlement=typeof fpSettlementRows!=='undefined' && fpSettlementRows.find(x=>String(x.order_id)===String(o.id));
+    if(settlement){
+      const cash=Number(settlement.cash||0),card=Number(settlement.card||0),bank=Number(settlement.transfer||0),expenses=Number(settlement.expenses||0);
+      const total=cash+card+bank,net=total-expenses;
+      return `<span class="fp-collection-amount">💰 تحصيل مسجل بتسوية الفاتورة: <strong>${fpApprovalMoney(total)} ر.س</strong></span><span class="fp-collection-state">${safe(settlement.status==='closed'?'مقفلة':'غير مقفلة')}</span><span class="fp-collection-breakdown">كاش ${fpApprovalMoney(cash)} | شبكة ${fpApprovalMoney(card)} | تحويل ${fpApprovalMoney(bank)} | مصروف ${fpApprovalMoney(expenses)} | صافي ${fpApprovalMoney(net)} ر.س</span>`;
+    }
+    const price=Number(o.price||0);
+    if(price>0)return `<span class="fp-collection-none">قيمة الطلب: ${fpApprovalMoney(price)} ر.س — لا يوجد سجل تحصيل مؤكد للفني</span>`;
+    return '<span class="fp-collection-none">لا يوجد تحصيل مسجل لهذا الطلب في جداول التحصيل المتاحة</span>';
   }
   function visible(){return ['admin','company_manager'].includes(currentUserRole);}
   function card(html,o){
@@ -1815,7 +1826,7 @@ window.addEventListener('load',()=>setTimeout(()=>fpApprovalLoad().catch(e=>cons
     panel.innerHTML=visible()?`<b>تحصيل الفني المسجل على الطلب:</b> ${info(o)}`:'';
   }
   editOrder=function(id){const result=baseEdit(id);const o=load(KEYS.ORD).find(x=>String(x.id)===String(id));if(o)updateEditor(o);return result;};
-  fpApprovalLoad=async function(){let result;try{result=await baseLoad();collectionLoaded=!!(sb&&cloudEnabled);collectionError=false;}catch(e){collectionLoaded=false;collectionError=true;console.warn("Collection display refresh failed",e);toast('تعذر تحميل تحصيل الفني من Supabase');}if(document.getElementById('allOrders'))renderOrders();const editId=document.getElementById('editingOrderId')?.value;if(editId){const o=load(KEYS.ORD).find(x=>String(x.id)===String(editId));if(o)updateEditor(o);}return result;};
+  fpApprovalLoad=async function(){let result;try{result=await baseLoad();if(typeof fpSettlementLoad==='function')await fpSettlementLoad();collectionLoaded=!!(sb&&cloudEnabled);collectionError=false;}catch(e){collectionLoaded=false;collectionError=true;console.warn("Collection display refresh failed",e);toast('تعذر تحميل تحصيل الفني من Supabase');}if(document.getElementById('allOrders'))renderOrders();const editId=document.getElementById('editingOrderId')?.value;if(editId){const o=load(KEYS.ORD).find(x=>String(x.id)===String(editId));if(o)updateEditor(o);}return result;};
   const baseClear=clearOrderForm;
   clearOrderForm=function(...args){const r=baseClear(...args);const panel=document.getElementById('fpOrderTechCollection');if(panel)panel.remove();return r;};
 })();
