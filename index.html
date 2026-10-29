@@ -481,7 +481,7 @@ function allowedPagesForRole(role){
   if(role==='technician') return ['techPortal','notifications','settings'];
   if(role==='viewer') return ['dashboard','reports','notifications','settings'];
   if(role==='dispatcher') return ['dashboard','orders','assign','clients','techPortal','clientTracking','notifications','settings'];
-  if(role==='company_manager') return ['companyPortal','techPortal','notifications','settings'];
+  if(role==='company_manager') return ['companyPortal','techPortal','payments','notifications','settings'];
   return ['dashboard','orders','companies','technicians','assign','companyPortal','clients','techPortal','clientTracking','payments','reports','notifications','users','settings'];
 }
 function roleFilteredOrders(arr){
@@ -1003,7 +1003,78 @@ function fpClientReportData(){return fpClientReportRows().map(o=>({'رقم ال�
 function fpClientReportMeta(){const sel=document.getElementById('fpCrTech');return {tech:sel?.selectedOptions?.[0]?.textContent||'جميع الفنيين',status:document.getElementById('fpCrStatus')?.selectedOptions?.[0]?.textContent||'كل الحالات',from:document.getElementById('fpCrFrom')?.value||'الكل',to:document.getElementById('fpCrTo')?.value||'الكل'};}
 function fpExportClientReport(){const rows=fpClientReportData(),header=Object.keys(rows[0]||{'رقم الطلب':'','اسم العميل':'','الجوال':'','الخدمة':'','المدينة':'','تاريخ الطلب':'','الحالة':'','تصنيف الحالة':'','الفني':'','قيمة الطلب (ر.س)':''});const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const data=[header,...rows.map(o=>header.map(k=>o[k]))].map(row=>row.map(esc).join(',')).join('\r\n');const blob=new Blob(['\ufeff'+data],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='fanni-pro-client-status-report.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('تم تصدير '+rows.length+' طلب');}
 function fpExportClientReportExcel(){if(typeof XLSX==='undefined'){toast('مكتبة Excel لم تُحمّل؛ جاري تنزيل CSV');fpExportClientReport();return;}const rows=fpClientReportData(),meta=fpClientReportMeta(),wb=XLSX.utils.book_new(),total=rows.reduce((n,r)=>n+Number(r['قيمة الطلب (ر.س)']||0),0),uniq=new Set(rows.map(r=>r['الجوال']||r['اسم العميل']));const summary=[['فني برو | تقرير حالات العملاء والطلبات'],['الفني',meta.tech],['الحالة',meta.status],['من تاريخ',meta.from],['إلى تاريخ',meta.to],['عدد الطلبات',rows.length],['عدد العملاء',uniq.size],['إجمالي قيمة الطلبات',total],[],['الحالة','عدد الطلبات','إجمالي القيمة']];['مكتملة','مسند','قيد التنفيذ','ملغاة','أخرى'].forEach(cat=>{const subset=rows.filter(r=>r['تصنيف الحالة']===cat);summary.push([cat,subset.length,subset.reduce((n,r)=>n+Number(r['قيمة الطلب (ر.س)']||0),0)]);});const sumSheet=XLSX.utils.aoa_to_sheet(summary);sumSheet['!cols']=[{wch:29},{wch:30},{wch:22}];sumSheet['!merges']=[{s:{r:0,c:0},e:{r:0,c:2}}];const headStyle={font:{bold:true,color:{rgb:'FFFFFF'},sz:13},fill:{fgColor:{rgb:'176DF7'}},alignment:{horizontal:'center'}};['A1','A10','B10','C10'].forEach(cell=>{if(sumSheet[cell])sumSheet[cell].s=headStyle;});XLSX.utils.book_append_sheet(wb,sumSheet,'الملخص');const cols=['رقم الطلب','اسم العميل','الجوال','الخدمة','المدينة','تاريخ الطلب','الحالة','تصنيف الحالة','الفني','قيمة الطلب (ر.س)'];const detail=XLSX.utils.json_to_sheet(rows,{header:cols});if(!rows.length)XLSX.utils.sheet_add_aoa(detail,[cols],{origin:'A1'});detail['!cols']=[{wch:18},{wch:27},{wch:18},{wch:26},{wch:17},{wch:18},{wch:20},{wch:18},{wch:27},{wch:20}];detail['!autofilter']={ref:'A1:J'+Math.max(rows.length+1,2)};for(let i=0;i<cols.length;i++){const a=XLSX.utils.encode_cell({r:0,c:i});if(detail[a])detail[a].s=headStyle;}XLSX.utils.book_append_sheet(wb,detail,'تفاصيل الطلبات');XLSX.writeFile(wb,'فني_برو_تقرير_الطلبات_حسب_الفني.xlsx');toast('تم تجهيز تقرير Excel بعدد '+rows.length+' طلب');}
-function fpPrintClientReport(){const rows=fpClientReportData(),meta=fpClientReportMeta(),escape=typeof safe==='function'?safe:(x=>String(x??''));const cols=['رقم الطلب','اسم العميل','الجوال','الخدمة','المدينة','تاريخ الطلب','الحالة','الفني','قيمة الطلب (ر.س)'];const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة لطباعة التقرير');return;}const counts=['مكتملة','مسند','قيد التنفيذ','ملغاة'].map(c=>c+': '+rows.filter(r=>r['تصنيف الحالة']===c).length).join(' | ');w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>فني برو - تقرير الطلبات</title><style>body{font-family:Tahoma,Arial,sans-serif;color:#173052;padding:22px}h1{color:#176df7}header{border-bottom:3px solid #176df7;padding-bottom:14px;margin-bottom:15px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#176df7;color:white}td,th{border:1px solid #dce5f0;padding:8px;text-align:right}tr:nth-child(even){background:#f2f7ff}.meta{padding:12px;background:#edf5ff;margin:12px 0;border-radius:9px;line-height:2}@page{size:A4 landscape;margin:12mm}@media print{button{display:none}}</style></head><body><header><h1>فني برو | تقرير حالات الطلبات</h1><div>تاريخ التقرير: '+escape(new Date().toLocaleString('ar-SA',{timeZone:'Asia/Riyadh'}))+'</div></header><div class="meta">الفني: '+escape(meta.tech)+' | الحالة: '+escape(meta.status)+' | الفترة: '+escape(meta.from)+' إلى '+escape(meta.to)+'<br>عدد الطلبات: '+rows.length+' | '+escape(counts)+' | إجمالي القيمة: '+rows.reduce((n,r)=>n+Number(r['قيمة الطلب (ر.س)']||0),0).toFixed(2)+' ر.س</div><button onclick="window.print()">طباعة / حفظ PDF</button><table><thead><tr>'+cols.map(c=>'<th>'+escape(c)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+cols.map(c=>'<td>'+escape(r[c])+'</td>').join('')+'</tr>').join('')+'</tbody></table></body></html>');w.document.close();}
+function fpPrintClientReport(){const rows=fpClientReportData(),meta=fpClientReportMeta(),escape=typeof safe==='function'?safe:(x=>String(x??''));const cols=['رقم الطلب','اسم العميل','الجوال','الخدمة','المدينة','تاريخ الطلب','الحالة','الفني','قيمة الطلب (ر.س)'];const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة لطباعة التقرير');return;}const counts=['مكتملة','مسند','قيد التنفيذ','ملغاة'].map(c=>c+': '+rows.filter(r=>r['تصنيف الحالة']===c).length).join(' | ');w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>فني برو - تقرير الطلبات</title><style>body{font-family:Tahoma,Arial,sans-serif;color:#173052;padding:22px}h1{color:#176df7}header{border-bottom:3px solid #176df7;padding-bottom:14px;margin-bottom:15px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#176df7;color:white}td,th{border:1px solid #dce5f0;padding:8px;text-align:right}tr:nth-child(even){background:#f2f7ff}.meta{padding:12px;background:#edf5ff;margin:12px 0;border-radius:9px;line-height:2}@page{size:A4 landscape;margin:12mm}@media print{button{display:none}}</style></head><body><header><h1>فني برو | تقرير حالات الطلبات</h1><div>تاريخ التقرير: '+escape(new Date().toLocaleString('ar-SA',{timeZone:'Asia/Riyadh'}))+'</div></header><div class="meta">الفني: '+escape(meta.tech)+' | الحالة: '+escape(meta.status)+' | الفترة: '+escape(meta.from)+' إلى '+escape(meta.to)+'<br>عدد الطلبات: '+rows.length+' | '+escape(counts)+' | إجمالي القيمة: '+rows.reduce((n,r)=>n+Number(r['قيمة الطلب (ر.س)']||0),0).toFixed(2)+' ر.س</div><button onclick="window.print()">طباعة / حفظ PDF</button><table><thead><tr>'+cols.map(c=>'<th>'+escape(c)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+cols.map(c=>'<td>'+escape(r[c])+'</td>').join('')+'</tr>').join('')+'</tbody></table><style id="fpApprovalStyles">
+.fp-approval-panel{border:1px solid #d9e6f5;background:#f7fbff;border-radius:14px;padding:14px;margin:12px 0;direction:rtl}
+.fp-approval-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.fp-approval-grid label{font-weight:800;font-size:13px}.fp-approval-grid input,.fp-approval-panel textarea{width:100%;border:1px solid #ccd9e9;border-radius:9px;padding:9px;background:white;margin-top:5px}.fp-approval-card{padding:14px;border:1px solid #dce6f2;border-radius:14px;background:#fff;margin:10px 0}.fp-approval-card p{margin:6px 0;line-height:1.8}.fp-approval-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}@media(max-width:480px){.fp-approval-grid{grid-template-columns:1fr}}
+</style>
+<script id="fpApprovalModule">
+// Collection approvals are server authoritative. Never put role decisions in localStorage.
+let fpApprovalRows=[];
+function fpApprovalMoney(n){return Number(n||0).toFixed(2)}
+function fpApprovalPanel(o){
+ const row=fpApprovalRows.find(r=>String(r.order_id)===String(o.id));
+ const st=row?.status||'none';
+ const label={none:'لم يُرسل التحصيل',pending:'بانتظار اعتماد الإدارة',approved:'تم اعتماد التحصيل',rejected:'مرفوض — يحتاج تعديل'}[st];
+ const locked=st==='approved';const id=String(o.id).replace(/[^a-zA-Z0-9]/g,'_');
+ const field=(key,title,value)=>`<label>${title}<input type="number" min="0" step="0.01" id="fpa_${key}_${id}" value="${fpApprovalMoney(value)}" ${locked?'disabled':''}></label>`;
+ return `<section class="fp-approval-panel"><h4>💰 تحصيل الطلب — ${safe(label)}</h4>
+ <p class="muted">المبالغ لا تُضاف للتحصيل المعتمد إلا بعد موافقة الإدارة.</p>
+ <div class="fp-approval-grid">${field('cash','كاش',row?.cash)}${field('card','شبكة',row?.card)}${field('bank','تحويل',row?.bank)}${field('expenses','مصروفات',row?.expenses)}</div>
+ <label style="display:block;margin-top:10px;font-weight:800">تقرير الفني / ملاحظات التحصيل<textarea id="fpa_notes_${id}" rows="3" ${locked?'disabled':''}>${safe(row?.work_notes||o.workReport||'')}</textarea></label>
+ <div class="fp-approval-actions">${locked?'🔒 التحصيل معتمد ومقفل':`<button class="btn green small" onclick="fpApprovalSubmit('${safe(o.id)}',this)">حفظ وإرسال للاعتماد</button>`}</div>
+ ${row?.review_note?`<p class="muted">ملاحظة الإدارة: ${safe(row.review_note)}</p>`:''}</section>`;
+}
+const fpApprovalBaseCard=techOrderDetailCard;
+techOrderDetailCard=function(o){const html=fpApprovalBaseCard(o);return html.replace(/<\/div>\s*$/,fpApprovalPanel(o)+'</div>')};
+async function fpApprovalLoad(){
+ if(!sb||!cloudEnabled)return;
+ const {data,error}=await sb.from('fp_collection_approvals').select('*').order('submitted_at',{ascending:false}).limit(1000);
+ if(error){console.warn('Approval loading:',error.message);return;}
+ fpApprovalRows=data||[];fpApprovalRenderAdmin();
+}
+async function fpApprovalSubmit(orderId,button){
+ if(currentUserRole!=='technician'||!sb){toast('يجب تسجيل الدخول كفني متصل');return;}
+ const o=load(KEYS.ORD).find(x=>String(x.id)===String(orderId));
+ if(!o||String(o.techId)!==String(currentTechnicianId)){toast('الطلب غير مسند لك');return;}
+ const id=String(orderId).replace(/[^a-zA-Z0-9]/g,'_');
+ const amount=k=>Number(document.getElementById(`fpa_${k}_${id}`)?.value);
+ const values=['cash','card','bank','expenses'].map(amount);
+ if(values.some(v=>!Number.isFinite(v)||v<0)){toast('راجع المبالغ');return;}
+ const notes=document.getElementById('fpa_notes_'+id)?.value||'';
+ button.disabled=true;
+ try{
+  const {error}=await sb.rpc('fp_submit_collection',{p_order_id:String(orderId),p_cash:values[0],p_card:values[1],p_bank:values[2],p_expenses:values[3],p_work_notes:notes});
+  if(error)throw error;
+  await fpApprovalLoad();renderTechPortal();toast('تم حفظ التحصيل على Supabase وإرساله للإدارة');
+ }catch(e){toast('لم يتم الحفظ: '+(e.message||e));}finally{button.disabled=false;}
+}
+function fpApprovalRenderAdmin(){
+ let host=document.getElementById('fpApprovalAdmin');
+ if(!host){const page=document.getElementById('payments');if(!page)return;host=document.createElement('section');host.id='fpApprovalAdmin';host.className='card';host.style.marginBottom='18px';page.prepend(host);}
+ if(!['admin','company_manager'].includes(currentUserRole)){host.style.display='none';return;}
+ host.style.display='block';
+ const rows=fpApprovalRows.filter(r=>r.status==='pending');
+ host.innerHTML=`<div class="card-head"><h3>📋 تحصيلات الفنيين بانتظار الاعتماد (${rows.length})</h3><button class="btn light small" onclick="fpApprovalLoad()">تحديث</button></div>`+
+ (rows.map(r=>{const o=load(KEYS.ORD).find(x=>String(x.id)===String(r.order_id));return `<article class="fp-approval-card"><b>طلب #${safe(r.order_id)}</b> — ${safe(o?.name||'')}<p>الفني: ${safe(techName(r.technician_id))} | كاش: ${fpApprovalMoney(r.cash)} | شبكة: ${fpApprovalMoney(r.card)} | تحويل: ${fpApprovalMoney(r.bank)} | مصروف: ${fpApprovalMoney(r.expenses)}</p><p><b>المحصل: ${fpApprovalMoney(r.total)} ر.س — الصافي: ${fpApprovalMoney(r.net)} ر.س</b></p><p>${safe(r.work_notes||'بدون تقرير')}</p><div class="fp-approval-actions"><button class="btn green small" onclick="fpApprovalReview('${safe(r.order_id)}','approved',this)">اعتماد التحصيل</button><button class="btn red small" onclick="fpApprovalReview('${safe(r.order_id)}','rejected',this)">رفض مع السبب</button></div></article>`}).join('')||'<p class="muted">لا توجد تحصيلات تنتظر الاعتماد</p>')+
+ `<p class="muted">إجمالي المعتمد: ${fpApprovalMoney(fpApprovalRows.filter(r=>r.status==='approved').reduce((s,r)=>s+Number(r.total||0),0))} ر.س</p>`;
+}
+async function fpApprovalReview(orderId,action,button){
+ if(!['admin','company_manager'].includes(currentUserRole)||!sb)return;
+ const note=action==='rejected'?prompt('اكتب سبب رفض التحصيل:'):prompt('ملاحظة الاعتماد (اختياري):','');
+ if(note===null||action==='rejected'&&!note.trim()){toast('اكتب سبب الرفض');return;}
+ button.disabled=true;
+ try{const {error}=await sb.rpc('fp_review_collection',{p_order_id:String(orderId),p_action:action,p_note:note});if(error)throw error;await fpApprovalLoad();toast(action==='approved'?'تم اعتماد التحصيل':'تم رفض التحصيل وإعادته للفني');}
+ catch(e){toast('لم يتم الاعتماد: '+(e.message||e));}finally{button.disabled=false;}
+}
+const fpApprovalOriginalRefresh=refreshFromCloud;
+refreshFromCloud=async function(...args){const r=await fpApprovalOriginalRefresh(...args);await fpApprovalLoad();return r};
+const fpApprovalOriginalShow=showPage;
+showPage=function(id){fpApprovalOriginalShow(id);if(id==='payments')fpApprovalLoad()};
+const fpApprovalOriginalRender=renderTechPortal;
+renderTechPortal=function(){fpApprovalOriginalRender();};
+window.addEventListener('load',()=>setTimeout(()=>fpApprovalLoad(),1300));
+</script>
+</body></html>');w.document.close();}
 
 function renderClients(){const orders=roleFilteredOrders(load(KEYS.ORD)),map={};orders.forEach(o=>{const k=o.phone||o.name;if(!map[k])map[k]={name:o.name,phone:o.phone,total:0,count:0,last:o.date};map[k].total+=Number(o.price||0);map[k].count++;map[k].last=o.date});const clients=Object.values(map);get('clientsList').innerHTML=clients.map(c=>`<div class="item-card"><div><b>${safe(c.name)}</b><p>${safe(c.phone)} · عدد الطلبات: ${c.count} · آخر طلب: ${safe(c.last)}</p></div><b>${fmt(c.total)} ر.س</b></div>`).join('')||'<div class="empty-state">لا يوجد عملاء</div>'}
 function techIsClosed(o){return !!o && (o.technicianLocked===true || ['مكتملة','مكتمل','completed','done','closed','مغلق'].includes(String(o.status||'').trim().toLowerCase()));}
@@ -1061,6 +1132,77 @@ function printProfessionalReport(id){
 
 
 
+<style id="fpApprovalStyles">
+.fp-approval-panel{border:1px solid #d9e6f5;background:#f7fbff;border-radius:14px;padding:14px;margin:12px 0;direction:rtl}
+.fp-approval-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.fp-approval-grid label{font-weight:800;font-size:13px}.fp-approval-grid input,.fp-approval-panel textarea{width:100%;border:1px solid #ccd9e9;border-radius:9px;padding:9px;background:white;margin-top:5px}.fp-approval-card{padding:14px;border:1px solid #dce6f2;border-radius:14px;background:#fff;margin:10px 0}.fp-approval-card p{margin:6px 0;line-height:1.8}.fp-approval-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}@media(max-width:480px){.fp-approval-grid{grid-template-columns:1fr}}
+</style>
+<script id="fpApprovalModule">
+// Collection approvals are server authoritative. Never put role decisions in localStorage.
+let fpApprovalRows=[];
+function fpApprovalMoney(n){return Number(n||0).toFixed(2)}
+function fpApprovalPanel(o){
+ const row=fpApprovalRows.find(r=>String(r.order_id)===String(o.id));
+ const st=row?.status||'none';
+ const label={none:'لم يُرسل التحصيل',pending:'بانتظار اعتماد الإدارة',approved:'تم اعتماد التحصيل',rejected:'مرفوض — يحتاج تعديل'}[st];
+ const locked=st==='approved';const id=String(o.id).replace(/[^a-zA-Z0-9]/g,'_');
+ const field=(key,title,value)=>`<label>${title}<input type="number" min="0" step="0.01" id="fpa_${key}_${id}" value="${fpApprovalMoney(value)}" ${locked?'disabled':''}></label>`;
+ return `<section class="fp-approval-panel"><h4>💰 تحصيل الطلب — ${safe(label)}</h4>
+ <p class="muted">المبالغ لا تُضاف للتحصيل المعتمد إلا بعد موافقة الإدارة.</p>
+ <div class="fp-approval-grid">${field('cash','كاش',row?.cash)}${field('card','شبكة',row?.card)}${field('bank','تحويل',row?.bank)}${field('expenses','مصروفات',row?.expenses)}</div>
+ <label style="display:block;margin-top:10px;font-weight:800">تقرير الفني / ملاحظات التحصيل<textarea id="fpa_notes_${id}" rows="3" ${locked?'disabled':''}>${safe(row?.work_notes||o.workReport||'')}</textarea></label>
+ <div class="fp-approval-actions">${locked?'🔒 التحصيل معتمد ومقفل':`<button class="btn green small" onclick="fpApprovalSubmit('${safe(o.id)}',this)">حفظ وإرسال للاعتماد</button>`}</div>
+ ${row?.review_note?`<p class="muted">ملاحظة الإدارة: ${safe(row.review_note)}</p>`:''}</section>`;
+}
+const fpApprovalBaseCard=techOrderDetailCard;
+techOrderDetailCard=function(o){const html=fpApprovalBaseCard(o);return html.replace(/<\/div>\s*$/,fpApprovalPanel(o)+'</div>')};
+async function fpApprovalLoad(){
+ if(!sb||!cloudEnabled)return;
+ const {data,error}=await sb.from('fp_collection_approvals').select('*').order('submitted_at',{ascending:false}).limit(1000);
+ if(error){console.warn('Approval loading:',error.message);return;}
+ fpApprovalRows=data||[];fpApprovalRenderAdmin();
+}
+async function fpApprovalSubmit(orderId,button){
+ if(currentUserRole!=='technician'||!sb){toast('يجب تسجيل الدخول كفني متصل');return;}
+ const o=load(KEYS.ORD).find(x=>String(x.id)===String(orderId));
+ if(!o||String(o.techId)!==String(currentTechnicianId)){toast('الطلب غير مسند لك');return;}
+ const id=String(orderId).replace(/[^a-zA-Z0-9]/g,'_');
+ const amount=k=>Number(document.getElementById(`fpa_${k}_${id}`)?.value);
+ const values=['cash','card','bank','expenses'].map(amount);
+ if(values.some(v=>!Number.isFinite(v)||v<0)){toast('راجع المبالغ');return;}
+ const notes=document.getElementById('fpa_notes_'+id)?.value||'';
+ button.disabled=true;
+ try{
+  const {error}=await sb.rpc('fp_submit_collection',{p_order_id:String(orderId),p_cash:values[0],p_card:values[1],p_bank:values[2],p_expenses:values[3],p_work_notes:notes});
+  if(error)throw error;
+  await fpApprovalLoad();renderTechPortal();toast('تم حفظ التحصيل على Supabase وإرساله للإدارة');
+ }catch(e){toast('لم يتم الحفظ: '+(e.message||e));}finally{button.disabled=false;}
+}
+function fpApprovalRenderAdmin(){
+ let host=document.getElementById('fpApprovalAdmin');
+ if(!host){const page=document.getElementById('payments');if(!page)return;host=document.createElement('section');host.id='fpApprovalAdmin';host.className='card';host.style.marginBottom='18px';page.prepend(host);}
+ if(!['admin','company_manager'].includes(currentUserRole)){host.style.display='none';return;}
+ host.style.display='block';
+ const rows=fpApprovalRows.filter(r=>r.status==='pending');
+ host.innerHTML=`<div class="card-head"><h3>📋 تحصيلات الفنيين بانتظار الاعتماد (${rows.length})</h3><button class="btn light small" onclick="fpApprovalLoad()">تحديث</button></div>`+
+ (rows.map(r=>{const o=load(KEYS.ORD).find(x=>String(x.id)===String(r.order_id));return `<article class="fp-approval-card"><b>طلب #${safe(r.order_id)}</b> — ${safe(o?.name||'')}<p>الفني: ${safe(techName(r.technician_id))} | كاش: ${fpApprovalMoney(r.cash)} | شبكة: ${fpApprovalMoney(r.card)} | تحويل: ${fpApprovalMoney(r.bank)} | مصروف: ${fpApprovalMoney(r.expenses)}</p><p><b>المحصل: ${fpApprovalMoney(r.total)} ر.س — الصافي: ${fpApprovalMoney(r.net)} ر.س</b></p><p>${safe(r.work_notes||'بدون تقرير')}</p><div class="fp-approval-actions"><button class="btn green small" onclick="fpApprovalReview('${safe(r.order_id)}','approved',this)">اعتماد التحصيل</button><button class="btn red small" onclick="fpApprovalReview('${safe(r.order_id)}','rejected',this)">رفض مع السبب</button></div></article>`}).join('')||'<p class="muted">لا توجد تحصيلات تنتظر الاعتماد</p>')+
+ `<p class="muted">إجمالي المعتمد: ${fpApprovalMoney(fpApprovalRows.filter(r=>r.status==='approved').reduce((s,r)=>s+Number(r.total||0),0))} ر.س</p>`;
+}
+async function fpApprovalReview(orderId,action,button){
+ if(!['admin','company_manager'].includes(currentUserRole)||!sb)return;
+ const note=action==='rejected'?prompt('اكتب سبب رفض التحصيل:'):prompt('ملاحظة الاعتماد (اختياري):','');
+ if(note===null||action==='rejected'&&!note.trim()){toast('اكتب سبب الرفض');return;}
+ button.disabled=true;
+ try{const {error}=await sb.rpc('fp_review_collection',{p_order_id:String(orderId),p_action:action,p_note:note});if(error)throw error;await fpApprovalLoad();toast(action==='approved'?'تم اعتماد التحصيل':'تم رفض التحصيل وإعادته للفني');}
+ catch(e){toast('لم يتم الاعتماد: '+(e.message||e));}finally{button.disabled=false;}
+}
+const fpApprovalOriginalRefresh=refreshFromCloud;
+refreshFromCloud=async function(...args){const r=await fpApprovalOriginalRefresh(...args);await fpApprovalLoad();return r};
+const fpApprovalOriginalShow=showPage;
+showPage=function(id){fpApprovalOriginalShow(id);if(id==='payments')fpApprovalLoad()};
+const fpApprovalOriginalRender=renderTechPortal;
+renderTechPortal=function(){fpApprovalOriginalRender();};
+window.addEventListener('load',()=>setTimeout(()=>fpApprovalLoad(),1300));
+</script>
 </body></html>`;
  const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة لطباعة التقرير');return;}w.document.open();w.document.write(html);w.document.close();
 }
@@ -1285,7 +1427,78 @@ function printTechnicianAllOrdersReport(){
  const paid=orders.filter(o=>o.paymentStatus==='مدفوعة').reduce((n,o)=>n+(Number(o.price)||0),0);
  const block=(label,value)=>`<div class="item"><small>${safe(label)}</small><div>${safe(value===undefined||value===null||value===''?'غير مسجل':String(value))}</div></div>`;
  const entries=orders.map((o,i)=>`<section class="order"><h2>الطلب ${i+1} — ${safe(o.id)} <span>${safe(o.status||'')}</span></h2><div class="fields">${fpTechReportFields(o).map(([k,v])=>block(k,v)).join('')}</div><div class="photos">${[['صور قبل الصيانة',o.beforePhotos],['صور بعد الصيانة',o.afterPhotos]].map(([label,arr])=>`<div><h3>${label}</h3>${Array.isArray(arr)&&arr.length?arr.map(src=>typeof src==='string'&&src.startsWith('data:image/')?`<img src="${src}" alt="صورة صيانة">`:'<p>الصورة محفوظة في النظام؛ افتح الطلب لعرضها</p>').join(''):'<p>لا توجد صور</p>'}</div>`).join('')}</div></section>`).join('');
- const html=`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>التقرير الشامل للفني ${safe(tech?.name||id)}</title><style>body{font-family:Tahoma,Arial,sans-serif;background:#edf3fb;color:#10213d;margin:0}.paper{max-width:1050px;margin:24px auto;background:white;padding:30px}.head{background:#123d69;color:white;padding:24px;border-radius:12px}.head h1{margin:5px 0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}.stat,.item{background:#f3f7fc;border:1px solid #e1e9f4;border-radius:9px;padding:12px}.stat b{display:block;font-size:22px}.order{border-top:3px solid #176df7;margin-top:26px;padding-top:12px;break-inside:avoid-page}.order h2{font-size:18px}.order h2 span{float:left;font-size:13px}.fields{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.item{overflow-wrap:anywhere;white-space:pre-wrap}.item small{display:block;color:#657b93;margin-bottom:5px}.photos{display:flex;gap:20px;flex-wrap:wrap}.photos img{max-width:160px;max-height:120px;object-fit:cover;margin:4px}.print{display:block;margin:20px auto;background:#176df7;color:#fff;border:0;border-radius:9px;padding:12px 22px;cursor:pointer}@media print{body{background:white}.paper{margin:0;padding:0}.print{display:none}@page{size:A4;margin:12mm}}@media(max-width:650px){.stats,.fields{grid-template-columns:repeat(2,1fr)}.paper{padding:12px}}</style></head><body><button class="print" onclick="window.print()">طباعة / حفظ PDF</button><main class="paper"><header class="head"><small>FANNI PRO · TECHNICIAN FULL REPORT</small><h1>التقرير التفصيلي لجميع طلبات الفني</h1><p>الفني: ${safe(tech?.name||id)} | التخصص: ${safe(tech?.skill||'-')} | المدينة: ${safe(tech?.city||'-')}</p><p>الفترة: ${safe(from||'كل الفترات')} — ${safe(to||'حتى الآن')} | تاريخ الإصدار: ${safe(new Date().toLocaleString('ar-SA'))}</p></header><div class="stats">${[['إجمالي الطلبات',orders.length],['الجديدة',count('new')],['قيد التنفيذ',count('active')],['انتهى منها الفني',count('finished')],['المكتملة',count('completed')],['الملغاة',count('cancelled')],['قيمة الطلبات',fmt(total)+' ر.س'],['المدفوع',fmt(paid)+' ر.س']].map(([k,v])=>`<div class="stat">${safe(k)}<b>${safe(v)}</b></div>`).join('')}</div>${entries}<p>ملاحظة: البيانات غير المسجلة تظهر «غير مسجل». سجل العمليات المركزي لا يظهر إلا بعد ربطه بمصدره.</p></main></body></html>`;
+ const html=`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>التقرير الشامل للفني ${safe(tech?.name||id)}</title><style>body{font-family:Tahoma,Arial,sans-serif;background:#edf3fb;color:#10213d;margin:0}.paper{max-width:1050px;margin:24px auto;background:white;padding:30px}.head{background:#123d69;color:white;padding:24px;border-radius:12px}.head h1{margin:5px 0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}.stat,.item{background:#f3f7fc;border:1px solid #e1e9f4;border-radius:9px;padding:12px}.stat b{display:block;font-size:22px}.order{border-top:3px solid #176df7;margin-top:26px;padding-top:12px;break-inside:avoid-page}.order h2{font-size:18px}.order h2 span{float:left;font-size:13px}.fields{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.item{overflow-wrap:anywhere;white-space:pre-wrap}.item small{display:block;color:#657b93;margin-bottom:5px}.photos{display:flex;gap:20px;flex-wrap:wrap}.photos img{max-width:160px;max-height:120px;object-fit:cover;margin:4px}.print{display:block;margin:20px auto;background:#176df7;color:#fff;border:0;border-radius:9px;padding:12px 22px;cursor:pointer}@media print{body{background:white}.paper{margin:0;padding:0}.print{display:none}@page{size:A4;margin:12mm}}@media(max-width:650px){.stats,.fields{grid-template-columns:repeat(2,1fr)}.paper{padding:12px}}</style></head><body><button class="print" onclick="window.print()">طباعة / حفظ PDF</button><main class="paper"><header class="head"><small>FANNI PRO · TECHNICIAN FULL REPORT</small><h1>التقرير التفصيلي لجميع طلبات الفني</h1><p>الفني: ${safe(tech?.name||id)} | التخصص: ${safe(tech?.skill||'-')} | المدينة: ${safe(tech?.city||'-')}</p><p>الفترة: ${safe(from||'كل الفترات')} — ${safe(to||'حتى الآن')} | تاريخ الإصدار: ${safe(new Date().toLocaleString('ar-SA'))}</p></header><div class="stats">${[['إجمالي الطلبات',orders.length],['الجديدة',count('new')],['قيد التنفيذ',count('active')],['انتهى منها الفني',count('finished')],['المكتملة',count('completed')],['الملغاة',count('cancelled')],['قيمة الطلبات',fmt(total)+' ر.س'],['المدفوع',fmt(paid)+' ر.س']].map(([k,v])=>`<div class="stat">${safe(k)}<b>${safe(v)}</b></div>`).join('')}</div>${entries}<p>ملاحظة: البيانات غير المسجلة تظهر «غير مسجل». سجل العمليات المركزي لا يظهر إلا بعد ربطه بمصدره.</p></main><style id="fpApprovalStyles">
+.fp-approval-panel{border:1px solid #d9e6f5;background:#f7fbff;border-radius:14px;padding:14px;margin:12px 0;direction:rtl}
+.fp-approval-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.fp-approval-grid label{font-weight:800;font-size:13px}.fp-approval-grid input,.fp-approval-panel textarea{width:100%;border:1px solid #ccd9e9;border-radius:9px;padding:9px;background:white;margin-top:5px}.fp-approval-card{padding:14px;border:1px solid #dce6f2;border-radius:14px;background:#fff;margin:10px 0}.fp-approval-card p{margin:6px 0;line-height:1.8}.fp-approval-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}@media(max-width:480px){.fp-approval-grid{grid-template-columns:1fr}}
+</style>
+<script id="fpApprovalModule">
+// Collection approvals are server authoritative. Never put role decisions in localStorage.
+let fpApprovalRows=[];
+function fpApprovalMoney(n){return Number(n||0).toFixed(2)}
+function fpApprovalPanel(o){
+ const row=fpApprovalRows.find(r=>String(r.order_id)===String(o.id));
+ const st=row?.status||'none';
+ const label={none:'لم يُرسل التحصيل',pending:'بانتظار اعتماد الإدارة',approved:'تم اعتماد التحصيل',rejected:'مرفوض — يحتاج تعديل'}[st];
+ const locked=st==='approved';const id=String(o.id).replace(/[^a-zA-Z0-9]/g,'_');
+ const field=(key,title,value)=>`<label>${title}<input type="number" min="0" step="0.01" id="fpa_${key}_${id}" value="${fpApprovalMoney(value)}" ${locked?'disabled':''}></label>`;
+ return `<section class="fp-approval-panel"><h4>💰 تحصيل الطلب — ${safe(label)}</h4>
+ <p class="muted">المبالغ لا تُضاف للتحصيل المعتمد إلا بعد موافقة الإدارة.</p>
+ <div class="fp-approval-grid">${field('cash','كاش',row?.cash)}${field('card','شبكة',row?.card)}${field('bank','تحويل',row?.bank)}${field('expenses','مصروفات',row?.expenses)}</div>
+ <label style="display:block;margin-top:10px;font-weight:800">تقرير الفني / ملاحظات التحصيل<textarea id="fpa_notes_${id}" rows="3" ${locked?'disabled':''}>${safe(row?.work_notes||o.workReport||'')}</textarea></label>
+ <div class="fp-approval-actions">${locked?'🔒 التحصيل معتمد ومقفل':`<button class="btn green small" onclick="fpApprovalSubmit('${safe(o.id)}',this)">حفظ وإرسال للاعتماد</button>`}</div>
+ ${row?.review_note?`<p class="muted">ملاحظة الإدارة: ${safe(row.review_note)}</p>`:''}</section>`;
+}
+const fpApprovalBaseCard=techOrderDetailCard;
+techOrderDetailCard=function(o){const html=fpApprovalBaseCard(o);return html.replace(/<\/div>\s*$/,fpApprovalPanel(o)+'</div>')};
+async function fpApprovalLoad(){
+ if(!sb||!cloudEnabled)return;
+ const {data,error}=await sb.from('fp_collection_approvals').select('*').order('submitted_at',{ascending:false}).limit(1000);
+ if(error){console.warn('Approval loading:',error.message);return;}
+ fpApprovalRows=data||[];fpApprovalRenderAdmin();
+}
+async function fpApprovalSubmit(orderId,button){
+ if(currentUserRole!=='technician'||!sb){toast('يجب تسجيل الدخول كفني متصل');return;}
+ const o=load(KEYS.ORD).find(x=>String(x.id)===String(orderId));
+ if(!o||String(o.techId)!==String(currentTechnicianId)){toast('الطلب غير مسند لك');return;}
+ const id=String(orderId).replace(/[^a-zA-Z0-9]/g,'_');
+ const amount=k=>Number(document.getElementById(`fpa_${k}_${id}`)?.value);
+ const values=['cash','card','bank','expenses'].map(amount);
+ if(values.some(v=>!Number.isFinite(v)||v<0)){toast('راجع المبالغ');return;}
+ const notes=document.getElementById('fpa_notes_'+id)?.value||'';
+ button.disabled=true;
+ try{
+  const {error}=await sb.rpc('fp_submit_collection',{p_order_id:String(orderId),p_cash:values[0],p_card:values[1],p_bank:values[2],p_expenses:values[3],p_work_notes:notes});
+  if(error)throw error;
+  await fpApprovalLoad();renderTechPortal();toast('تم حفظ التحصيل على Supabase وإرساله للإدارة');
+ }catch(e){toast('لم يتم الحفظ: '+(e.message||e));}finally{button.disabled=false;}
+}
+function fpApprovalRenderAdmin(){
+ let host=document.getElementById('fpApprovalAdmin');
+ if(!host){const page=document.getElementById('payments');if(!page)return;host=document.createElement('section');host.id='fpApprovalAdmin';host.className='card';host.style.marginBottom='18px';page.prepend(host);}
+ if(!['admin','company_manager'].includes(currentUserRole)){host.style.display='none';return;}
+ host.style.display='block';
+ const rows=fpApprovalRows.filter(r=>r.status==='pending');
+ host.innerHTML=`<div class="card-head"><h3>📋 تحصيلات الفنيين بانتظار الاعتماد (${rows.length})</h3><button class="btn light small" onclick="fpApprovalLoad()">تحديث</button></div>`+
+ (rows.map(r=>{const o=load(KEYS.ORD).find(x=>String(x.id)===String(r.order_id));return `<article class="fp-approval-card"><b>طلب #${safe(r.order_id)}</b> — ${safe(o?.name||'')}<p>الفني: ${safe(techName(r.technician_id))} | كاش: ${fpApprovalMoney(r.cash)} | شبكة: ${fpApprovalMoney(r.card)} | تحويل: ${fpApprovalMoney(r.bank)} | مصروف: ${fpApprovalMoney(r.expenses)}</p><p><b>المحصل: ${fpApprovalMoney(r.total)} ر.س — الصافي: ${fpApprovalMoney(r.net)} ر.س</b></p><p>${safe(r.work_notes||'بدون تقرير')}</p><div class="fp-approval-actions"><button class="btn green small" onclick="fpApprovalReview('${safe(r.order_id)}','approved',this)">اعتماد التحصيل</button><button class="btn red small" onclick="fpApprovalReview('${safe(r.order_id)}','rejected',this)">رفض مع السبب</button></div></article>`}).join('')||'<p class="muted">لا توجد تحصيلات تنتظر الاعتماد</p>')+
+ `<p class="muted">إجمالي المعتمد: ${fpApprovalMoney(fpApprovalRows.filter(r=>r.status==='approved').reduce((s,r)=>s+Number(r.total||0),0))} ر.س</p>`;
+}
+async function fpApprovalReview(orderId,action,button){
+ if(!['admin','company_manager'].includes(currentUserRole)||!sb)return;
+ const note=action==='rejected'?prompt('اكتب سبب رفض التحصيل:'):prompt('ملاحظة الاعتماد (اختياري):','');
+ if(note===null||action==='rejected'&&!note.trim()){toast('اكتب سبب الرفض');return;}
+ button.disabled=true;
+ try{const {error}=await sb.rpc('fp_review_collection',{p_order_id:String(orderId),p_action:action,p_note:note});if(error)throw error;await fpApprovalLoad();toast(action==='approved'?'تم اعتماد التحصيل':'تم رفض التحصيل وإعادته للفني');}
+ catch(e){toast('لم يتم الاعتماد: '+(e.message||e));}finally{button.disabled=false;}
+}
+const fpApprovalOriginalRefresh=refreshFromCloud;
+refreshFromCloud=async function(...args){const r=await fpApprovalOriginalRefresh(...args);await fpApprovalLoad();return r};
+const fpApprovalOriginalShow=showPage;
+showPage=function(id){fpApprovalOriginalShow(id);if(id==='payments')fpApprovalLoad()};
+const fpApprovalOriginalRender=renderTechPortal;
+renderTechPortal=function(){fpApprovalOriginalRender();};
+window.addEventListener('load',()=>setTimeout(()=>fpApprovalLoad(),1300));
+</script>
+</body></html>`;
  const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة');return;}w.document.open();w.document.write(html);w.document.close();
 }
 function exportTechnicianReportCSV(){
@@ -1662,6 +1875,77 @@ refreshFromCloud=async function(...args){const result=await fpSettlementOriginal
 const fpSettlementOriginalRender=renderTechPortal;
 renderTechPortal=function(){fpSettlementOriginalRender();if(currentUserRole==='admin'){const list=fpsEl('fpSettlementAdminList');if(list)list.innerHTML=fpSettlementRows.filter(r=>r.status==='closed').map(r=>`<button class="btn light small" onclick="fpSettlementOpen('${safe(r.order_id)}')">🔒 طلب ${safe(r.order_id)} — إعادة فتح</button>`).join(' ')||'لا توجد فواتير مقفلة'};};
 window.addEventListener('load',()=>{setTimeout(()=>fpSettlementLoad().then(()=>{if(typeof renderTechPortal==='function')renderTechPortal()}),1000)});
+</script>
+<style id="fpApprovalStyles">
+.fp-approval-panel{border:1px solid #d9e6f5;background:#f7fbff;border-radius:14px;padding:14px;margin:12px 0;direction:rtl}
+.fp-approval-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.fp-approval-grid label{font-weight:800;font-size:13px}.fp-approval-grid input,.fp-approval-panel textarea{width:100%;border:1px solid #ccd9e9;border-radius:9px;padding:9px;background:white;margin-top:5px}.fp-approval-card{padding:14px;border:1px solid #dce6f2;border-radius:14px;background:#fff;margin:10px 0}.fp-approval-card p{margin:6px 0;line-height:1.8}.fp-approval-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}@media(max-width:480px){.fp-approval-grid{grid-template-columns:1fr}}
+</style>
+<script id="fpApprovalModule">
+// Collection approvals are server authoritative. Never put role decisions in localStorage.
+let fpApprovalRows=[];
+function fpApprovalMoney(n){return Number(n||0).toFixed(2)}
+function fpApprovalPanel(o){
+ const row=fpApprovalRows.find(r=>String(r.order_id)===String(o.id));
+ const st=row?.status||'none';
+ const label={none:'لم يُرسل التحصيل',pending:'بانتظار اعتماد الإدارة',approved:'تم اعتماد التحصيل',rejected:'مرفوض — يحتاج تعديل'}[st];
+ const locked=st==='approved';const id=String(o.id).replace(/[^a-zA-Z0-9]/g,'_');
+ const field=(key,title,value)=>`<label>${title}<input type="number" min="0" step="0.01" id="fpa_${key}_${id}" value="${fpApprovalMoney(value)}" ${locked?'disabled':''}></label>`;
+ return `<section class="fp-approval-panel"><h4>💰 تحصيل الطلب — ${safe(label)}</h4>
+ <p class="muted">المبالغ لا تُضاف للتحصيل المعتمد إلا بعد موافقة الإدارة.</p>
+ <div class="fp-approval-grid">${field('cash','كاش',row?.cash)}${field('card','شبكة',row?.card)}${field('bank','تحويل',row?.bank)}${field('expenses','مصروفات',row?.expenses)}</div>
+ <label style="display:block;margin-top:10px;font-weight:800">تقرير الفني / ملاحظات التحصيل<textarea id="fpa_notes_${id}" rows="3" ${locked?'disabled':''}>${safe(row?.work_notes||o.workReport||'')}</textarea></label>
+ <div class="fp-approval-actions">${locked?'🔒 التحصيل معتمد ومقفل':`<button class="btn green small" onclick="fpApprovalSubmit('${safe(o.id)}',this)">حفظ وإرسال للاعتماد</button>`}</div>
+ ${row?.review_note?`<p class="muted">ملاحظة الإدارة: ${safe(row.review_note)}</p>`:''}</section>`;
+}
+const fpApprovalBaseCard=techOrderDetailCard;
+techOrderDetailCard=function(o){const html=fpApprovalBaseCard(o);return html.replace(/<\/div>\s*$/,fpApprovalPanel(o)+'</div>')};
+async function fpApprovalLoad(){
+ if(!sb||!cloudEnabled)return;
+ const {data,error}=await sb.from('fp_collection_approvals').select('*').order('submitted_at',{ascending:false}).limit(1000);
+ if(error){console.warn('Approval loading:',error.message);return;}
+ fpApprovalRows=data||[];fpApprovalRenderAdmin();
+}
+async function fpApprovalSubmit(orderId,button){
+ if(currentUserRole!=='technician'||!sb){toast('يجب تسجيل الدخول كفني متصل');return;}
+ const o=load(KEYS.ORD).find(x=>String(x.id)===String(orderId));
+ if(!o||String(o.techId)!==String(currentTechnicianId)){toast('الطلب غير مسند لك');return;}
+ const id=String(orderId).replace(/[^a-zA-Z0-9]/g,'_');
+ const amount=k=>Number(document.getElementById(`fpa_${k}_${id}`)?.value);
+ const values=['cash','card','bank','expenses'].map(amount);
+ if(values.some(v=>!Number.isFinite(v)||v<0)){toast('راجع المبالغ');return;}
+ const notes=document.getElementById('fpa_notes_'+id)?.value||'';
+ button.disabled=true;
+ try{
+  const {error}=await sb.rpc('fp_submit_collection',{p_order_id:String(orderId),p_cash:values[0],p_card:values[1],p_bank:values[2],p_expenses:values[3],p_work_notes:notes});
+  if(error)throw error;
+  await fpApprovalLoad();renderTechPortal();toast('تم حفظ التحصيل على Supabase وإرساله للإدارة');
+ }catch(e){toast('لم يتم الحفظ: '+(e.message||e));}finally{button.disabled=false;}
+}
+function fpApprovalRenderAdmin(){
+ let host=document.getElementById('fpApprovalAdmin');
+ if(!host){const page=document.getElementById('payments');if(!page)return;host=document.createElement('section');host.id='fpApprovalAdmin';host.className='card';host.style.marginBottom='18px';page.prepend(host);}
+ if(!['admin','company_manager'].includes(currentUserRole)){host.style.display='none';return;}
+ host.style.display='block';
+ const rows=fpApprovalRows.filter(r=>r.status==='pending');
+ host.innerHTML=`<div class="card-head"><h3>📋 تحصيلات الفنيين بانتظار الاعتماد (${rows.length})</h3><button class="btn light small" onclick="fpApprovalLoad()">تحديث</button></div>`+
+ (rows.map(r=>{const o=load(KEYS.ORD).find(x=>String(x.id)===String(r.order_id));return `<article class="fp-approval-card"><b>طلب #${safe(r.order_id)}</b> — ${safe(o?.name||'')}<p>الفني: ${safe(techName(r.technician_id))} | كاش: ${fpApprovalMoney(r.cash)} | شبكة: ${fpApprovalMoney(r.card)} | تحويل: ${fpApprovalMoney(r.bank)} | مصروف: ${fpApprovalMoney(r.expenses)}</p><p><b>المحصل: ${fpApprovalMoney(r.total)} ر.س — الصافي: ${fpApprovalMoney(r.net)} ر.س</b></p><p>${safe(r.work_notes||'بدون تقرير')}</p><div class="fp-approval-actions"><button class="btn green small" onclick="fpApprovalReview('${safe(r.order_id)}','approved',this)">اعتماد التحصيل</button><button class="btn red small" onclick="fpApprovalReview('${safe(r.order_id)}','rejected',this)">رفض مع السبب</button></div></article>`}).join('')||'<p class="muted">لا توجد تحصيلات تنتظر الاعتماد</p>')+
+ `<p class="muted">إجمالي المعتمد: ${fpApprovalMoney(fpApprovalRows.filter(r=>r.status==='approved').reduce((s,r)=>s+Number(r.total||0),0))} ر.س</p>`;
+}
+async function fpApprovalReview(orderId,action,button){
+ if(!['admin','company_manager'].includes(currentUserRole)||!sb)return;
+ const note=action==='rejected'?prompt('اكتب سبب رفض التحصيل:'):prompt('ملاحظة الاعتماد (اختياري):','');
+ if(note===null||action==='rejected'&&!note.trim()){toast('اكتب سبب الرفض');return;}
+ button.disabled=true;
+ try{const {error}=await sb.rpc('fp_review_collection',{p_order_id:String(orderId),p_action:action,p_note:note});if(error)throw error;await fpApprovalLoad();toast(action==='approved'?'تم اعتماد التحصيل':'تم رفض التحصيل وإعادته للفني');}
+ catch(e){toast('لم يتم الاعتماد: '+(e.message||e));}finally{button.disabled=false;}
+}
+const fpApprovalOriginalRefresh=refreshFromCloud;
+refreshFromCloud=async function(...args){const r=await fpApprovalOriginalRefresh(...args);await fpApprovalLoad();return r};
+const fpApprovalOriginalShow=showPage;
+showPage=function(id){fpApprovalOriginalShow(id);if(id==='payments')fpApprovalLoad()};
+const fpApprovalOriginalRender=renderTechPortal;
+renderTechPortal=function(){fpApprovalOriginalRender();};
+window.addEventListener('load',()=>setTimeout(()=>fpApprovalLoad(),1300));
 </script>
 </body>
 </html>
