@@ -209,6 +209,97 @@
 @media(max-width:850px){.topbar{padding:10px 12px;gap:8px}.topbar .fp-header-user{padding:0 8px;max-width:160px}.topbar .fp-header-user .avatar{width:38px;height:38px;flex-basis:38px}.topbar .top-icons{gap:5px}.topbar .icon-btn{width:38px;height:38px}.topbar .fp-header-identity b{max-width:92px}}
 @media(max-width:560px){.topbar .search{order:5;flex:1 0 100%;max-width:none;margin:0}.topbar .fp-header-user{margin-inline-start:auto}.topbar .hamb{width:38px;height:38px;flex-shrink:0}.topbar .fp-header-identity b{max-width:90px}}
 </style>
+<style id="fpUsersProfessionalStyle">
+#users .fp-user-toolbar{display:flex;flex-direction:column;gap:14px;margin-bottom:16px}
+#users .fp-user-heading{display:flex;flex-direction:column;gap:3px;color:#14294b}
+#users .fp-user-heading strong{font-size:19px}
+#users .fp-user-heading small{font-size:12px;color:#71829d}
+#users .fp-user-filters{display:flex;gap:9px;flex-wrap:wrap}
+#users .fp-user-filters input,#users .fp-user-filters select{flex:1 1 170px;min-width:0;border:1px solid #dce6f4;border-radius:12px;padding:11px;background:#f8fbff;color:#193353}
+#users .fp-user-list{display:grid;gap:12px}
+#users .fp-user-card{border:1px solid #dfe8f5;border-radius:17px;padding:16px;background:#fff;box-shadow:0 5px 20px rgba(24,63,110,.04);min-width:0}
+#users .fp-user-card-head{display:flex;align-items:center;gap:11px;min-width:0}
+#users .fp-user-avatar{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:#eaf2ff;flex:none;font-size:22px}
+#users .fp-user-main{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+#users .fp-user-main strong,#users .fp-user-email{overflow-wrap:anywhere}
+#users .fp-user-email{font-size:12px;color:#6b7d99;direction:ltr;text-align:right}
+#users .fp-user-role{font-size:12px;color:#3263a7}
+#users .fp-user-connected{display:inline-flex;align-items:center;gap:6px;border-radius:30px;background:#e8f8f1;color:#11875d;padding:7px 10px;font-size:11px;font-weight:700;white-space:nowrap}
+#users .fp-user-dot{height:7px;width:7px;background:#1ba875;border-radius:50%}
+#users .fp-user-details{border-top:1px solid #eef2f8;margin-top:13px;padding-top:12px;display:grid;gap:9px}
+#users .fp-user-details>div{display:flex;justify-content:space-between;gap:12px;font-size:13px}
+#users .fp-user-details span{color:#7c8aa1}
+#users .fp-user-details b{color:#1e3554;text-align:left;overflow-wrap:anywhere}
+#users .danger-note{display:none!important}
+@media(max-width:550px){#users .fp-user-card{padding:12px}#users .fp-user-connected{font-size:10px;padding:6px}#users .fp-user-filters{flex-direction:column}}
+</style>
+<style id="fpProfessionalOrderCards">
+/* Order cards only: no changes to company, technician, or invoice lists */
+.item-card.fp-order-card{display:flex;flex-direction:column;align-items:stretch;gap:0;direction:rtl;text-align:right;padding:0;overflow:hidden;border:1px solid #dbe6f4;border-radius:18px;background:#fff;box-shadow:0 4px 18px rgba(22,47,84,.055);margin-bottom:14px}
+.fp-order-card .fp-order-main{min-width:0;padding:19px 20px 15px;width:100%}
+.fp-order-card .fp-order-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:1px solid #edf1f7;padding-bottom:13px;margin-bottom:14px}
+.fp-order-card .fp-order-heading-text{display:flex;flex-direction:column;gap:5px;min-width:0}
+.fp-order-card .fp-order-id{font-weight:900;font-size:13px;color:#1a66d1}
+.fp-order-card .fp-order-service{font-size:17px;line-height:1.6;color:#172b4d;overflow-wrap:anywhere}
+.fp-order-card .fp-order-heading>.status{flex-shrink:0;max-width:40%;text-align:center}
+.fp-order-card .fp-order-details{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.fp-order-card .fp-order-detail{min-width:0;display:flex;flex-direction:column;gap:5px;background:#f5f8fd;border:1px solid #edf2fa;border-radius:11px;padding:10px 12px;overflow-wrap:anywhere}
+.fp-order-card .fp-order-label{font-size:11px;font-weight:750;color:#657b9a}
+.fp-order-card .fp-order-detail strong{font-size:13px;color:#203451;line-height:1.5}
+.fp-order-card .fp-order-price{color:#096bb4!important;font-size:15px!important}
+.fp-order-card .fp-order-meta{display:flex;gap:10px 18px;flex-wrap:wrap;padding-top:13px;font-size:12px;color:#64748b}
+.fp-order-card .fp-order-meta b{color:#263a55}
+.fp-order-card .fp-order-actions{display:flex;align-items:center;justify-content:flex-start;gap:8px;flex-wrap:wrap;padding:13px 20px;background:#f8fbff;border-top:1px solid #e8eef7;width:100%}
+.fp-order-card .fp-order-actions .btn{height:36px;min-width:0;white-space:normal;border-radius:9px;font-size:12px;padding:6px 12px}
+.fp-order-card .fp-order-assign{display:flex;align-items:center;gap:8px;color:#526782;font-size:12px;font-weight:800}
+.fp-order-card .fp-order-assign select{height:36px;max-width:160px;min-width:100px;border:1px solid #d7e2f1;border-radius:9px;background:#fff;color:#203451;padding:0 8px}
+@media(max-width:760px){.fp-order-card .fp-order-details{grid-template-columns:repeat(2,minmax(0,1fr))}.fp-order-card .fp-order-main{padding:15px}.fp-order-card .fp-order-actions{padding:12px 15px}.fp-order-card .fp-order-service{font-size:15px}}
+@media(max-width:440px){.fp-order-card .fp-order-details{grid-template-columns:1fr 1fr;gap:7px}.fp-order-card .fp-order-detail{padding:9px}.fp-order-card .fp-order-actions .btn{flex:1 1 auto}.fp-order-card .fp-order-heading>.status{max-width:45%}}
+</style>
+
+<style id="fpMobileProfessional2026">
+html,body{max-width:100%;overflow-x:hidden}
+.app,.main,.content,.page{min-width:0}
+.item-card,.order-card,.lane,.card{min-width:0;max-width:100%}
+.item-card{flex-wrap:wrap;align-items:flex-start}
+.item-card>div,.item-card>section{min-width:0;overflow-wrap:anywhere}
+.actions{max-width:100%;flex-wrap:wrap}
+.actions button,.actions select{max-width:100%;white-space:normal}
+input,select,textarea{max-width:100%;min-width:0}
+.table-wrap,.table-container,.table-responsive{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media(max-width:900px){
+ .app{display:block!important;grid-template-columns:minmax(0,1fr)!important}
+ .main{width:100%;min-width:0}
+ .sidebar{position:fixed!important;inset:0 auto 0 0;left:auto;right:0;width:min(320px,86vw);height:100dvh!important;z-index:1002;overflow-y:auto;transform:translateX(110%);transition:transform .25s ease;box-shadow:-16px 0 45px rgba(4,20,45,.22);order:initial!important}
+ body.fp-mobile-menu-open .sidebar{transform:translateX(0)}
+ .fp-mobile-backdrop{display:none;position:fixed;inset:0;background:rgba(5,20,45,.55);z-index:1001}
+ body.fp-mobile-menu-open .fp-mobile-backdrop{display:block}
+ body.fp-mobile-menu-open{overflow:hidden}
+ .nav{display:flex!important;flex-direction:column;gap:5px}
+ .topbar{min-height:62px;height:auto;padding:10px 12px;gap:8px;flex-wrap:wrap}
+ .topbar .search{order:3;flex-basis:100%;max-width:none}
+ .topbar .user{min-width:0;max-width:calc(100vw - 160px)}
+ .content{padding:12px!important}
+ .page-title{flex-wrap:wrap;align-items:flex-start}
+ .page-title h1{font-size:20px}
+ .grid,.lower,.wide-grid,.section-grid,.kanban,.metric-grid,.inv-grid{grid-template-columns:minmax(0,1fr)!important}
+ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px}
+ .item-card{padding:12px;gap:10px}
+ .actions{width:100%;gap:7px}
+ .actions button{min-height:38px}
+ .modal,.modal-content,.dialog{max-width:calc(100vw - 20px)}
+}
+@media(max-width:480px){
+ .content{padding:9px!important}
+ .kpis{gap:7px}
+ .kpis>*{min-width:0}
+ .topbar .search input{width:100%}
+ .item-card .actions button{flex:1 1 calc(50% - 8px)}
+ .page-title h1{font-size:18px}
+ .mini-form,.admin-service-grid{grid-template-columns:minmax(0,1fr)!important}
+}
+@media(min-width:901px){.fp-mobile-backdrop{display:none!important}}
+</style>
 </head>
 <body>
 <div id="loginScreen" class="login-screen hidden">
@@ -232,10 +323,10 @@
     </section>
   </div>
 </div>
-<div class="app" id="app">
+<div class="fp-mobile-backdrop" onclick="fpMobileMenuClose()" aria-hidden="true"></div><div class="app" id="app">
   <main class="main">
     <header class="topbar">
-      <button class="hamb" onclick="document.querySelector('.sidebar').scrollIntoView({behavior:'smooth'})">☰</button>
+      <button class="hamb" onclick="fpMobileMenuToggle()">☰</button>
       <div class="search"><input id="globalSearch" placeholder="ابحث عن طلب، عميل، فني، فاتورة..." oninput="renderAll()"></div>
       <div class="top-icons"><button class="icon-btn" onclick="toggleTheme()">🌙</button><button class="icon-btn" onclick="showPage('notifications')">🔔<span class="badge" id="notifBadge">0</span></button><button class="icon-btn" onclick="logout()" title="تسجيل خروج">🚪</button></div>
       <div class="user fp-header-user" dir="rtl"><div class="avatar" aria-hidden="true">👨🏻</div><div class="fp-header-identity"><b id="currentUserName">مدير النظام</b><small id="connectionStatus" class="fp-connection-status">متصل</small></div></div>
@@ -307,10 +398,10 @@
 <option value="المنطقة الجنوبية">المنطقة الجنوبية</option>
 <option value="المنطقة الشرقية">المنطقة الشرقية</option>
 </select></div><div class="field"><label>المدينة</label><select id="tCity"></select></div><div class="field"><label>التقييم</label><input id="tRate" type="number" value="4.8" step=".1" min="0" max="5"></div><div class="field"><label>الحالة</label><select id="tAvailable"><option>متاح للعمل</option><option>مشغول</option><option>إجازة</option><option>موقوف</option></select></div><div class="field"><label>سنوات الخبرة</label><input id="tExp" type="number" value="5"></div></div><br><button class="btn" onclick="saveTechForm()">حفظ الفني</button></div><div class="card"><div class="card-head"><h3>قائمة الفنيين</h3><span class="status paid" id="techCount">0 فني</span></div><div id="techList" class="list-card"></div></div></div></div>
-      <div id="assign" class="page"><div class="page-title"><div><h1>الإسناد والمتابعة</h1><p>إسناد الطلبات للفني المناسب وتحديث الحالة</p></div><button class="btn light" onclick="autoAssignAll()">اقتراح تلقائي</button></div><div class="wide-grid"><div class="card"><div class="card-head"><h3>لوحة الحالات</h3></div><div id="assignBoard" class="kanban"></div></div><div class="card"><div class="card-head"><h3>أسرع إسناد</h3></div><div id="quickAssign" class="timeline"></div></div></div></div>
+      <div id="assign" class="page"><div class="page-title"><div><h1>الإسناد والمتابعة</h1><p>إسناد الطلبات للفني المناسب وتحديث الحالة</p></div><button class="btn light" onclick="fpAutoOpen()" style="background:#e9f1ff;color:#1554a5;border:1px solid #c7dcff">⚙️ الإسناد التلقائي</button></div><div class="wide-grid"><div class="card"><div class="card-head"><h3>لوحة الحالات</h3></div><div id="fpAutoControls" style="margin-bottom:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"></div><div id="assignBoard" class="kanban"></div></div><div class="card"><div class="card-head"><h3>أسرع إسناد</h3></div><div id="quickAssign" class="timeline"></div></div></div></div>
       <div id="companyPortal" class="page">
         <div class="page-title"><div><h1>🏢 بوابة الشركة</h1><p>متابعة طلبات الشركة وإسنادها لفنييها</p></div><button class="btn light" onclick="refreshFromCloud()">تحديث الطلبات</button></div>
-        <div class="card" style="margin-bottom:16px"><div class="field"><label>الشركة الحالية</label><select id="companyPortalSelect" onchange="renderCompanyPortal()"></select></div><p class="muted" style="margin-top:8px">مدير الشركة يرى شركته المرتبطة بحسابه فقط. يجب تفعيل سياسات RLS في قاعدة البيانات لحماية البيانات.</p></div>
+        <div class="card" style="margin-bottom:16px"><div class="field"><label>الشركة الحالية</label><select id="companyPortalSelect" onchange="renderCompanyPortal()"></select></div></div>
         <div class="kpis"><div class="kpi"><div><h4>طلبات الشركة</h4><strong id="cpTotal">0</strong></div><div class="kicon ki-blue">📋</div></div><div class="kpi"><div><h4>بانتظار فني</h4><strong id="cpPending">0</strong></div><div class="kicon ki-orange">⏳</div></div><div class="kpi"><div><h4>قيد التنفيذ</h4><strong id="cpActive">0</strong></div><div class="kicon ki-purple">🔧</div></div><div class="kpi"><div><h4>مكتملة</h4><strong id="cpDone">0</strong></div><div class="kicon ki-green">✔</div></div></div>
         <div class="card"><div class="card-head"><h3>الطلبات المسندة للشركة</h3></div><div id="companyPortalOrders" class="list-card"></div></div>
       </div>
@@ -340,7 +431,7 @@
 </section><div class="card" style="margin-bottom:16px"><div class="card-head"><h3>فواتير الفنيين — مسودات واعتمادات</h3><button class="btn light" onclick="fpInvoiceRefresh()">تحديث</button></div><div id="fpInvoiceAdminList" class="list-card">جار التحميل...</div></div><div class="page-title"><div><h1>الفواتير والمدفوعات</h1><p>طباعة الفواتير ومراجعة حالة الدفع</p></div><button class="btn light" onclick="window.print()">طباعة الصفحة</button></div><div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>رقم الفاتورة</th><th>العميل</th><th>الخدمة</th><th>التاريخ</th><th>المبلغ</th><th>الدفع</th><th>إجراء</th></tr></thead><tbody id="invoiceRows2"></tbody></table></div></div></div>
       <div id="reports" class="page"><div class="page-title"><div><h1>التقارير</h1><p>مؤشرات تشغيلية سريعة</p></div></div><div class="kpis"><div class="kpi"><div><h4>نسبة الإنجاز</h4><strong id="completeRate">0%</strong><p>مكتملة من إجمالي الطلبات</p></div><div class="kicon ki-green">✅</div></div><div class="kpi"><div><h4>متوسط الطلب</h4><strong id="avgOrder">0</strong><p>متوسط قيمة الطلب</p></div><div class="kicon ki-blue">📌</div></div><div class="kpi"><div><h4>طلبات متأخرة</h4><strong id="lateOrdersKpi">0</strong><p>تحتاج متابعة</p></div><div class="kicon ki-orange">⏱</div></div><div class="kpi"><div><h4>فنيين نشطين</h4><strong id="activeTechsKpi">0</strong><p>متاحين للعمل</p></div><div class="kicon ki-purple">👷</div></div></div></div>
       <div id="notifications" class="page"><div class="page-title"><div><h1>الإشعارات</h1><p>تنبيهات تشغيلية تلقائية</p></div></div><div class="card"><div id="notifyCenter" class="timeline"></div></div></div>
-      <div id="users" class="page"><div class="page-title"><div><h1>المستخدمين والصلاحيات</h1><p>إنشاء مستخدمين حقيقيين في Supabase Authentication مع ربط الصلاحيات</p></div></div><div class="wide-grid"><div class="card"><div class="mini-form"><div class="field"><label>الاسم</label><input id="uName" placeholder="اسم المستخدم"></div><div class="field"><label>البريد</label><input id="uEmail" type="email" placeholder="user@example.com"></div><div class="field"><label>كلمة المرور</label><input id="uPassword" type="password" placeholder="كلمة مرور لا تقل عن 6 أحرف"></div><div class="field"><label>الدور</label><select id="uRole"><option value="admin">Admin</option><option value="dispatcher">Dispatcher</option><option value="company_manager">Company Manager</option><option value="technician">Technician</option><option value="viewer">Viewer</option><option value="client">Client</option></select></div><div class="field"><label>الحالة</label><select id="uActive"><option value="Active">Active</option><option value="Disabled">Disabled</option></select></div><div class="field"><label>ربط الفني - اختياري</label><select id="uTechnicianId"><option value="">بدون ربط</option></select></div><div class="field"><label>ربط الشركة - لمدير الشركة</label><select id="uCompanyId"><option value="">بدون ربط</option></select></div></div><br><div class="actions"><button class="btn" onclick="addUser()">إنشاء مستخدم حقيقي</button><button class="btn light" onclick="clearUserForm()">تفريغ</button></div></div><div class="card"><div class="danger-note">إدارة المستخدمين والصلاحيات وربط الفنيين بالحسابات.</div><div id="usersRows" class="list-card"></div></div></div></div>
+      <div id="users" class="page"><div class="page-title"><div><h1>المستخدمين والصلاحيات</h1><p>إنشاء مستخدمين حقيقيين في Supabase Authentication مع ربط الصلاحيات</p></div></div><div class="wide-grid"><div class="card"><div class="mini-form"><div class="field"><label>الاسم</label><input id="uName" placeholder="اسم المستخدم"></div><div class="field"><label>البريد</label><input id="uEmail" type="email" placeholder="user@example.com"></div><div class="field"><label>كلمة المرور</label><input id="uPassword" type="password" placeholder="كلمة مرور لا تقل عن 6 أحرف"></div><div class="field"><label>الدور</label><select id="uRole"><option value="admin">Admin</option><option value="dispatcher">Dispatcher</option><option value="company_manager">Company Manager</option><option value="technician">Technician</option><option value="viewer">Viewer</option><option value="client">Client</option></select></div><div class="field"><label>الحالة</label><select id="uActive"><option value="Active">Active</option><option value="Disabled">Disabled</option></select></div><div class="field"><label>ربط الفني - اختياري</label><select id="uTechnicianId"><option value="">بدون ربط</option></select></div><div class="field"><label>ربط الشركة - لمدير الشركة</label><select id="uCompanyId"><option value="">بدون ربط</option></select></div></div><br><div class="actions"><button class="btn" onclick="addUser()">إنشاء مستخدم حقيقي</button><button class="btn light" onclick="clearUserForm()">تفريغ</button></div></div><div class="card"><div class="fp-user-toolbar"><div class="fp-user-heading"><strong>حسابات المستخدمين</strong><small>إدارة الحسابات والصلاحيات والارتباطات</small></div><div class="fp-user-filters"><input id="fpUserSearch" placeholder="بحث بالاسم أو البريد" oninput="fpFilterUsers()" aria-label="بحث المستخدمين"><select id="fpUserRoleFilter" onchange="fpFilterUsers()" aria-label="تصفية حسب الدور"><option value="">جميع الصلاحيات</option><option value="admin">مدير النظام</option><option value="dispatcher">مسؤول الإسناد</option><option value="company_manager">مدير شركة</option><option value="technician">فني</option><option value="viewer">مشاهد</option><option value="client">عميل</option></select></div></div><div id="usersRows" class="fp-user-list"></div></div></div></div>
       <div id="settings" class="page"><div class="page-title"><div><h1>الإعدادات</h1><p>إدارة النسخة والربط والنسخ الاحتياطي</p></div></div><div class="section-grid"><div class="card"><h3>حالة الربط</h3><br><div class="danger-note" id="dbStatus">جاري الفحص...</div><div class="actions"><button class="btn light" onclick="exportBackup()">تصدير نسخة احتياطية</button><button class="btn light" onclick="document.getElementById('backupInput').click()">استيراد نسخة</button><input id="backupInput" type="file" accept="application/json" class="hidden" onchange="importBackup(event)"><button class="btn red" onclick="logout()">تسجيل خروج</button></div></div><div class="card"><h3>ملاحظات أمان</h3><br><p class="muted">إعدادات النظام والنسخ الاحتياطي وإدارة الجلسة.</p></div></div></div>
     </section>
   </main>
@@ -349,13 +440,13 @@
     <nav class="nav" id="nav">
       <button class="active" data-page="dashboard"><span>⌂ الرئيسية</span></button><button data-page="orders"><span>🛠 طلبات الصيانة</span></button><button data-page="companies"><span>🏢 الشركات والفنيين</span></button><button data-page="technicians"><span>👥 الفنيين</span></button><button data-page="assign"><span>🔗 الإسناد</span></button><button data-page="companyPortal"><span>🏢 بوابة الشركة</span></button><button data-page="clients"><span>🏢 العملاء</span></button><button data-page="techPortal"><span>📱 بوابة الفني</span></button><button data-page="clientTracking"><span>📍 تتبع العميل</span></button><button data-page="payments"><span>💳 الفواتير والمدفوعات</span></button><button data-page="reports"><span>▤ التقارير</span></button><button data-page="notifications"><span>🔔 الإشعارات</span></button><button data-page="users"><span>🔐 المستخدمين</span></button><button data-page="settings"><span>⚙ الإعدادات</span></button>
     </nav>
-    <div class="pro-box"><b>النظام الاحترافي</b><p>لوحة تشغيل احترافية لإدارة الطلبات والفنيين والفواتير.</p></div>
+    
   </aside>
 </div>
 <div id="toast" class="toast"></div>
 <div id="liveAlert" class="live-alert"></div>
 <div id="fpInvoiceModal" class="hidden" style="position:fixed;inset:0;background:#071b34aa;z-index:999999;overflow:auto;padding:22px"><div class="card" style="max-width:760px;margin:30px auto"><div class="card-head"><h2 id="fpInvoiceTitle">مسودة فاتورة</h2><button class="btn red" onclick="fpInvoiceClose()">إغلاق</button></div><p id="fpInvoiceHint" class="muted"></p><div id="fpInvoiceLines"></div><div class="actions" style="margin:12px 0"><button id="fpAddLine" class="btn light" onclick="fpInvoiceAddLine()">+ إضافة بند</button><b id="fpInvoiceTotal"></b></div><div class="actions"><button id="fpSaveDraft" class="btn" onclick="fpInvoiceSave('save')">حفظ المسودة</button><button id="fpSubmitDraft" class="btn orange" onclick="fpInvoiceSave('submit')">إرسال للإدارة</button><button id="fpApproveDraft" class="btn green" onclick="fpInvoiceAction('approve')">اعتماد</button><button id="fpIssueDraft" class="btn green" onclick="fpInvoiceAction('issue')">إصدار الفاتورة</button><button id="fpPrintDraft" class="btn light" onclick="fpInvoicePrint()">طباعة / PDF</button></div><p id="fpInvoiceError" style="color:#c00;margin-top:12px"></p></div></div>
-<div id="fpSettlementAdminList" class="actions" style="margin:15px"></div><div id="printArea" class="invoice-print"></div>
+<div id="fpSettlementAdminList" style="margin:15px"></div><div id="printArea" class="invoice-print"></div>
 <script>
 const CONFIG={SUPABASE_URL:'https://kbnqrpkexkjzndunnxcq.supabase.co',SUPABASE_ANON_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtibnFycGtleGtqem5kdW5ueGNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTk5MTIsImV4cCI6MjA5NTI3NTkxMn0.zs1q4hmUDH80j6guhciKJbfi75aB3MAlD6sAvkGcZWU'};
 const KEYS={ORD:'alostol_orders_v2',TECH:'alostol_techs_v2',COMP:'alostol_companies_v1',USERS:'alostol_users_v2',SESSION:'alostol_session_v2',KNOWN:'alostol_known_orders_v2',NEW:'alostol_new_orders_v2',ALERTS:'alostol_alert_records_v2'};
@@ -760,14 +851,20 @@ async function refreshFromCloud(showToast=true){
       sb.from('companies').select('id,name,phone,city')
     ]);
     const techResult=results[0].status==='fulfilled'?results[0].value:null;
-    if(techResult&&!techResult.error) localStorage.setItem(KEYS.TECH,JSON.stringify((techResult.data||[]).map(fromDbTech)));
+    if(techResult&&!techResult.error){
+      const cloudTechs=(techResult.data||[]).map(fromDbTech);
+      const existingTechs=load(KEYS.TECH);
+      if(cloudTechs.length || !existingTechs.length) localStorage.setItem(KEYS.TECH,JSON.stringify(cloudTechs));
+      else console.warn('استجابة الفنيين فارغة؛ الاحتفاظ بالبيانات المحلية لحين التحقق من صلاحيات القراءة');
+    }
     else console.warn('تعذر تحميل الفنيين دون التأثير على الطلبات',techResult?.error||results[0].reason);
     const companyResult=results[1].status==='fulfilled'?results[1].value:null;
     if(companyResult&&!companyResult.error){
       const oldCompanies=getCompanies();
       const oldMap=new Map(oldCompanies.map(c=>[String(c.id),c]));
       const cloudCompanies=(companyResult.data||[]).map(c=>({...oldMap.get(String(c.id)),id:c.id,name:c.name||'',phone:c.phone||'',city:c.city||'',region:oldMap.get(String(c.id))?.region||inferRegion(c.city||''),status:oldMap.get(String(c.id))?.status||'نشطة',notes:oldMap.get(String(c.id))?.notes||''}));
-      localStorage.setItem(KEYS.COMP,JSON.stringify(cloudCompanies));
+      if(cloudCompanies.length || !oldCompanies.length) localStorage.setItem(KEYS.COMP,JSON.stringify(cloudCompanies));
+      else console.warn('استجابة الشركات فارغة؛ الاحتفاظ بالبيانات المحلية لحين التحقق من صلاحيات القراءة');
     }else console.warn('تعذر تحميل الشركات دون التأثير على الطلبات',companyResult?.error||results[1].reason);
     const db=get('dbStatus');if(db)db.textContent='الطلبات جاهزة للعرض.';
     const st=get('connectionStatus');if(st)st.textContent='متصل';
@@ -937,9 +1034,10 @@ async function sendOrderWhatsAppNotification(order,eventType='created'){
 }
 function fpAdminAmount(id){return Math.max(0,Number(get(id)?.value)||0)}
 function fpAdminRecalc(){const c=fpAdminAmount('oCashCollected'),n=fpAdminAmount('oCardCollected'),t=fpAdminAmount('oBankCollected'),e=fpAdminAmount('oExpenseCollected');const total=c+n+t;const el=get('fpAdminTotals');if(el)el.textContent=`إجمالي المحصل: ${total.toFixed(2)} ر.س | المصروف: ${e.toFixed(2)} ر.س | الصافي: ${(total-e).toFixed(2)} ر.س | المتبقي: ${(Math.max(0,(Number(get('oPrice')?.value)||0)-total)).toFixed(2)} ر.س`;}
-function saveOrderForm(){let arr=load(KEYS.ORD),edit=get('editingOrderId').value;const selectedServices=getSelectedAdminServices();const serviceText=selectedServices.join('، ');if(!selectedServices.length){toast('اختار خدمة واحدة على الأقل');return}const order={id:edit||orderNumber(),name:get('oName').value.trim()||'عميل جديد',phone:get('oPhone').value.trim(),service:serviceText,services:selectedServices,city:get('oCity').value,price:+get('oPrice').value||0,status:get('oStatus').value,date:today(),notes:get('oNotes').value.trim(),paymentStatus:get('oPayment').value,techId:get('oTech').value||null,companyId:get('oCompany').value||'',cashCollected:fpAdminAmount('oCashCollected'),cardCollected:fpAdminAmount('oCardCollected'),bankCollected:fpAdminAmount('oBankCollected'),expenseCollected:fpAdminAmount('oExpenseCollected')}; if(edit)arr=arr.map(x=>x.id===edit?{...x,...order}:x); else arr.unshift(order);save(KEYS.ORD,arr);const known=getKnownOrders();known.add(order.id);setKnownOrders(known);clearOrderForm();renderAll();toast(edit?'تم تعديل الطلب':'تم حفظ الطلب');if(!edit){const k=String(order.id);let ids=[];try{ids=JSON.parse(localStorage.getItem(WA_NOTIFIED_KEY)||'[]')}catch{};if(!ids.includes(k)){ids.push(k);localStorage.setItem(WA_NOTIFIED_KEY,JSON.stringify(ids.slice(-1000)))}/* WhatsApp handled by database webhook */}}
-function editOrder(id){markOrderSeen(id);const x=roleFilteredOrders(load(KEYS.ORD)).find(o=>o.id===id);if(!x)return;showPage('orders');get('editingOrderId').value=x.id;get('orderFormTitle').textContent='تعديل طلب '+x.id;get('oName').value=x.name||'';get('oPhone').value=x.phone||'';setAdminServiceSelection((x.services&&x.services.length)?x.services:(x.service||'صيانة مكيفات'));if(get('oRegion'))get('oRegion').value=x.region||inferRegion(x.city||'');fillOrderCities(x.city||'');fillOrderCompaniesByRegion(x.companyId||'');get('oCity').value=x.city||'خميس مشيط';fillOrderCompaniesByRegion(x.companyId||'');get('oPrice').value=x.price||0;get('oStatus').value=x.status||'جديدة';get('oPayment').value=x.paymentStatus||'غير مدفوعة';fillOrderTechsByCompany();get('oTech').value=x.techId||'';get('oNotes').value=x.notes||'';[['oCashCollected','cashCollected'],['oCardCollected','cardCollected'],['oBankCollected','bankCollected'],['oExpenseCollected','expenseCollected']].forEach(([id,key])=>get(id).value=x[key]||0);fpAdminRecalc();window.scrollTo({top:0,behavior:'smooth'})}
-function clearOrderForm(){['oCashCollected','oCardCollected','oBankCollected','oExpenseCollected'].forEach(id=>{if(get(id))get(id).value=0});fpAdminRecalc();['editingOrderId','oName','oPhone','oPrice','oNotes'].forEach(id=>get(id).value='');setAdminServiceSelection('');get('orderFormTitle').textContent='إضافة طلب';get('oStatus').value='جديدة';get('oPayment').value='غير مدفوعة';get('oTech').value='';if(get('oCompany'))get('oCompany').value='';fillOrderCompaniesByRegion()}
+function saveOrderForm(){let arr=load(KEYS.ORD),edit=get('editingOrderId').value;const selectedServices=getSelectedAdminServices();const serviceText=selectedServices.join('، ');if(!selectedServices.length){toast('اختار خدمة واحدة على الأقل');return}const original=edit?arr.find(x=>String(x.id)===String(edit)):null;const order={id:original?original.id:(edit||orderNumber()),name:original?original.name:(get('oName').value.trim()||'عميل جديد'),phone:original?original.phone:get('oPhone').value.trim(),service:serviceText,services:selectedServices,city:original?original.city:get('oCity').value,price:+get('oPrice').value||0,status:get('oStatus').value,date:today(),notes:get('oNotes').value.trim(),paymentStatus:get('oPayment').value,techId:get('oTech').value||null,companyId:get('oCompany').value||'',cashCollected:fpAdminAmount('oCashCollected'),cardCollected:fpAdminAmount('oCardCollected'),bankCollected:fpAdminAmount('oBankCollected'),expenseCollected:fpAdminAmount('oExpenseCollected')}; if(edit)arr=arr.map(x=>String(x.id)===String(edit)?{...x,...order,id:x.id,name:x.name,phone:x.phone,city:x.city,address:x.address,region:x.region}:x); else arr.unshift(order);save(KEYS.ORD,arr);const known=getKnownOrders();known.add(order.id);setKnownOrders(known);clearOrderForm();renderAll();toast(edit?'تم تعديل الطلب':'تم حفظ الطلب');if(!edit){const k=String(order.id);let ids=[];try{ids=JSON.parse(localStorage.getItem(WA_NOTIFIED_KEY)||'[]')}catch{};if(!ids.includes(k)){ids.push(k);localStorage.setItem(WA_NOTIFIED_KEY,JSON.stringify(ids.slice(-1000)))}/* WhatsApp handled by database webhook */}}
+function editOrder(id){markOrderSeen(id);const x=roleFilteredOrders(load(KEYS.ORD)).find(o=>o.id===id);if(!x)return;showPage('orders');get('editingOrderId').value=x.id;get('orderFormTitle').textContent='تعديل طلب '+x.id;get('oName').value=x.name||'';get('oPhone').value=x.phone||'';fpLockCustomerFields(true);setAdminServiceSelection((x.services&&x.services.length)?x.services:(x.service||'صيانة مكيفات'));if(get('oRegion'))get('oRegion').value=x.region||inferRegion(x.city||'');fillOrderCities(x.city||'');fillOrderCompaniesByRegion(x.companyId||'');get('oCity').value=x.city||'خميس مشيط';fillOrderCompaniesByRegion(x.companyId||'');get('oPrice').value=x.price||0;get('oStatus').value=x.status||'جديدة';get('oPayment').value=x.paymentStatus||'غير مدفوعة';fillOrderTechsByCompany();get('oTech').value=x.techId||'';get('oNotes').value=x.notes||'';[['oCashCollected','cashCollected'],['oCardCollected','cardCollected'],['oBankCollected','bankCollected'],['oExpenseCollected','expenseCollected']].forEach(([id,key])=>get(id).value=x[key]||0);fpAdminRecalc();window.scrollTo({top:0,behavior:'smooth'})}
+function fpLockCustomerFields(locked){['oName','oPhone','oRegion','oCity'].forEach(id=>{const el=get(id);if(el){el.disabled=!!locked;el.title=locked?'بيانات العميل ثابتة بعد إنشاء الطلب':'';}})}
+function clearOrderForm(){fpLockCustomerFields(false);['oCashCollected','oCardCollected','oBankCollected','oExpenseCollected'].forEach(id=>{if(get(id))get(id).value=0});fpAdminRecalc();['editingOrderId','oName','oPhone','oPrice','oNotes'].forEach(id=>get(id).value='');setAdminServiceSelection('');get('orderFormTitle').textContent='إضافة طلب';get('oStatus').value='جديدة';get('oPayment').value='غير مدفوعة';get('oTech').value='';if(get('oCompany'))get('oCompany').value='';fillOrderCompaniesByRegion()}
 async function deleteOrder(id){if(!confirm('حذف الطلب '+id+'؟'))return;save(KEYS.ORD,load(KEYS.ORD).filter(x=>x.id!==id));await deleteOrderCloud(id);renderAll();toast('تم حذف الطلب')}
 function updateOrderStatus(id,status){markOrderSeen(id);const arr=load(KEYS.ORD).map(x=>x.id===id?{...x,status}:x);save(KEYS.ORD,arr);renderAll();toast('تم تحديث الحالة');const changed=arr.find(x=>x.id===id);/* WhatsApp handled by database webhook */}
 function assignOrder(id,techId){markOrderSeen(id);const arr=load(KEYS.ORD).map(x=>x.id===id?{...x,techId,companyId:(load(KEYS.TECH).find(t=>String(t.id)===String(techId))||{}).companyId||x.companyId||'',assignedAt:new Date().toISOString(),status:x.status==='جديدة'?'تم الإسناد':x.status}:x);save(KEYS.ORD,arr);renderAll();toast('تم إسناد الطلب');const changed=arr.find(x=>x.id===id);/* WhatsApp handled by database webhook */}
@@ -1002,7 +1100,34 @@ function fpOrderCreatedDate(x){
 }
 function orderCardCompact(x){const isNew=getNewOrderIds().has(x.id);return `<div class="item-card ${isNew?'new-order-highlight':''}"><div><b>${safe(x.id)} - ${safe(displayServices(x))}</b><p>📅 تاريخ الطلب: <b>${safe(fpOrderCreatedDate(x))}</b><br>عميل: ${safe(x.name)} · فني: ${safe(techName(x.techId))}</p></div><span class="status ${orderStatusClass(x.status)}">${safe(x.status)}</span></div>`}
 function sendInvoiceToTech(id){const arr=load(KEYS.ORD).map(x=>x.id===id?{...x,invoiceSent:true,invoiceSentAt:new Date().toISOString()}:x);save(KEYS.ORD,arr);renderAll();toast('تم إرسال الفاتورة للفني')}
-function orderCardFull(x,techs){const techOptions='<option value="">إسناد</option>'+techs.map(t=>`<option value="${safe(t.id)}" ${x.techId===t.id?'selected':''}>${safe(t.name)}</option>`).join('');const isNew=getNewOrderIds().has(x.id);return `<div class="item-card ${isNew?'new-order-highlight':''}"><div style="min-width:0"><b>${safe(x.id)} - ${safe(displayServices(x))}</b><p><span class="fp-admin-order-date">📅 تاريخ الطلب: <b>${safe(fpOrderCreatedDate(x))}</b></span><br>${safe(x.name)} · ${customerPhoneAction(x.phone)} · ${safe(x.city)} · ${fmt(x.price)} ر.س<br>الفني: ${safe(techName(x.techId))} · الدفع: ${safe(x.paymentStatus||'غير مدفوعة')} · الفاتورة للفني: ${x.invoiceSent?'مرسلة':'غير مرسلة'}</p></div><div class="actions"><span class="status ${orderStatusClass(x.status)}">${safe(x.status)}</span><select onchange="assignOrder('${safe(x.id)}',this.value)" style="height:34px;border:1px solid var(--line);border-radius:10px">${techOptions}</select><button class="btn small light" onclick="editOrder('${safe(x.id)}')">تعديل</button><button class="btn small orange" onclick="fpOpenTransfer('${safe(x.id)}')">🔄 تحويل لفني آخر</button><button class="btn small green" onclick="updateOrderStatus('${safe(x.id)}','مكتملة')">إنهاء</button><button class="btn small orange" onclick="updateOrderStatus('${safe(x.id)}','الفني تحرك')">تحرك</button><button class="btn small" onclick="printInvoice('${safe(x.id)}')">فاتورة</button><button class="btn small green" onclick="sendInvoiceToTech('${safe(x.id)}')">إرسال للفني</button><button class="btn small red" onclick="deleteOrder('${safe(x.id)}')">حذف</button></div></div>`}
+function orderCardFull(x,techs){
+  const techOptions='<option value="">إسناد</option>'+techs.map(t=>`<option value="${safe(t.id)}" ${x.techId===t.id?'selected':''}>${safe(t.name)}</option>`).join('');
+  const isNew=getNewOrderIds().has(x.id);
+  return `<div class="item-card fp-order-card ${isNew?'new-order-highlight':''}">
+    <div class="fp-order-main">
+      <div class="fp-order-heading"><div class="fp-order-heading-text"><span class="fp-order-id">طلب #${safe(x.id)}</span><b class="fp-order-service">${safe(displayServices(x))}</b></div><span class="status ${orderStatusClass(x.status)}">${safe(x.status)}</span></div>
+      <div class="fp-order-details">
+        <div class="fp-order-detail"><span class="fp-order-label">العميل</span><strong>${safe(x.name||'غير مسجل')}</strong></div>
+        <div class="fp-order-detail"><span class="fp-order-label">الجوال</span><div>${customerPhoneAction(x.phone)}</div></div>
+        <div class="fp-order-detail"><span class="fp-order-label">المدينة</span><strong>${safe(x.city||'غير محددة')}</strong></div>
+        <div class="fp-order-detail"><span class="fp-order-label">تاريخ الطلب</span><strong>${safe(fpOrderCreatedDate(x))}</strong></div>
+        <div class="fp-order-detail"><span class="fp-order-label">الفني المسؤول</span><strong>${safe(techName(x.techId))}</strong></div>
+        <div class="fp-order-detail"><span class="fp-order-label">قيمة الطلب</span><strong class="fp-order-price">${fmt(x.price)} ر.س</strong></div>
+      </div>
+      <div class="fp-order-meta"><span>الدفع: <b>${safe(x.paymentStatus||'غير مدفوعة')}</b></span><span>الفاتورة للفني: <b>${x.invoiceSent?'مرسلة':'غير مرسلة'}</b></span></div>
+    </div>
+    <div class="actions fp-order-actions">
+      <label class="fp-order-assign">إسناد الفني<select onchange="assignOrder('${safe(x.id)}',this.value)">${techOptions}</select></label>
+      <button class="btn small light" onclick="editOrder('${safe(x.id)}')">تعديل</button>
+      <button class="btn small orange" onclick="fpOpenTransfer('${safe(x.id)}')">تحويل لفني آخر</button>
+      <button class="btn small green" onclick="updateOrderStatus('${safe(x.id)}','مكتملة')">إنهاء</button>
+      <button class="btn small orange" onclick="updateOrderStatus('${safe(x.id)}','الفني تحرك')">تحرك</button>
+      <button class="btn small" onclick="printInvoice('${safe(x.id)}')">فاتورة</button>
+      <button class="btn small green" onclick="sendInvoiceToTech('${safe(x.id)}')">إرسال للفني</button>
+      <button class="btn small red" onclick="deleteOrder('${safe(x.id)}')">حذف</button>
+    </div>
+  </div>`;
+}
 function renderTech(){const techs=qfilter(load(KEYS.TECH));get('techCount').textContent=techs.length+' فني';get('techList').innerHTML=techs.map(t=>`<div class="item-card"><div style="display:flex;gap:12px;align-items:center"><div class="avatar">👨‍🔧</div><div><b>${safe(t.name)}</b><p>${safe(t.skill)} · ${safe(t.city)} · ${safe(t.available)} · خبرة ${safe(t.experience||0)} سنوات</p></div></div><div class="actions"><b>★ ${safe(t.rate)}</b><button class="btn small light" onclick="editTech('${safe(t.id)}')">تعديل</button><button class="btn small red" onclick="deleteTech('${safe(t.id)}')">حذف</button></div></div>`).join('')||'<div class="empty-state">لا يوجد فنيين</div>';fillTechSelects()}
 function renderInvoices(){const orders=roleFilteredOrders(load(KEYS.ORD));const rows=orders.map(x=>`<tr><td>INV-${safe(String(x.id).replace('#',''))}</td><td>${safe(x.name)}</td><td>${safe(displayServices(x))}</td><td>${safe(x.date)}</td><td>${fmt(x.price)} ر.س</td><td><span class="status ${paymentClass(x.paymentStatus)}">${safe(x.paymentStatus||'غير مدفوعة')}</span></td><td><button class="btn small" onclick="printInvoice('${safe(x.id)}')">طباعة</button></td></tr>`).join('');get('invoiceRows').innerHTML=rows||'<tr><td colspan="6">لا توجد فواتير</td></tr>';get('invoiceRows2').innerHTML=rows||'<tr><td colspan="7">لا توجد فواتير</td></tr>'}
 function renderNumbers(){const o=roleFilteredOrders(load(KEYS.ORD)),t=load(KEYS.TECH);const total=o.reduce((a,x)=>a+Number(x.price||0),0),paid=o.filter(x=>x.paymentStatus==='مدفوعة'||x.status==='مكتملة').reduce((a,x)=>a+Number(x.price||0),0),done=o.filter(x=>x.status==='مكتملة').length,work=o.filter(x=>['قيد التنفيذ','تم الإسناد','الفني تحرك'].includes(x.status)).length,late=o.filter(x=>x.status==='متأخرة').length,p=n=>o.length?Math.round(n/o.length*100):0;get('kPaid').textContent=fmt(paid);get('kInvoices').textContent=fmt(total);get('kOrders').textContent=o.length;get('kTechs').textContent=t.length;get('sideTotal').textContent=fmt(total)+' ر.س';get('netProfit').textContent=fmt(total*.72)+' ر.س';get('needFollow').textContent=late+o.filter(x=>!x.techId).length;get('donutTotal').textContent=o.length;get('donePercent').textContent=p(done)+'%';get('workPercent').textContent=p(work)+'%';get('latePercent').textContent=p(late)+'%';get('completeRate').textContent=p(done)+'%';get('avgOrder').textContent=fmt(o.length?total/o.length:0);get('lateOrdersKpi').textContent=late;get('activeTechsKpi').textContent=t.filter(x=>x.available==='متاح للعمل').length;get('notifBadge').textContent=late+o.filter(x=>!x.techId).length+getNewOrderIds().size}
@@ -1032,7 +1157,18 @@ function fpClientReportData(){return fpClientReportRows().map(o=>({'رقم ال�
 function fpClientReportMeta(){const sel=document.getElementById('fpCrTech');return {tech:sel?.selectedOptions?.[0]?.textContent||'جميع الفنيين',status:document.getElementById('fpCrStatus')?.selectedOptions?.[0]?.textContent||'كل الحالات',from:document.getElementById('fpCrFrom')?.value||'الكل',to:document.getElementById('fpCrTo')?.value||'الكل'};}
 function fpExportClientReport(){const rows=fpClientReportData(),header=Object.keys(rows[0]||{'رقم الطلب':'','اسم العميل':'','الجوال':'','الخدمة':'','المدينة':'','تاريخ الطلب':'','الحالة':'','تصنيف الحالة':'','الفني':'','قيمة الطلب (ر.س)':''});const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const data=[header,...rows.map(o=>header.map(k=>o[k]))].map(row=>row.map(esc).join(',')).join('\r\n');const blob=new Blob(['\ufeff'+data],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='fanni-pro-client-status-report.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('تم تصدير '+rows.length+' طلب');}
 function fpExportClientReportExcel(){if(typeof XLSX==='undefined'){toast('مكتبة Excel لم تُحمّل؛ جاري تنزيل CSV');fpExportClientReport();return;}const rows=fpClientReportData(),meta=fpClientReportMeta(),wb=XLSX.utils.book_new(),total=rows.reduce((n,r)=>n+Number(r['قيمة الطلب (ر.س)']||0),0),uniq=new Set(rows.map(r=>r['الجوال']||r['اسم العميل']));const summary=[['فني برو | تقرير حالات العملاء والطلبات'],['الفني',meta.tech],['الحالة',meta.status],['من تاريخ',meta.from],['إلى تاريخ',meta.to],['عدد الطلبات',rows.length],['عدد العملاء',uniq.size],['إجمالي قيمة الطلبات',total],[],['الحالة','عدد الطلبات','إجمالي القيمة']];['مكتملة','مسند','قيد التنفيذ','ملغاة','أخرى'].forEach(cat=>{const subset=rows.filter(r=>r['تصنيف الحالة']===cat);summary.push([cat,subset.length,subset.reduce((n,r)=>n+Number(r['قيمة الطلب (ر.س)']||0),0)]);});const sumSheet=XLSX.utils.aoa_to_sheet(summary);sumSheet['!cols']=[{wch:29},{wch:30},{wch:22}];sumSheet['!merges']=[{s:{r:0,c:0},e:{r:0,c:2}}];const headStyle={font:{bold:true,color:{rgb:'FFFFFF'},sz:13},fill:{fgColor:{rgb:'176DF7'}},alignment:{horizontal:'center'}};['A1','A10','B10','C10'].forEach(cell=>{if(sumSheet[cell])sumSheet[cell].s=headStyle;});XLSX.utils.book_append_sheet(wb,sumSheet,'الملخص');const cols=['رقم الطلب','اسم العميل','الجوال','الخدمة','المدينة','تاريخ الطلب','الحالة','تصنيف الحالة','الفني','قيمة الطلب (ر.س)'];const detail=XLSX.utils.json_to_sheet(rows,{header:cols});if(!rows.length)XLSX.utils.sheet_add_aoa(detail,[cols],{origin:'A1'});detail['!cols']=[{wch:18},{wch:27},{wch:18},{wch:26},{wch:17},{wch:18},{wch:20},{wch:18},{wch:27},{wch:20}];detail['!autofilter']={ref:'A1:J'+Math.max(rows.length+1,2)};for(let i=0;i<cols.length;i++){const a=XLSX.utils.encode_cell({r:0,c:i});if(detail[a])detail[a].s=headStyle;}XLSX.utils.book_append_sheet(wb,detail,'تفاصيل الطلبات');XLSX.writeFile(wb,'فني_برو_تقرير_الطلبات_حسب_الفني.xlsx');toast('تم تجهيز تقرير Excel بعدد '+rows.length+' طلب');}
-function fpPrintClientReport(){const rows=fpClientReportData(),meta=fpClientReportMeta(),escape=typeof safe==='function'?safe:(x=>String(x??''));const cols=['رقم الطلب','اسم العميل','الجوال','الخدمة','المدينة','تاريخ الطلب','الحالة','الفني','قيمة الطلب (ر.س)'];const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة لطباعة التقرير');return;}const counts=['مكتملة','مسند','قيد التنفيذ','ملغاة'].map(c=>c+': '+rows.filter(r=>r['تصنيف الحالة']===c).length).join(' | ');w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>فني برو - تقرير الطلبات</title><style>body{font-family:Tahoma,Arial,sans-serif;color:#173052;padding:22px}h1{color:#176df7}header{border-bottom:3px solid #176df7;padding-bottom:14px;margin-bottom:15px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#176df7;color:white}td,th{border:1px solid #dce5f0;padding:8px;text-align:right}tr:nth-child(even){background:#f2f7ff}.meta{padding:12px;background:#edf5ff;margin:12px 0;border-radius:9px;line-height:2}@page{size:A4 landscape;margin:12mm}@media print{button{display:none}}</style></head><body><header><h1>فني برو | تقرير حالات الطلبات</h1><div>تاريخ التقرير: '+escape(new Date().toLocaleString('ar-SA',{timeZone:'Asia/Riyadh'}))+'</div></header><div class="meta">الفني: '+escape(meta.tech)+' | الحالة: '+escape(meta.status)+' | الفترة: '+escape(meta.from)+' إلى '+escape(meta.to)+'<br>عدد الطلبات: '+rows.length+' | '+escape(counts)+' | إجمالي القيمة: '+rows.reduce((n,r)=>n+Number(r['قيمة الطلب (ر.س)']||0),0).toFixed(2)+' ر.س</div><button onclick="window.print()">طباعة / حفظ PDF</button><table><thead><tr>'+cols.map(c=>'<th>'+escape(c)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+cols.map(c=>'<td>'+escape(r[c])+'</td>').join('')+'</tr>').join('')+'</tbody></table></body></html>');w.document.close();}
+function fpPrintClientReport(){const rows=fpClientReportData(),meta=fpClientReportMeta(),escape=typeof safe==='function'?safe:(x=>String(x??''));const cols=['رقم الطلب','اسم العميل','الجوال','الخدمة','المدينة','تاريخ الطلب','الحالة','الفني','قيمة الطلب (ر.س)'];const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة لطباعة التقرير');return;}const counts=['مكتملة','مسند','قيد التنفيذ','ملغاة'].map(c=>c+': '+rows.filter(r=>r['تصنيف الحالة']===c).length).join(' | ');w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>فني برو - تقرير الطلبات</title><style>body{font-family:Tahoma,Arial,sans-serif;color:#173052;padding:22px}h1{color:#176df7}header{border-bottom:3px solid #176df7;padding-bottom:14px;margin-bottom:15px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#176df7;color:white}td,th{border:1px solid #dce5f0;padding:8px;text-align:right}tr:nth-child(even){background:#f2f7ff}.meta{padding:12px;background:#edf5ff;margin:12px 0;border-radius:9px;line-height:2}@page{size:A4 landscape;margin:12mm}@media print{button{display:none}}</style></head><body><header><h1>فني برو | تقرير حالات الطلبات</h1><div>تاريخ التقرير: '+escape(new Date().toLocaleString('ar-SA',{timeZone:'Asia/Riyadh'}))+'</div></header><div class="meta">الفني: '+escape(meta.tech)+' | الحالة: '+escape(meta.status)+' | الفترة: '+escape(meta.from)+' إلى '+escape(meta.to)+'<br>عدد الطلبات: '+rows.length+' | '+escape(counts)+' | إجمالي القيمة: '+rows.reduce((n,r)=>n+Number(r['قيمة الطلب (ر.س)']||0),0).toFixed(2)+' ر.س</div><button onclick="window.print()">طباعة / حفظ PDF</button><table><thead><tr>'+cols.map(c=>'<th>'+escape(c)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+cols.map(c=>'<td>'+escape(r[c])+'</td>').join('')+'</tr>').join('')+'</tbody></table>
+<script id="fpMobileMenu2026">
+function fpMobileMenuToggle(){document.body.classList.toggle('fp-mobile-menu-open')}
+function fpMobileMenuClose(){document.body.classList.remove('fp-mobile-menu-open')}
+document.addEventListener('DOMContentLoaded',function(){
+ const side=document.querySelector('.sidebar');
+ if(side)side.addEventListener('click',function(e){if(e.target.closest('.nav button,.nav a'))fpMobileMenuClose()});
+ document.addEventListener('keydown',function(e){if(e.key==='Escape')fpMobileMenuClose()});
+ window.addEventListener('resize',function(){if(innerWidth>900)fpMobileMenuClose()});
+});
+</script>
+</body></html>');w.document.close();}
 
 function renderClients(){const orders=roleFilteredOrders(load(KEYS.ORD)),map={};orders.forEach(o=>{const k=o.phone||o.name;if(!map[k])map[k]={name:o.name,phone:o.phone,total:0,count:0,last:o.date};map[k].total+=Number(o.price||0);map[k].count++;map[k].last=o.date});const clients=Object.values(map);get('clientsList').innerHTML=clients.map(c=>`<div class="item-card"><div><b>${safe(c.name)}</b><p>${safe(c.phone)} · عدد الطلبات: ${c.count} · آخر طلب: ${safe(c.last)}</p></div><b>${fmt(c.total)} ر.س</b></div>`).join('')||'<div class="empty-state">لا يوجد عملاء</div>'}
 function techIsClosed(o){return !!o && (o.technicianLocked===true || ['ملغاة','ملغي','cancelled','canceled','مكتملة','مكتمل','completed','done','closed','مغلق'].includes(String(o.status||'').trim().toLowerCase()));}
@@ -1391,9 +1527,29 @@ async function renderUsers(){
       if(!error&&data) profiles=data;
     }catch(e){console.warn('profiles load',e)}
   }
-  const rows=profiles.length?profiles.map(u=>`<div class="item-card"><div><b>${safe(u.full_name||'مستخدم')}</b><p>${safe(u.id)} · ${safe(u.role)}${u.technician_id?' · فني: '+safe(u.technician_id):''}</p></div><span class="status paid">Supabase</span></div>`).join(''):'<div class="empty-state">لا يوجد مستخدمين ظاهرين من Supabase</div>';
-  get('usersRows').innerHTML=rows;
+  window.fpUserProfiles=profiles;
+  fpFilterUsers();
 }
+
+function fpUserRoleLabel(role){return ({admin:'مدير النظام',dispatcher:'مسؤول الإسناد',company_manager:'مدير شركة',technician:'فني',viewer:'مشاهد',client:'عميل'})[role]||'مستخدم'}
+function fpFilterUsers(){
+  const el=get('usersRows');if(!el)return;
+  const q=(get('fpUserSearch')?.value||'').trim().toLowerCase();
+  const role=get('fpUserRoleFilter')?.value||'';
+  const techs=load(KEYS.TECH)||[];
+  const companies=load(KEYS.COMP)||[];
+  const profiles=(window.fpUserProfiles||[]).filter(u=>(!role||u.role===role)&&(!q||String([u.full_name,u.email,u.role,u.technician_id].join(' ')).toLowerCase().includes(q)));
+  el.innerHTML=profiles.length?profiles.map(u=>{
+    const technician=techs.find(t=>String(t.id)===String(u.technician_id));
+    const company=companies.find(c=>String(c.id)===String(u.company_id));
+    const name=safe(u.full_name||u.email||'مستخدم');
+    const email=u.email?`<span class="fp-user-email">${safe(u.email)}</span>`:'';
+    const techLabel=u.technician_id?(technician?.name||'فني مرتبط'):'لا يوجد';
+    const companyLabel=u.company_id?(company?.name||'شركة مرتبطة'):'لا يوجد';
+    return `<article class="fp-user-card"><div class="fp-user-card-head"><span class="fp-user-avatar" aria-hidden="true">👤</span><div class="fp-user-main"><strong>${name}</strong>${email}<span class="fp-user-role">${safe(fpUserRoleLabel(u.role))}</span></div><span class="fp-user-connected"><span class="fp-user-dot"></span>حساب مرتبط</span></div><div class="fp-user-details"><div><span>الصلاحية</span><b>${safe(fpUserRoleLabel(u.role))}</b></div><div><span>الفني المرتبط</span><b>${safe(techLabel)}</b></div>${u.company_id?`<div><span>الشركة</span><b>${safe(companyLabel)}</b></div>`:''}</div></article>`;
+  }).join(''):'<div class="empty-state">لا توجد حسابات مطابقة للبحث</div>';
+}
+
 async function addUser(){
   if(currentUserRole!=='admin'){toast('الأدمن فقط يمكنه إنشاء الحسابات');return}
   const name=get('uName').value.trim()||'مستخدم';
@@ -1508,7 +1664,7 @@ async function companyUpdateStatus(orderId,status){
   }catch(e){console.error('company status',e);toast('فشل التحديث: '+(e.message||e));}
 }
 function showPage(id){if(!canOpenPage(id)){toast('غير مسموح لهذا الحساب بفتح هذه الصفحة');id=allowedPagesForRole(currentUserRole)[0]||'techPortal';}document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));const page=get(id);if(page)page.classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));if(id==='techPortal')renderTechPortal();if(id==='companyPortal')renderCompanyPortal();if(id==='clientTracking')renderTracking();window.scrollTo({top:0,behavior:'smooth'})}
-function renderAll(){initAdminServiceCards();fillTechSelects();renderNumbers();renderOrders();renderTech();renderInvoices();renderAlerts();renderAssign();renderClients();fpRenderClientReport();renderTechPortal();renderCompanyPortal();if(!isTechnicianRole())renderUsers();renderChart();applyRolePermissions(currentUserRole,currentTechnicianId)}
+function renderAll(){initAdminServiceCards();fillTechSelects();renderNumbers();renderCompanies();renderCompanyOperationsDashboard();renderOrders();renderTech();renderInvoices();renderAlerts();renderAssign();renderClients();fpRenderClientReport();renderTechPortal();renderCompanyPortal();if(!isTechnicianRole())renderUsers();renderChart();applyRolePermissions(currentUserRole,currentTechnicianId)}
 document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('button[data-page]');if(b)showPage(b.dataset.page)});
 window.addEventListener('storage',e=>{if(e.key===KEYS.ORD){const orders=load(KEYS.ORD);detectIncomingOrders(orders);renderAll();}});
 window.addEventListener('load',async()=>{await initSupabase();const logged=await requireLogin();if(logged){await restoreSessionProfile();await refreshFromCloud(false);detectIncomingOrders(roleFilteredOrders(load(KEYS.ORD)));renderAll();if(currentUserRole==='technician')showPage('techPortal');startFastOrderNotifications();}else{renderAll();}});
@@ -1711,8 +1867,37 @@ techOrderDetailCard=function(o){const html=fpSettlementOriginalCard(o),row=fpSet
 const fpSettlementOriginalRefresh=refreshFromCloud;
 refreshFromCloud=async function(...args){const result=await fpSettlementOriginalRefresh(...args);await fpSettlementLoad();return result};
 const fpSettlementOriginalRender=renderTechPortal;
-renderTechPortal=function(){fpSettlementOriginalRender();if(currentUserRole==='admin'){const list=fpsEl('fpSettlementAdminList');if(list)list.innerHTML=fpSettlementRows.filter(r=>r.status==='closed').map(r=>`<button class="btn light small" onclick="fpSettlementOpen('${safe(r.order_id)}')">🔒 طلب ${safe(r.order_id)} — إعادة فتح</button>`).join(' ')||'لا توجد فواتير مقفلة'};};
+renderTechPortal=function(){fpSettlementOriginalRender();if(currentUserRole==='admin'){const list=fpsEl('fpSettlementAdminList');if(list)list.innerHTML='<button type="button" class="btn primary fp-closed-launch" onclick="fpClosedOpen()">🔒 إدارة الفواتير المقفلة <span class="fp-closed-count">'+fpSettlementRows.filter(r=>r.status==='closed').length+'</span></button>'};};
 window.addEventListener('load',()=>{setTimeout(()=>fpSettlementLoad().then(()=>{if(typeof renderTechPortal==='function')renderTechPortal()}),1000)});
+</script>
+<style id="fpClosedManagerStyle">
+.fp-closed-launch{display:inline-flex;align-items:center;gap:10px;border-radius:12px!important;padding:12px 20px!important;background:#1456a6!important;color:white!important;border:0!important;cursor:pointer}
+.fp-closed-count{background:#ffffff25;border-radius:30px;padding:2px 10px;font-size:12px}
+#fpClosedManager{position:fixed;inset:0;z-index:1000001;background:#071a32a6;display:flex;align-items:center;justify-content:center;padding:16px;direction:rtl}
+#fpClosedManager.hidden{display:none!important}
+.fp-closed-box{background:white;color:#172d4b;width:min(750px,100%);max-height:88vh;overflow:auto;border-radius:18px;box-shadow:0 20px 70px #0003;padding:22px}
+.fp-closed-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.fp-closed-head h2{font-size:20px;margin:0}.fp-closed-head button{border:0;border-radius:10px;padding:8px 12px;background:#eef3fa;cursor:pointer}
+#fpClosedSearch{width:100%;padding:13px 14px;border:1px solid #d4e0ef;border-radius:12px;font-size:15px;box-sizing:border-box;margin-bottom:14px}
+.fp-closed-table{width:100%;border-collapse:collapse;text-align:right}.fp-closed-table th,.fp-closed-table td{padding:12px 8px;border-bottom:1px solid #e5edf6}.fp-closed-table th{color:#62758e;font-size:13px}
+.fp-closed-action{background:#eaf2ff;color:#1456a6;border:0;border-radius:9px;padding:9px 13px;font-weight:700;cursor:pointer}
+.fp-closed-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:15px}.fp-closed-foot button{border:1px solid #d4e0ef;background:white;border-radius:9px;padding:8px 15px;cursor:pointer}.fp-closed-foot button:disabled{opacity:.4;cursor:default}
+@media(max-width:550px){.fp-closed-box{padding:15px}.fp-closed-table th,.fp-closed-table td{padding:10px 4px;font-size:12px}}
+</style>
+<div id="fpClosedManager" class="hidden" role="dialog" aria-modal="true" aria-labelledby="fpClosedTitle">
+ <div class="fp-closed-box"><div class="fp-closed-head"><h2 id="fpClosedTitle">إدارة الفواتير المقفلة</h2><button type="button" onclick="fpClosedHide()" aria-label="إغلاق">✕</button></div>
+ <input id="fpClosedSearch" placeholder="ابحث برقم الطلب" autocomplete="off" oninput="fpClosedPage=0;fpClosedRender()">
+ <table class="fp-closed-table"><thead><tr><th>رقم الطلب</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody id="fpClosedRows"></tbody></table>
+ <div class="fp-closed-foot"><button type="button" onclick="fpClosedMove(-1)" id="fpClosedPrev">السابق</button><span id="fpClosedInfo"></span><button type="button" onclick="fpClosedMove(1)" id="fpClosedNext">التالي</button></div></div>
+</div>
+<script id="fpClosedManagerScript">
+let fpClosedPage=0;
+function fpClosedHide(){document.getElementById('fpClosedManager').classList.add('hidden')}
+async function fpClosedOpen(){if(currentUserRole!=='admin')return;document.getElementById('fpClosedManager').classList.remove('hidden');fpClosedPage=0;document.getElementById('fpClosedSearch').value='';await fpSettlementLoad();fpClosedRender();}
+function fpClosedRender(){if(currentUserRole!=='admin'){fpClosedHide();return;}const term=document.getElementById('fpClosedSearch').value.trim().toLowerCase();const rows=fpSettlementRows.filter(r=>r.status==='closed'&&String(r.order_id??'').toLowerCase().includes(term));const pages=Math.max(1,Math.ceil(rows.length/10));fpClosedPage=Math.min(Math.max(0,fpClosedPage),pages-1);const visible=rows.slice(fpClosedPage*10,fpClosedPage*10+10);document.getElementById('fpClosedRows').innerHTML=visible.map(r=>'<tr><td><strong>#'+safe(r.order_id)+'</strong></td><td>مقفلة</td><td><button type="button" class="fp-closed-action" data-order="'+safe(r.order_id)+'" onclick="fpClosedChoose(this)">عرض / إعادة فتح</button></td></tr>').join('')||'<tr><td colspan="3">لا توجد فواتير مطابقة</td></tr>';document.getElementById('fpClosedInfo').textContent=(rows.length?'صفحة '+(fpClosedPage+1)+' من '+pages:'0 نتائج')+' — '+rows.length+' فاتورة';document.getElementById('fpClosedPrev').disabled=fpClosedPage===0;document.getElementById('fpClosedNext').disabled=fpClosedPage>=pages-1;}
+function fpClosedMove(step){fpClosedPage+=step;fpClosedRender()}
+function fpClosedChoose(button){if(currentUserRole!=='admin')return;const id=button.getAttribute('data-order');fpClosedHide();fpSettlementOpen(id)}
+document.getElementById('fpClosedManager').addEventListener('click',function(e){if(e.target===this)fpClosedHide()});
 </script>
 <style id="fpApprovalStyles">
 .fp-approval-panel{border:1px solid #d9e6f5;background:#f7fbff;border-radius:14px;padding:14px;margin:12px 0;direction:rtl}
@@ -1904,6 +2089,45 @@ function tick(){document.querySelectorAll('.fp-delay[data-start]').forEach(el=>{
 function settings(){if(!document.body||document.getElementById('fpDelaySettings'))return;const box=document.createElement('div');box.id='fpDelaySettings';box.className='fp-delay-config';box.innerHTML='<strong>⏱️ إعداد تأخير الطلبات</strong><label>المدة قبل التأخير (دقيقة): <input id="fpDelayMinutes" type="number" min="1" max="1440" value="'+minutes()+'"></label><button type="button" id="fpDelaySave" class="btn small">حفظ المدة</button><small>الإعداد محفوظ على هذا الجهاز فقط</small>';const target=document.getElementById('ordersDiagnostic')||document.getElementById('ordersList');if(target&&target.parentElement)target.parentElement.insertBefore(box,target);else document.body.appendChild(box);box.querySelector('#fpDelaySave').addEventListener('click',()=>{const n=Number(box.querySelector('input').value);if(!Number.isInteger(n)||n<1||n>1440){alert('أدخل عدد دقائق من 1 إلى 1440');return}localStorage.setItem(STORAGE,String(n));tick();if(typeof toast==='function')toast('تم حفظ مدة التأخير على هذا الجهاز')})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',settings);else settings();
 setInterval(tick,1000);
+})();
+</script>
+<style>
+#fpAutoModal{position:fixed;inset:0;background:#071b38a8;z-index:99999;display:none;align-items:center;justify-content:center;padding:15px;direction:rtl}
+#fpAutoModal .fp-auto-panel{width:min(460px,100%);background:#fff;border-radius:20px;padding:25px;box-shadow:0 18px 55px #102a4d44;color:#102a4d}
+#fpAutoModal input,#fpAutoModal select{width:100%;padding:11px;border:1px solid #cbd8ed;border-radius:10px;margin:7px 0 14px;box-sizing:border-box}
+#fpAutoModal button{padding:11px 17px;border-radius:10px;border:0;cursor:pointer;background:#1465cf;color:white;font-weight:700}
+#fpAutoModal .fp-auto-cancel{background:#eaf0f9;color:#24436d}
+</style>
+<div id="fpAutoModal"><div class="fp-auto-panel"><h3>⚙️ إعدادات الإسناد التلقائي</h3><p style="color:#64748b">توزيع الطلبات غير المسندة بعد انتهاء مهلة الانتظار.</p><label><input type="checkbox" id="fpAutoEnabled" style="width:auto"> تفعيل الإسناد التلقائي</label><div style="margin-top:15px"><label>مدة الانتظار بالدقائق</label><input id="fpAutoMinutes" type="number" min="1" max="1440" value="30"></div><div style="display:flex;gap:10px"><button onclick="fpAutoSave()">حفظ الإعدادات</button><button class="fp-auto-cancel" onclick="fpAutoClose()">إلغاء</button></div></div></div>
+<script id="fpAutoAssignmentModule">
+(function(){
+const el=()=>document.getElementById('fpAutoControls');
+window.fpAutoOpen=async function(){
+  document.getElementById('fpAutoModal').style.display='flex';
+  try{const {data,error}=await sb.rpc('fp_auto_assign_get_settings');if(error)throw error;
+    document.getElementById('fpAutoEnabled').checked=!!data.enabled;
+    document.getElementById('fpAutoMinutes').value=data.minutes;
+  }catch(e){toast('يلزم تثبيت ملف SQL للإسناد التلقائي على Supabase');console.warn(e)}
+};
+window.fpAutoClose=function(){document.getElementById('fpAutoModal').style.display='none'};
+window.fpAutoSave=async function(){
+  const minutes=Number(document.getElementById('fpAutoMinutes').value);
+  if(!Number.isInteger(minutes)||minutes<1||minutes>1440){toast('حدد مدة بين 1 و1440 دقيقة');return}
+  try{
+    const {error}=await sb.rpc('fp_auto_assign_save_settings',{p_enabled:document.getElementById('fpAutoEnabled').checked,p_minutes:minutes});
+    if(error)throw error;
+    fpAutoClose();await fpAutoRender();toast('تم حفظ الإسناد التلقائي على السيرفر');
+  }catch(e){toast('تعذر حفظ الإعدادات على السيرفر');console.error(e)}
+};
+window.fpAutoRender=async function(){
+  const target=el();if(!target||!window.sb)return;
+  try{const {data,error}=await sb.rpc('fp_auto_assign_get_settings');if(error)throw error;
+    target.textContent=data.enabled?'الإسناد التلقائي مفعل — بعد '+data.minutes+' دقيقة':'الإسناد التلقائي متوقف';
+  }catch(e){target.textContent='الإسناد التلقائي: يلزم إعداد السيرفر';}
+};
+const prev=window.renderAssign;
+if(typeof prev==='function')window.renderAssign=function(){const r=prev.apply(this,arguments);fpAutoRender();return r};
+setTimeout(fpAutoRender,1000);
 })();
 </script>
 </body>
