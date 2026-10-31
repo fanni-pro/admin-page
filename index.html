@@ -1639,7 +1639,10 @@ function fpOpenUserEditor(id){
 async function fpSaveUserEditor(id){
  if(currentUserRole!=='admin'||!sb)return toast('غير مصرح');
  const permissions={};document.querySelectorAll('[data-fp-permission]').forEach(e=>permissions[e.dataset.fpPermission]=e.checked);
- const {error}=await sb.rpc('fp_admin_manage_user',{p_user_id:id,p_is_active:get('fpEditActive').value==='true',p_role:get('fpEditRole').value,p_permissions:permissions,p_technician_id:get('fpEditTech').value||null,p_company_id:get('fpEditCompany').value||null});
+ const companyValue=get('fpEditCompany').value.trim();
+ const uuidPattern=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+ if(companyValue && !uuidPattern.test(companyValue))return toast('رقم الشركة يجب أن يكون UUID صحيحًا، أو اتركه فارغًا');
+ const {error}=await sb.rpc('fp_admin_manage_user',{p_user_id:id,p_is_active:get('fpEditActive').value==='true',p_role:get('fpEditRole').value,p_permissions:permissions,p_technician_id:get('fpEditTech').value.trim()||null,p_company_id:companyValue||null});
  if(error)return toast('فشل حفظ الصلاحيات: '+error.message);
  toast('تم حفظ إعدادات الحساب');get('fpUserEditor')?.remove();await renderUsers();
 }
