@@ -1176,37 +1176,7 @@ function fpClientReportData(){return fpClientReportRows().map(o=>({'رقم ال�
 function fpClientReportMeta(){const sel=document.getElementById('fpCrTech');return {tech:sel?.selectedOptions?.[0]?.textContent||'جميع الفنيين',status:document.getElementById('fpCrStatus')?.selectedOptions?.[0]?.textContent||'كل الحالات',from:document.getElementById('fpCrFrom')?.value||'الكل',to:document.getElementById('fpCrTo')?.value||'الكل'};}
 function fpExportClientReport(){const rows=fpClientReportData(),header=Object.keys(rows[0]||{'رقم الطلب':'','اسم العميل':'','الجوال':'','الخدمة':'','المدينة':'','تاريخ الطلب':'','الحالة':'','تصنيف الحالة':'','الفني':'','قيمة الطلب (ر.س)':''});const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const data=[header,...rows.map(o=>header.map(k=>o[k]))].map(row=>row.map(esc).join(',')).join('\r\n');const blob=new Blob(['\ufeff'+data],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='fanni-pro-client-status-report.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('تم تصدير '+rows.length+' طلب');}
 function fpExportClientReportExcel(){if(typeof XLSX==='undefined'){toast('مكتبة Excel لم تُحمّل؛ جاري تنزيل CSV');fpExportClientReport();return;}const rows=fpClientReportData(),meta=fpClientReportMeta(),wb=XLSX.utils.book_new(),total=rows.reduce((n,r)=>n+Number(r['قيمة الطلب (ر.س)']||0),0),uniq=new Set(rows.map(r=>r['الجوال']||r['اسم العميل']));const summary=[['فني برو | تقرير حالات العملاء والطلبات'],['الفني',meta.tech],['الحالة',meta.status],['من تاريخ',meta.from],['إلى تاريخ',meta.to],['عدد الطلبات',rows.length],['عدد العملاء',uniq.size],['إجمالي قيمة الطلبات',total],[],['الحالة','عدد الطلبات','إجمالي القيمة']];['مكتملة','مسند','قيد التنفيذ','ملغاة','أخرى'].forEach(cat=>{const subset=rows.filter(r=>r['تصنيف الحالة']===cat);summary.push([cat,subset.length,subset.reduce((n,r)=>n+Number(r['قيمة الطلب (ر.س)']||0),0)]);});const sumSheet=XLSX.utils.aoa_to_sheet(summary);sumSheet['!cols']=[{wch:29},{wch:30},{wch:22}];sumSheet['!merges']=[{s:{r:0,c:0},e:{r:0,c:2}}];const headStyle={font:{bold:true,color:{rgb:'FFFFFF'},sz:13},fill:{fgColor:{rgb:'176DF7'}},alignment:{horizontal:'center'}};['A1','A10','B10','C10'].forEach(cell=>{if(sumSheet[cell])sumSheet[cell].s=headStyle;});XLSX.utils.book_append_sheet(wb,sumSheet,'الملخص');const cols=['رقم الطلب','اسم العميل','الجوال','الخدمة','المدينة','تاريخ الطلب','الحالة','تصنيف الحالة','الفني','قيمة الطلب (ر.س)'];const detail=XLSX.utils.json_to_sheet(rows,{header:cols});if(!rows.length)XLSX.utils.sheet_add_aoa(detail,[cols],{origin:'A1'});detail['!cols']=[{wch:18},{wch:27},{wch:18},{wch:26},{wch:17},{wch:18},{wch:20},{wch:18},{wch:27},{wch:20}];detail['!autofilter']={ref:'A1:J'+Math.max(rows.length+1,2)};for(let i=0;i<cols.length;i++){const a=XLSX.utils.encode_cell({r:0,c:i});if(detail[a])detail[a].s=headStyle;}XLSX.utils.book_append_sheet(wb,detail,'تفاصيل الطلبات');XLSX.writeFile(wb,'فني_برو_تقرير_الطلبات_حسب_الفني.xlsx');toast('تم تجهيز تقرير Excel بعدد '+rows.length+' طلب');}
-function fpPrintClientReport(){const rows=fpClientReportData(),meta=fpClientReportMeta(),escape=typeof safe==='function'?safe:(x=>String(x??''));const cols=['رقم الطلب','اسم العميل','الجوال','الخدمة','المدينة','تاريخ الطلب','الحالة','الفني','قيمة الطلب (ر.س)'];const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة لطباعة التقرير');return;}const counts=['مكتملة','مسند','قيد التنفيذ','ملغاة'].map(c=>c+': '+rows.filter(r=>r['تصنيف الحالة']===c).length).join(' | ');w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>فني برو - تقرير الطلبات</title><style>body{font-family:Tahoma,Arial,sans-serif;color:#173052;padding:22px}h1{color:#176df7}header{border-bottom:3px solid #176df7;padding-bottom:14px;margin-bottom:15px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#176df7;color:white}td,th{border:1px solid #dce5f0;padding:8px;text-align:right}tr:nth-child(even){background:#f2f7ff}.meta{padding:12px;background:#edf5ff;margin:12px 0;border-radius:9px;line-height:2}@page{size:A4 landscape;margin:12mm}@media print{button{display:none}}</style></head><body><header><h1>فني برو | تقرير حالات الطلبات</h1><div>تاريخ التقرير: '+escape(new Date().toLocaleString('ar-SA',{timeZone:'Asia/Riyadh'}))+'</div></header><div class="meta">الفني: '+escape(meta.tech)+' | الحالة: '+escape(meta.status)+' | الفترة: '+escape(meta.from)+' إلى '+escape(meta.to)+'<br>عدد الطلبات: '+rows.length+' | '+escape(counts)+' | إجمالي القيمة: '+rows.reduce((n,r)=>n+Number(r['قيمة الطلب (ر.س)']||0),0).toFixed(2)+' ر.س</div><button onclick="window.print()">طباعة / حفظ PDF</button><table><thead><tr>'+cols.map(c=>'<th>'+escape(c)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+cols.map(c=>'<td>'+escape(r[c])+'</td>').join('')+'</tr>').join('')+'</tbody></table>
-<style id="fp-no-delete-css">button[onclick*="deleteOrder("],button[onclick*="deleteTech("],button[onclick*="deleteCompany("],button[onclick*="deleteUser("],button[onclick*="clearAllData("],button[onclick*="importBackup("]{display:none!important}</style>
-<script id="fp-no-delete-guard">
-(function(){
-  'use strict';
-  const blocked = () => { alert('الحذف ومسح البيانات معطّلان نهائيًا في منصة فني برو.'); return false; };
-  // Replace original handlers; backend SQL is the authoritative protection.
-  window.deleteOrder = blocked;
-  window.deleteTech = blocked;
-  window.deleteCompany = blocked;
-  window.deleteUser = blocked;
-  window.clearAllData = blocked;
-  window.deleteOrderCloud = blocked;
-  window.deleteTechCloud = blocked;
-  window.deleteCompanyCloud = blocked;
-  window.importBackup = blocked;
-  const hide = () => {
-    document.querySelectorAll('button,[role="button"]').forEach(el => {
-      const act = el.getAttribute('onclick') || '';
-      const txt = (el.textContent || '').trim();
-      if (/deleteOrder\(|deleteTech\(|deleteCompany\(|deleteUser\(|clearAllData\(|importBackup\(/.test(act) || /^(حذف|مسح الكل)$/.test(txt)) {
-        el.style.setProperty('display','none','important');
-      }
-    });
-  };
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hide);
-  else hide();
-  new MutationObserver(hide).observe(document.documentElement,{childList:true,subtree:true});
-})();
-</script>
-</body></html>');w.document.close();}
+function fpPrintClientReport(){const rows=fpClientReportData(),meta=fpClientReportMeta(),escape=typeof safe==='function'?safe:(x=>String(x??''));const cols=['رقم الطلب','اسم العميل','الجوال','الخدمة','المدينة','تاريخ الطلب','الحالة','الفني','قيمة الطلب (ر.س)'];const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة لطباعة التقرير');return;}const counts=['مكتملة','مسند','قيد التنفيذ','ملغاة'].map(c=>c+': '+rows.filter(r=>r['تصنيف الحالة']===c).length).join(' | ');w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>فني برو - تقرير الطلبات</title><style>body{font-family:Tahoma,Arial,sans-serif;color:#173052;padding:22px}h1{color:#176df7}header{border-bottom:3px solid #176df7;padding-bottom:14px;margin-bottom:15px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#176df7;color:white}td,th{border:1px solid #dce5f0;padding:8px;text-align:right}tr:nth-child(even){background:#f2f7ff}.meta{padding:12px;background:#edf5ff;margin:12px 0;border-radius:9px;line-height:2}@page{size:A4 landscape;margin:12mm}@media print{button{display:none}}</style></head><body><header><h1>فني برو | تقرير حالات الطلبات</h1><div>تاريخ التقرير: '+escape(new Date().toLocaleString('ar-SA',{timeZone:'Asia/Riyadh'}))+'</div></header><div class="meta">الفني: '+escape(meta.tech)+' | الحالة: '+escape(meta.status)+' | الفترة: '+escape(meta.from)+' إلى '+escape(meta.to)+'<br>عدد الطلبات: '+rows.length+' | '+escape(counts)+' | إجمالي القيمة: '+rows.reduce((n,r)=>n+Number(r['قيمة الطلب (ر.س)']||0),0).toFixed(2)+' ر.س</div><button onclick="window.print()">طباعة / حفظ PDF</button><table><thead><tr>'+cols.map(c=>'<th>'+escape(c)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+cols.map(c=>'<td>'+escape(r[c])+'</td>').join('')+'</tr>').join('')+'</tbody></table></body></html>');w.document.close();}
 
 function renderClients(){const orders=roleFilteredOrders(load(KEYS.ORD)),map={};orders.forEach(o=>{const k=o.phone||o.name;if(!map[k])map[k]={name:o.name,phone:o.phone,total:0,count:0,last:o.date};map[k].total+=Number(o.price||0);map[k].count++;map[k].last=o.date});const clients=Object.values(map);get('clientsList').innerHTML=clients.map(c=>`<div class="item-card"><div><b>${safe(c.name)}</b><p>${safe(c.phone)} · عدد الطلبات: ${c.count} · آخر طلب: ${safe(c.last)}</p></div><b>${fmt(c.total)} ر.س</b></div>`).join('')||'<div class="empty-state">لا يوجد عملاء</div>'}
 function techIsClosed(o){return !!o && (o.technicianLocked===true || ['ملغاة','ملغي','cancelled','canceled','مكتملة','مكتمل','completed','done','closed','مغلق'].includes(String(o.status||'').trim().toLowerCase()));}
@@ -1267,35 +1237,7 @@ function printProfessionalReport(id){
 
 
 
-<style id="fp-no-delete-css">button[onclick*="deleteOrder("],button[onclick*="deleteTech("],button[onclick*="deleteCompany("],button[onclick*="deleteUser("],button[onclick*="clearAllData("],button[onclick*="importBackup("]{display:none!important}</style>
-<script id="fp-no-delete-guard">
-(function(){
-  'use strict';
-  const blocked = () => { alert('الحذف ومسح البيانات معطّلان نهائيًا في منصة فني برو.'); return false; };
-  // Replace original handlers; backend SQL is the authoritative protection.
-  window.deleteOrder = blocked;
-  window.deleteTech = blocked;
-  window.deleteCompany = blocked;
-  window.deleteUser = blocked;
-  window.clearAllData = blocked;
-  window.deleteOrderCloud = blocked;
-  window.deleteTechCloud = blocked;
-  window.deleteCompanyCloud = blocked;
-  window.importBackup = blocked;
-  const hide = () => {
-    document.querySelectorAll('button,[role="button"]').forEach(el => {
-      const act = el.getAttribute('onclick') || '';
-      const txt = (el.textContent || '').trim();
-      if (/deleteOrder\(|deleteTech\(|deleteCompany\(|deleteUser\(|clearAllData\(|importBackup\(/.test(act) || /^(حذف|مسح الكل)$/.test(txt)) {
-        el.style.setProperty('display','none','important');
-      }
-    });
-  };
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hide);
-  else hide();
-  new MutationObserver(hide).observe(document.documentElement,{childList:true,subtree:true});
-})();
-</script>
+
 </body></html>`;
  const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة لطباعة التقرير');return;}w.document.open();w.document.write(html);w.document.close();
 }
@@ -1618,35 +1560,7 @@ input,select,textarea{max-width:100%;min-width:0}
 </head><body><button class="print" onclick="window.print()">طباعة / حفظ PDF</button><main class="paper"><header class="head"><small>FANNI PRO · TECHNICIAN FULL REPORT</small><h1>التقرير التفصيلي لجميع طلبات الفني</h1><p>الفني: ${safe(tech?.name||id)} | التخصص: ${safe(tech?.skill||'-')} | المدينة: ${safe(tech?.city||'-')}</p><p>الفترة: ${safe(from||'كل الفترات')} — ${safe(to||'حتى الآن')} | تاريخ الإصدار: ${safe(new Date().toLocaleString('ar-SA'))}</p></header><div class="stats">${[['إجمالي الطلبات',orders.length],['الجديدة',count('new')],['قيد التنفيذ',count('active')],['انتهى منها الفني',count('finished')],['المكتملة',count('completed')],['الملغاة',count('cancelled')],['قيمة الطلبات',fmt(total)+' ر.س'],['المدفوع',fmt(paid)+' ر.س']].map(([k,v])=>`<div class="stat">${safe(k)}<b>${safe(v)}</b></div>`).join('')}</div>${entries}<p>ملاحظة: البيانات غير المسجلة تظهر «غير مسجل». سجل العمليات المركزي لا يظهر إلا بعد ربطه بمصدره.</p></main>
 
 
-<style id="fp-no-delete-css">button[onclick*="deleteOrder("],button[onclick*="deleteTech("],button[onclick*="deleteCompany("],button[onclick*="deleteUser("],button[onclick*="clearAllData("],button[onclick*="importBackup("]{display:none!important}</style>
-<script id="fp-no-delete-guard">
-(function(){
-  'use strict';
-  const blocked = () => { alert('الحذف ومسح البيانات معطّلان نهائيًا في منصة فني برو.'); return false; };
-  // Replace original handlers; backend SQL is the authoritative protection.
-  window.deleteOrder = blocked;
-  window.deleteTech = blocked;
-  window.deleteCompany = blocked;
-  window.deleteUser = blocked;
-  window.clearAllData = blocked;
-  window.deleteOrderCloud = blocked;
-  window.deleteTechCloud = blocked;
-  window.deleteCompanyCloud = blocked;
-  window.importBackup = blocked;
-  const hide = () => {
-    document.querySelectorAll('button,[role="button"]').forEach(el => {
-      const act = el.getAttribute('onclick') || '';
-      const txt = (el.textContent || '').trim();
-      if (/deleteOrder\(|deleteTech\(|deleteCompany\(|deleteUser\(|clearAllData\(|importBackup\(/.test(act) || /^(حذف|مسح الكل)$/.test(txt)) {
-        el.style.setProperty('display','none','important');
-      }
-    });
-  };
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hide);
-  else hide();
-  new MutationObserver(hide).observe(document.documentElement,{childList:true,subtree:true});
-})();
-</script>
+
 </body></html>`;
  const w=window.open('','_blank');if(!w){toast('اسمح بالنوافذ المنبثقة');return;}w.document.open();w.document.write(html);w.document.close();
 }
@@ -2320,6 +2234,7 @@ document.addEventListener('DOMContentLoaded',function(){
  window.addEventListener('resize',function(){if(innerWidth>900)fpMobileMenuClose()});
 });
 </script>
+
 
 <style id="fp-no-delete-css">button[onclick*="deleteOrder("],button[onclick*="deleteTech("],button[onclick*="deleteCompany("],button[onclick*="deleteUser("],button[onclick*="clearAllData("],button[onclick*="importBackup("]{display:none!important}</style>
 <script id="fp-no-delete-guard">
