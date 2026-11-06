@@ -469,24 +469,43 @@ function incomingWhatsAppOnce(order){
       localStorage.setItem(WA_NOTIFIED_KEY,JSON.stringify(list.filter(x=>x!==key)));}
   });
 }
+function fpCanNotifyOrder(order){
+  if(currentUserRole==='technician'){
+    return !!currentTechnicianId && String(order.techId||order.tech_id||order.raw?.techId||'')===String(currentTechnicianId);
+  }
+  if(currentUserRole==='company_manager'){
+    return !!currentCompanyId && String(order.companyId||order.company_id||order.raw?.companyId||'')===String(currentCompanyId);
+  }
+  return currentUserRole==='admin'||currentUserRole==='dispatcher'||currentUserRole==='accountant';
+}
+function fpNotificationScope(){
+  return currentUserRole==='technician'?'tech:'+String(currentTechnicianId||'none'):
+    currentUserRole==='company_manager'?'company:'+String(currentCompanyId||'none'):
+    'role:'+currentUserRole;
+}
+function fpScopedKnownKey(){return KEYS.KNOWN+':'+fpNotificationScope()}
+function fpReadScopedKnown(){try{return new Set(JSON.parse(localStorage.getItem(fpScopedKnownKey())||'[]'))}catch{return new Set()}}
+function fpSaveScopedKnown(ids){localStorage.setItem(fpScopedKnownKey(),JSON.stringify([...ids].slice(-1500)))}
 function notifyNewOrders(newOrders){
-  if(!newOrders||!newOrders.length)return;
+  const eligible=(newOrders||[]).filter(fpCanNotifyOrder);
+  if(!eligible.length)return;
   const ids=getNewOrderIds();
-  newOrders.forEach(o=>{ids.add(o.id);addAlertRecord(o);});
+  eligible.forEach(o=>{ids.add(o.id);addAlertRecord(o)});
   setNewOrderIds(ids);
-  const first=newOrders[0];
-  toast(`وصل ${newOrders.length} طلب جديد`);
-  showLiveAlert(first);
+  toast(`وصل ${eligible.length} طلب مسند إليك`);
+  showLiveAlert(eligible[0]);
   playNewOrderSound();
-  desktopNotifyOrder(first);
+  desktopNotifyOrder(eligible[0]);
 }
 function detectIncomingOrders(currentOrders){
-  const known=getKnownOrders();
-  const currentIds=new Set((currentOrders||[]).map(o=>o.id).filter(Boolean));
-  if(!known.size){setKnownOrders(currentIds);return}
-  const fresh=(currentOrders||[]).filter(o=>o.id && !known.has(o.id));
-  if(fresh.length)notifyNewOrders(fresh);
-  setKnownOrders(currentIds);
+  const eligible=(currentOrders||[]).filter(fpCanNotifyOrder);
+  const known=fpReadScopedKnown();
+  const ids=new Set(eligible.map(o=>String(o.id)).filter(Boolean));
+  if(known.size){
+    const fresh=eligible.filter(o=>o.id&&!known.has(String(o.id)));
+    if(fresh.length)notifyNewOrders(fresh);
+  }
+  fpSaveScopedKnown(ids);
 }
 function markOrderSeen(id){
   const ids=getNewOrderIds(); ids.delete(id); setNewOrderIds(ids);
@@ -504,33 +523,22 @@ function clearNotificationHistory(){
 let fastOrderNotificationTimer=null;
 let fastOrderNotificationBusy=false;
 async function checkNewOrdersForNotificationOnly(){
-  if(!sb||!cloudEnabled||fastOrderNotificationBusy)return;
+  if(!sb||!cloudEnabled||fastOrderNotificationBusy||!currentUserProfile)return;
   try{
     fastOrderNotificationBusy=true;
-    const {data,error}=await sb
-      .from('orders')
-      .select('id,name,phone,service,city,updated_at,created_at,order_number')
-      .order('updated_at',{ascending:false})
-      .limit(8);
-    if(error) throw error;
-    const known=getKnownOrders();
-    if(!known.size){
-      setKnownOrders(new Set((data||[]).map(o=>o.id).filter(Boolean)));
-      return;
+    // Only notify for orders actually assigned to the signed-in technician.
+    let q=sb.from('orders').select('id,name,service,city,tech_id,company_id,raw,created_at,updated_at').order('updated_at',{ascending:false}).limit(500);
+    if(currentUserRole==='technician'){
+      if(!currentTechnicianId)return;
+      q=q.eq('tech_id',currentTechnicianId);
     }
-    const fresh=(data||[]).filter(o=>o.id && !known.has(o.id));
-    if(fresh.length){
-      const fixed=fresh.map(o=>({...o,id:o.order_number||o.id}));
-      notifyNewOrders(fixed);
-      fresh.forEach(o=>known.add(o.id));
-      setKnownOrders(known);
-      renderAlerts();
-    }
-  }catch(e){
-    console.warn('fast notification check failed',e.message||e);
-  }finally{
-    fastOrderNotificationBusy=false;
-  }
+    const {data,error}=await q;
+    if(error)throw error;
+    const orders=(data||[]).map(fromDbOrder);
+    detectIncomingOrders(orders);
+    renderAlerts();
+  }catch(e){console.warn('Scoped notification check failed',e.message||e)}
+  finally{fastOrderNotificationBusy=false}
 }
 function startFastOrderNotifications(){
   if(fastOrderNotificationTimer)clearInterval(fastOrderNotificationTimer);
@@ -561,7 +569,8 @@ function allowedPagesForRole(role){
 }
 function roleFilteredOrders(arr){
   if(currentUserRole==='company_manager')return (arr||[]).filter(o=>String(o.companyId||o.raw?.companyId||'')===String(currentCompanyId||'__no_company__'));
-  if(!isTechnicianRole()||!currentTechnicianId) return arr||[];
+  if(isTechnicianRole()&&!currentTechnicianId) return [];
+  if(!isTechnicianRole()) return arr||[];
   return (arr||[]).filter(o=>String(o.techId||o.tech_id||'')===String(currentTechnicianId));
 }
 function applyRolePermissions(role, technicianId){
@@ -1150,7 +1159,7 @@ function orderCardFull(x,techs){
 function renderTech(){const techs=qfilter(load(KEYS.TECH));get('techCount').textContent=techs.length+' فني';get('techList').innerHTML=techs.map(t=>`<div class="item-card"><div style="display:flex;gap:12px;align-items:center"><div class="avatar">👨‍🔧</div><div><b>${safe(t.name)}</b><p>${safe(t.skill)} · ${safe(t.city)} · ${safe(t.available)} · خبرة ${safe(t.experience||0)} سنوات</p></div></div><div class="actions"><b>★ ${safe(t.rate)}</b><button class="btn small light" onclick="editTech('${safe(t.id)}')">تعديل</button><button class="btn small red" onclick="deleteTech('${safe(t.id)}')">حذف</button></div></div>`).join('')||'<div class="empty-state">لا يوجد فنيين</div>';fillTechSelects()}
 function renderInvoices(){const orders=roleFilteredOrders(load(KEYS.ORD));const rows=orders.map(x=>`<tr><td>INV-${safe(String(x.id).replace('#',''))}</td><td>${safe(x.name)}</td><td>${safe(displayServices(x))}</td><td>${safe(x.date)}</td><td>${fmt(x.price)} ر.س</td><td><span class="status ${paymentClass(x.paymentStatus)}">${safe(x.paymentStatus||'غير مدفوعة')}</span></td><td><button class="btn small" onclick="printInvoice('${safe(x.id)}')">طباعة</button></td></tr>`).join('');get('invoiceRows').innerHTML=rows||'<tr><td colspan="6">لا توجد فواتير</td></tr>';get('invoiceRows2').innerHTML=rows||'<tr><td colspan="7">لا توجد فواتير</td></tr>'}
 function renderNumbers(){const o=roleFilteredOrders(load(KEYS.ORD)),t=load(KEYS.TECH);const total=o.reduce((a,x)=>a+Number(x.price||0),0),paid=o.filter(x=>x.paymentStatus==='مدفوعة'||x.status==='مكتملة').reduce((a,x)=>a+Number(x.price||0),0),done=o.filter(x=>x.status==='مكتملة').length,work=o.filter(x=>['قيد التنفيذ','تم الإسناد','الفني تحرك'].includes(x.status)).length,late=o.filter(x=>x.status==='متأخرة').length,p=n=>o.length?Math.round(n/o.length*100):0;get('kPaid').textContent=fmt(paid);get('kInvoices').textContent=fmt(total);get('kOrders').textContent=o.length;get('kTechs').textContent=t.length;get('sideTotal').textContent=fmt(total)+' ر.س';get('netProfit').textContent=fmt(total*.72)+' ر.س';get('needFollow').textContent=late+o.filter(x=>!x.techId).length;get('donutTotal').textContent=o.length;get('donePercent').textContent=p(done)+'%';get('workPercent').textContent=p(work)+'%';get('latePercent').textContent=p(late)+'%';get('completeRate').textContent=p(done)+'%';get('avgOrder').textContent=fmt(o.length?total/o.length:0);get('lateOrdersKpi').textContent=late;get('activeTechsKpi').textContent=t.filter(x=>x.available==='متاح للعمل').length;get('notifBadge').textContent=late+o.filter(x=>!x.techId).length+getNewOrderIds().size}
-function renderAlerts(){const o=load(KEYS.ORD);let notes=[];const unassigned=o.filter(x=>!x.techId).length,late=o.filter(x=>x.status==='متأخرة'||x.paymentStatus==='متأخرة').length,newCount=getNewOrderIds().size;if(newCount)notes.push(['طلبات جديدة',`${newCount} طلب جديد لم تتم مراجعته`,'green']);if(unassigned)notes.push(['طلبات بدون فني',`${unassigned} طلب يحتاج إسناد`,'blue']);if(late)notes.push(['متأخرات',`${late} طلب/فاتورة تحتاج متابعة`,'red']);if(!notes.length)notes.push(['النظام مستقر','لا توجد تنبيهات حرجة الآن','green']);const main=notes.map(n=>`<div class="time-item"><div class="time-box"><b>${n[0]}</b><p class="muted">${n[1]}</p></div><div class="time-dot"><i class="dot ${n[2]}"></i></div></div>`).join('');get('alerts').innerHTML=main;const history=load(KEYS.ALERTS).slice(0,15).map(a=>`<div class="time-item"><div class="time-box"><b>${safe(a.title)}</b><p class="muted">${safe(a.body)}<br>${safe(a.time)}</p></div><div class="time-dot">🔔</div></div>`).join('');get('notifyCenter').innerHTML=`<div class="notify-actions"><button class="btn light" onclick="requestBrowserNotifications()">تفعيل إشعارات المتصفح</button><button class="btn red" onclick="clearNotificationHistory()">تصفير التنبيهات</button></div>${main}${history?'<br><h3>سجل الطلبات الجديدة</h3><br>'+history:''}`}
+function renderAlerts(){const o=roleFilteredOrders(load(KEYS.ORD));let notes=[];const unassigned=currentUserRole==='technician'?0:o.filter(x=>!x.techId).length,late=o.filter(x=>x.status==='متأخرة'||x.paymentStatus==='متأخرة').length,newCount=getNewOrderIds().size;if(newCount)notes.push(['طلبات جديدة',`${newCount} طلب جديد لم تتم مراجعته`,'green']);if(unassigned)notes.push(['طلبات بدون فني',`${unassigned} طلب يحتاج إسناد`,'blue']);if(late)notes.push(['متأخرات',`${late} طلب/فاتورة تحتاج متابعة`,'red']);if(!notes.length)notes.push(['النظام مستقر','لا توجد تنبيهات حرجة الآن','green']);const main=notes.map(n=>`<div class="time-item"><div class="time-box"><b>${n[0]}</b><p class="muted">${n[1]}</p></div><div class="time-dot"><i class="dot ${n[2]}"></i></div></div>`).join('');get('alerts').innerHTML=main;const history=load(KEYS.ALERTS).filter(a=>o.some(order=>String(order.id)===String(a.orderId))).slice(0,15).map(a=>`<div class="time-item"><div class="time-box"><b>${safe(a.title)}</b><p class="muted">${safe(a.body)}<br>${safe(a.time)}</p></div><div class="time-dot">🔔</div></div>`).join('');get('notifyCenter').innerHTML=`<div class="notify-actions"><button class="btn light" onclick="requestBrowserNotifications()">تفعيل إشعارات المتصفح</button><button class="btn red" onclick="clearNotificationHistory()">تصفير التنبيهات</button></div>${main}${history?'<br><h3>سجل الطلبات الجديدة</h3><br>'+history:''}`}
 function renderAssign(){
  const orders=roleFilteredOrders(load(KEYS.ORD)),techs=load(KEYS.TECH);
  const unassigned=orders.filter(o=>!o.techId&&!o.companyId);
